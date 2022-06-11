@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{ 'title.page.replacement.structure'|trans }} - {{ structure.product.name }}  {{ structure.product.designation }}{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+            	<div class="card-header">
+            		<p>Замена элемента:</p>
+                    <dt>{{ 'label.name'|trans }}</dt>
+                	<dd>{{ structure.product.name }}  {{ structure.product.designation }}</dd>
+                    <dt>{{ 'label.unit'|trans }}</dt>
+                	<dd>{{ structure.product.unit.name }}</dd>
+                    <dt>{{ 'label.amount'|trans }}</dt>
+                	<dd>{{ structure.amount }}</dd>
+                	<dt>{{ 'label.specification'|trans }}</dt>
+                	<dd><a href="{{ path('specification_edit', {'id': specification.id}) }}">{{ specification.product.name }}  {{ specification.product.designation }}</a></dd>
+
+                	<a href="{{ path('specification_edit', {'id': specification.id}) }}"
+                           class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+                {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGK") and specification.close != 1) %}
+
+
+                {% if structure.mainReplacement %}
+                <div class="card-header">
+            		<div class="row">
+              			<div class="col-md-12">
+                			<div class="form-group">
+                  				<label>Элементы для замены</label>
+                  				<select class="form-control select2" style="width: 100%;" id="elementSelect">
+                    				<option value="0" selected="selected">Не выбрано</option>
+                    				{% for element in elementsReplacement %}
+                    					{% if element.id != structure.id and  element.getStructureRepltMains().count() == 0 %}
+                        					<option value="{{ element.id }}">{{ element.product.name }} {{ element.product.designation }}</option>
+                        				{% endif %}
+                    				{% endfor %}
+                  				</select>
+                			</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <button type='button' class='btn btn-sm btn-success float-left mb-3' id='addReplacement'>{{ 'title.add'|trans }}</button>
+
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% endif %}
+
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <table id="structureReplacement" class="table table-bordered table-striped table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Формат</th>
+                                        <th>Позиция</th>
+                                        <th>Обозначение</th>
+                                        <th>Наименование</th>
+                                        <th>Кол</th>
+                                        <th>Примечание</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Формат</th>
+                                        <th>Позиция</th>
+                                        <th>Обозначение</th>
+                                        <th>Наименование</th>
+                                        <th>Кол</th>
+                                        <th>Примечание</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                		</div>
+                	</div>
+
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            let elementSelect = $('#elementSelect');
+
+            $("#addReplacement").click(function() {
+                if (elementSelect.val() != 0) {
+
+                    let url = "{{ path('structure_element_replacement_new', {'specification_id': specification.id}) }}";
+
+                    $.ajax({
+                        type: 'post',
+                        url: url,
+                        data: {
+                            '_method': 'post',
+                            '_token': '{{ csrf_token('structure-element-replacement-add') }}',
+                            'structureMainId': JSON.stringify({{ structure.id }}),
+                            'structureReplacementId': JSON.stringify(elementSelect.val()),
+                        },
+                        dataType: 'json'
+                    }).done(function (data) {
+                        table.ajax.reload(null, false);
+
+                        $('#elementSelect option').each(function() {
+                            if ( $(this).val() == elementSelect.val() ) {
+                               $(this).remove();
+                            }
+                        });
+
+                    });
+                }
+            });
+
+            let table = $("#structureReplacement").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "format", "targets": 1},
+                    {"name": "position", "targets": 2},
+                    {"name": "designation", "targets": 3},
+                    {"name": "name", "targets": 4},
+                    {"name": "amount", "targets": 5},
+                    {"name": "note", "targets": 6},
+                    {"name": "control", "targets": 7, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('structure_replacement_datatables', {'specification_id': specification.id, 'structureMainId': structure.id }) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#structureReplacement").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let replacementId = $(this).attr('data-confirm-delete-id');
+                let url = " /specification/" + {{ specification.id }} + "/edit/structure/" + replacementId + "/replacement/delete";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+
+        });
+
+
+    </script>
+
+{% endblock %}

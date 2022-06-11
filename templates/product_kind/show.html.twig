@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.product_kind'|trans }}: {{ productKind.name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-body">
+
+                    <dl>
+                        {% if productKind.name %}
+                            <dt>{{ 'label.name'|trans }}</dt>
+                            <dd>{{ productKind.name }}</dd>
+                        {% endif %}
+                    </dl>
+
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+
+{% endblock %}

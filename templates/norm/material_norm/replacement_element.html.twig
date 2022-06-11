@@ -1,0 +1,213 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{ 'title.page.replacement.structure'|trans }} - {{ materialNorm.material.name }}  {{ materialNorm.material.designation }}{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+            	<div class="card-header">
+            		<p>Замена элемента:</p>
+                    <dt>{{ 'label.name'|trans }}</dt>
+                	<dd>{{ materialNorm.material.fullName }}</dd>
+                    <dt>{{ 'label.unit'|trans }}</dt>
+                	<dd>{{ materialNorm.material.unit.name }}</dd>
+                    <dt>{{ 'label.amount'|trans }}</dt>
+                	<dd>{{ materialNorm.amount }}</dd>
+                	<dt>{{ 'label.normDocument'|trans }}</dt>
+                	<dd><a href="{{ path('norm_document_edit', {'id': normDocument.id}) }}">{{ normDocument.product.name }}  {{ normDocument.product.designation }}</a></dd>
+
+                	<a href="{{ path('norm_document_edit', {'id': normDocument.id}) }}"
+                           class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+
+                {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1) %}
+
+
+                {% if materialNorm.mainReplacement %}
+                <div class="card-header">
+            		<div class="row">
+              			<div class="col-md-12">
+                			<div class="form-group">
+                  				<label>Элементы для замены</label>
+                  				<select class="form-control select2" style="width: 100%;" id="elementSelect">
+                    				<option value="0" selected="selected">Не выбрано</option>
+                    				{% for element in elementsReplacement %}
+                    					{% if element.id != materialNorm.id and  element.getMaterialNormRepltMains().count() == 0 %}
+                        					<option value="{{ element.id }}">{{ element.material.fullName }}</option>
+                        				{% endif %}
+                    				{% endfor %}
+                  				</select>
+                			</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <button type='button' class='btn btn-sm btn-success float-left mb-3' id='addReplacement'>{{ 'title.add'|trans }}</button>
+
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <table id="materialNormReplacement" class="table table-bordered table-striped table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Материал</th>
+                                        <th>Ед.изм.</th>
+                                        <th>Норма на деталь</th>
+                                        <th>Основной</th>
+                                        <th>Примечание</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Материал</th>
+                                        <th>Ед.изм.</th>
+                                        <th>Норма на деталь</th>
+                                        <th>Основной</th>
+                                        <th>Примечание</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                		</div>
+                	</div>
+                </div>
+
+
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            let elementSelect = $('#elementSelect');
+
+            $("#addReplacement").click(function() {
+                if (elementSelect.val() != 0) {
+
+                    let url = "{{ path('consumption_element_replacement_new', {'norm_document_id': normDocument.id}) }}";
+
+                    $.ajax({
+                        type: 'post',
+                        url: url,
+                        data: {
+                            '_method': 'post',
+                            '_token': '{{ csrf_token('material-norm-element-replacement-add') }}',
+                            'materialNormMainId': JSON.stringify({{ materialNorm.id }}),
+                            'materialNormReplacementId': JSON.stringify(elementSelect.val()),
+                        },
+                        dataType: 'json'
+                    }).done(function (data) {
+                        table.ajax.reload(null, false);
+
+                        $('#elementSelect option').each(function() {
+                            if ( $(this).val() == elementSelect.val() ) {
+                               $(this).remove();
+                            }
+                        });
+
+                    });
+                }
+            });
+
+            let table = $("#materialNormReplacement").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "name", "targets": 1},
+                    {"name": "unit", "targets": 2},
+                    {"name": "amount", "targets": 3},
+                    {"name": "mainReplacement", "targets": 4, "orderable": false, "searchable": false},
+                    {"name": "note", "targets": 5},
+                    {"name": "control", "targets": 6, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('consumption_replacement_datatables', {'norm_document_id': normDocument.id, 'materialNormMainId': materialNorm.id }) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#materialNormReplacement").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let replacementId = $(this).attr('data-confirm-delete-id');
+                let url = " /norm/document/" + {{ normDocument.id }} + "/edit/consumption/" + replacementId + "/replacement/delete";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+
+        });
+
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+<dl>
+    {% if is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+
+    {% if product.name %}
+        <dt>{{ 'label.name'|trans }}</dt>
+        <dd>{{ product.name }}</dd>
+    {% endif %}
+
+    {% if product.designation %}
+        <dt>{{ 'label.designation'|trans }}</dt>
+        <dd>{{ product.designation }}</dd>
+    {% endif %}
+
+    {% if product.weight %}
+        <dt>{{ 'label.weight'|trans }}</dt>
+        <dd>{{ product.weight }}</dd>
+    {% endif %}
+    {% if product.unit %}
+        <dt>{{ 'label.unit'|trans }}</dt>
+        <dd>{{ product.unit.name }}</dd>
+    {% endif %}
+
+    {% if product.productGroup %}
+        <dt>                           
+            {{ 'label.product_group'|trans }}
+            <span data-toggle='tooltip' data-placement='right' title='Группа: Продукция технического назначения, ТНП, основные материалы - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        </dt>
+        <dd>{{ product.productGroup.name }}</dd>
+    {% endif %}
+    {% if product.productType %}
+        <dt>
+            {{ 'label.product_type'|trans }}
+            <span data-toggle='tooltip' data-placement='right' title='Используется для дополнительной группировки'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        </dt>
+        <dd>{{ product.productType.name }}</dd>
+    {% endif %}
+    {% if product.productKind %}
+        <dt>
+            {{ 'label.product_kind'|trans }}
+            <span data-toggle='tooltip' data-placement='right' title='Вид номенклатуры - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        </dt>
+        <dd>{{ product.productKind.name }}</dd>
+    {% endif %}
+    {% if product.productCategory %}
+        <dt>
+            {{ 'label.product_category'|trans }}
+            <span data-toggle='tooltip' data-placement='right' title='Товарная категория: покупная или собственного изготовления - если одна и та же деталь может быть либо покупной, либо собственного изготовления, то  необходимо создать 2 элемента в справочнике'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        </dt>
+        <dd>{{ product.productCategory.name }}</dd>
+    {% endif %}
+    {% if product.kdMaterials.count > 0 %}
+        <dt>
+            {{ 'label.materials'|trans }}
+        </dt>
+        <dd>
+            <ul>
+                {% for kdMaterial in product.kdMaterials %}
+                    <li>{{ kdMaterial.fullName }}</li>
+                {% endfor %}
+            </ul>
+        </dd>
+    {% endif %}
+
+    {% endif %}
+
+    {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT")  or is_granted("ROLE_BUH") %}
+
+    {% if product.calculation %}
+        <dt>
+            {{ 'label.calculation'|trans }}
+        </dt>
+        <dd>{{ product.calculation.name }}</dd>
+    {% endif %}
+
+    {% endif %}
+
+    {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT")  or is_granted("ROLE_PEO") %}
+
+    {% if product.analyticGroup %}
+        <dt>
+            {{ 'label.analytic_group'|trans }}
+        </dt>
+        <dd>{{ product.analyticGroup.name }}</dd>
+    {% endif %}
+
+    {% if product.financeGroup %}
+        <dt>
+            {{ 'label.finance_group'|trans }}
+        </dt>
+        <dd>{{ product.financeGroup.name }}</dd>
+    {% endif %}
+
+    {% endif %}
+
+    </dl>
+{% endif %}
+                

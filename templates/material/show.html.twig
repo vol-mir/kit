@@ -1,0 +1,409 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.material'|trans }}: {{ material.name }} {% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="true">Материал</a>
+                        </li>
+                        {% if material.kdProducts.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="false">Установлен по КД</a>
+                        </li>
+                        {% endif %}
+                        {% if material.structures.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab3-tab" data-toggle="pill" href="#custom-tabs-four-tab3" role="tab" aria-controls="custom-tabs-four-tab3" aria-selected="false">Входимость в спецификации</a>
+                        </li>
+                        {% endif %}
+                        {% if material.materialNorms.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab4-tab" data-toggle="pill" href="#custom-tabs-four-tab4" role="tab" aria-controls="custom-tabs-four-tab4" aria-selected="false">Нормы расхода</a>
+                        </li>
+                        {% endif %}
+                        {% if comments %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab5-tab" data-toggle="pill" href="#custom-tabs-four-tab5" role="tab" aria-controls="custom-tabs-four-tab5" aria-selected="false">Комментарии</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                            <dl>
+                                <dt>{{ 'label.name'|trans }}</dt>
+                                <dd>{{ material.name }}</dd>
+
+                                {% if material.profileName %}
+                                    <dt>{{ 'label.profile_name'|trans }}</dt>
+                                    <dd>{{ material.profileName }}</dd>
+                                {% endif %}
+
+                                {% if material.profile %}
+                                    <dt>{{ 'label.profile'|trans }}</dt>
+                                    <dd>{{ material.profile}}</dd>
+                                {% endif %}
+
+                                {% if material.profileStandard %}
+                                    <dt>{{ 'label.profile_standard'|trans }}</dt>
+                                    <dd>{{ material.profileStandard}}</dd>
+                                {% endif %}
+
+                                {% if material.mark %}
+                                    <dt>{{ 'label.mark'|trans }}</dt>
+                                    <dd>{{ material.mark }}</dd>
+                                {% endif %}
+
+                                {% if material.markStandard %}
+                                    <dt>{{ 'label.mark_standard'|trans }}</dt>
+                                    <dd>{{ material.markStandard }}</dd>
+                                {% endif %}
+
+                                {% if material.materialKind %}
+                                    <dt>{{ 'label.material_kind'|trans }}</dt>
+                                    <dd>{{ material.materialKind }}</dd>
+                                {% endif %}
+
+                                {% if material.unit %}
+                                    <dt>{{ 'label.unit'|trans }}</dt>
+                                    <dd>{{ material.unit.name }}</dd>
+                                {% endif %}
+
+                                {% if material.productGroup %}
+                                    <dt>
+                                        {{ 'label.product_group'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Группа: Продукция технического назначения, ТНП, основные материалы - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ material.productGroup.name }}</dd>
+                                {% endif %}
+                                {% if material.productType %}
+                                    <dt>
+                                        {{ 'label.product_type'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Используется для дополнительной группировки'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ material.productType.name }}</dd>
+                                {% endif %}
+                                {% if material.productKind %}
+                                    <dt>
+                                        {{ 'label.product_kind'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Вид номенклатуры - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ material.productKind.name }}</dd>
+                                {% endif %}
+                                {% if material.productCategory %}
+                                    <dt>
+                                        {{ 'label.product_category'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Товарная категория: покупная или собственного изготовления - если одна и та же деталь может быть либо покупной, либо собственного изготовления, то  необходимо создать 2 элемента в справочнике'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ material.productCategory.name }}</dd>
+                                {% endif %}
+
+                                {% if material.calculation %}
+                                    <dt>
+                                        {{ 'label.calculation'|trans }}
+                                    </dt>
+                                    <dd>{{ material.calculation.name }}</dd>
+                                {% endif %}
+
+                                {% if material.analyticGroup %}
+                                    <dt>
+                                        {{ 'label.analytic_group'|trans }}
+                                    </dt>
+                                    <dd>{{ material.analyticGroup.name }}</dd>
+                                {% endif %}
+
+                                {% if material.financeGroup %}
+                                    <dt>
+                                        {{ 'label.finance_group'|trans }}
+                                    </dt>
+                                    <dd>{{ material.financeGroup.name }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        {% if material.kdProducts.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+                            {% if material.kdProducts.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for kdProduct in material.kdProducts %}
+                                            <tr role="row">
+                                                <td>{{ kdProduct.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: kdProduct.id}) }}' title="Открыть">{{ kdProduct.name }}</a></td></td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('product_show', {id: kdProduct.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не используется
+                                </div>
+                            {% endif %}
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                        {% endif %}
+                        {% if material.structures.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab3" role="tabpanel" aria-labelledby="custom-tabs-four-tab3-tab">
+                            {% if material.structures.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for structure in material.structures %}
+                                            <tr role="row">
+                                                <td>{{ structure.specification.id }}</td>
+                                                <td>{{ structure.specification.dateSpecification|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if structure.specification.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif structure.specification.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ specificationStatuses[structure.specification.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ structure.specification.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: structure.specification.product.id}) }}' title="Открыть">{{ structure.specification.product.name }}</a></td></td>
+                                                <td>{{ structure.specification.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('specification_show', {id: structure.specification.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не входит в состав изделия/узла
+                                </div>
+                            {% endif %}
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                        {% endif %}
+                        {% if material.materialNorms.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab4" role="tabpanel" aria-labelledby="custom-tabs-four-tab4-tab">
+                            {% if material.materialNorms.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th>Норма на деталь</th>
+                                            <th>Ед.изм.</th>
+                                            <th>Основной</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for materialNorm in material.materialNorms %}
+                                            <tr role="row">
+                                                <td>{{ materialNorm.normDocument.id }}</td>
+                                                <td>{{ materialNorm.normDocument.dateDocument|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if materialNorm.normDocument.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif materialNorm.normDocument.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ normDocumentStatuses[materialNorm.normDocument.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ materialNorm.normDocument.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: materialNorm.normDocument.product.id}) }}' title="Открыть">{{ materialNorm.normDocument.product.name }}</a></td></td>
+                                                <td>{{ materialNorm.normDocument.rendition.name }}</td>
+                                                <td>{{ materialNorm.amount }}</td>
+                                                <td>{{ materialNorm.material.unit.name }}</td>
+                                                <td>
+                                                {% if materialNorm.mainReplacement == 1 %}
+                                                    <span class='badge badge-success'>Да</span>
+                                                {% else %}
+                                                    <span class='badge badge-warning'>Замена</span>
+
+                                                {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('norm_document_show', {id: materialNorm.normDocument.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th>Норма</th>
+                                            <th>Основной</th>
+                                            <th>Ед.изм.</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не заданы нормы расхода
+                                </div>
+                            {% endif %}
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                        {% endif %}
+                        {% if comments %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab5" role="tabpanel" aria-labelledby="custom-tabs-four-tab5-tab">
+
+                            {% if comments %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Комментарий</th>
+                                            <th>Пользователь</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for comment in comments %}
+                                            <tr role="row">
+                                                <td>{{ comment.createdAt|date("d.m.Y") }}</td>
+                                                <td>{{ comment.description }}</td>
+                                                <td>
+
+                                                   {{ comment.user?comment.user.fullName:'' }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Комментарий</th>
+                                            <th>Пользователь</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Нет комментариев
+                                </div>
+                            {% endif %}
+
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+        $("#entres").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            let locDocumentTab = localStorage.getItem('document-tab');
+            if ($('#' + locDocumentTab).length) {
+                $('#' + locDocumentTab).tab('show');
+            } else {
+                $('#custom-tabs-four-tab1-tab').tab('show');
+            }
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('document-tab', selectedTabId);
+            });
+
+        });
+    </script>
+
+{% endblock %}

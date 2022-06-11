@@ -1,0 +1,363 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.edit.norm_document'|trans }}: {{ normDocument.product.name }} {{ normDocument.product.designation }} {% if normDocument.product.weight %} - вес {{ normDocument.product.weight }} кг{% endif %} {% if normDocument.product.productCategory %}, товарная категория - {{ normDocument.product.productCategory.name }} {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="false">Документ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="true">Материалы</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                        {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1) %}
+                        <!-- form start -->
+                        <form id="normDocumentForm" action="{{ path('norm_document_edit', {'id': normDocument.id}) }}" method="POST">
+                            {% include 'norm/norm_document/_form.html.twig' with {'form': form} only %}
+                            <div class="card-footer">
+
+                                {{ form_widget(form.save) }}
+                                {{ form_widget(form.saveAndStay) }}
+
+                                <a href="{{ path('norm_document_index') }}"
+                                   class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                            </div>
+                        </form>
+                        {% else %}
+                            <div class="card-body">
+                            <dl>
+                                {% if normDocument.dateDocument %}
+                                    <dt>{{ 'label.date_specification'|trans }}</dt>
+                                    <dd>{{ normDocument.dateDocument|date("d.m.Y") }}</dd>
+                                {% endif %}
+                                {% if normDocument.product %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ normDocument.product.name }}</dd>
+                                {% endif %}
+                                {% if normDocument.product.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ normDocument.product.designation }}</dd>
+                                {% endif %}
+                                {% if normDocument.rendition %}
+                                    <dt>{{ 'label.rendition'|trans }}</dt>
+                                    <dd>{{ normDocument.rendition.name}}</dd>
+                                {% endif %}
+                                {% if normDocument.status %}
+                                    <dt>{{ 'label.status'|trans }}</dt>
+                                    <dd>{{ normDocumentStatuses[normDocument.status]|trans }}</dd>
+                                {% endif %}
+                            </dl>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{ path('norm_document_index') }}"
+                                   class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+
+
+                            {% if (is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1)) or (normDocument.product.kdMaterials.count() > 0) %}
+
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% if normDocument.product.kdMaterials.count() > 0 %}
+
+                                            <div class="alert alert-light" role="alert">
+                                                {% if normDocument.product.kdMaterials.count() > 0 %}
+                                                <h4 class="alert-heading">Материал по КД:</h4>
+                                                <ul>
+                                                    {% for kdMaterial in normDocument.product.kdMaterials %}
+                                                        <li>{{ kdMaterial.fullName }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1) %}
+                                    <div class="col-md-12">
+                                        {% include 'norm/material_norm/_controls.html.twig' %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% endif %}
+
+                            <div class="card-body">
+                                <table id="consumption" class="table table-bordered table-striped table-hover table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Материал</th>
+                                            <th>Ед.изм.</th>
+                                            <th>Норма на деталь</th>
+                                            <th>Основной</th>
+                                            <th>Примечание</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Материал</th>
+                                            <th>Ед.изм.</th>
+                                            <th>Норма на деталь</th>
+                                            <th>Основной</th>
+                                            <th>Примечание</th>
+                                            <th></th>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                            </div>
+
+                            {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1)%}
+
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% include 'norm/material_norm/_controls.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endif %}
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/move.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#normDocumentForm').validate({
+                rules: {
+                    'normDocument[date_document]': {
+                        maxlength: 190,
+                        required: false,
+                    },
+                    'normDocument[product]': {
+                        required: true,
+                    },
+                    'normDocument[rendition]': {
+                        required: true,
+                    },
+                },
+                messages: {
+                    'normDocument[date_document]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'normDocument[product]': {
+                        required: "{{ 'message.validation.required'|trans }}"
+                    },
+                    'normDocument[rendition]': {
+                        required: "{{ 'message.validation.required'|trans }}"
+                    },
+                },
+                errorElement: 'div',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+
+
+        });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            let table = $("#consumption").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "name", "targets": 1},
+                    {"name": "unit", "targets": 2},
+                    {"name": "amount", "targets": 3},
+                    {"name": "mainReplacement", "targets": 4, "orderable": false, "searchable": false},
+                    {"name": "note", "targets": 5},
+                    {"name": "control", "targets": 6, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('consumption_datatables', {'norm_document_id': normDocument.id}) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+                "pageLength": 100,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            let locNormDocumentTab = localStorage.getItem('norm-document-tab');
+            $('#' + locNormDocumentTab).tab('show');
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('norm-document-tab', selectedTabId);
+            });
+
+            $("#norm_document_product").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('select_product') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
+            });
+
+            $("#consumption").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#consumption").on("click", ".element-move", function () {
+
+                $("#option-index-numbers option").remove();
+
+                $.each(table.column(0).data(), function() {
+                    $('#option-index-numbers').append($('<option>', {
+                        value: this,
+                        text: this
+                    }));
+                });
+
+
+                $('#btn-modal-move').attr("data-move-id", $(this).attr('data-id'));
+                $('#modal-move').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let materialNormId = $(this).attr('data-confirm-delete-id');
+                let url = " /norm/document/" + {{ normDocument.id }} + "/edit/consumption/" + materialNormId + "/delete";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+            $(document).on('click','.element-up',function(){
+
+                let consumptionId = $(this).attr('data-id');
+                let url = "/norm/document/" + {{ normDocument.id }} + "/edit/consumption/" + consumptionId + "/up";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('material-norm-item-up') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+            });
+
+
+            $(document).on('click','.element-adown',function(){
+
+                let consumptionId = $(this).attr('data-id');
+                let url = "/norm/document/" + {{ normDocument.id }} + "/edit/consumption/" + consumptionId + "/adown";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('material-norm-item-adown') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+            });
+
+            $("#modal-move").on("click", "#btn-modal-move", function () {
+
+                let consumptionId = $(this).attr('data-move-id');
+                let newIndexNumber = $("#option-index-numbers").val();
+
+                let url = "/norm/document/" + {{ normDocument.id }} + "/edit/consumption/" + consumptionId + "/move/" + newIndexNumber + "/new-index";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('material-norm-item-move') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-move').attr("data-move-id", null);
+                $('#modal-move').modal('hide');
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

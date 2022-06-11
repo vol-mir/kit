@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.edit.product'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+                <!-- form start -->
+                <form id="productForm" action="{{ path('product_edit', {'id': product.id}) }}" method="POST">
+                    <div class="card-body">
+                        {% include 'product/_form.html.twig' with {'form': form} only %}
+                        {% include 'product/_show_form.html.twig' with {'product': product} only %}
+                    </div>
+                    <div class="card-footer">
+                        {{ form_widget(form.save) }}
+                        {{ form_widget(form.saveAndStay) }}
+                        <a href="{{ path('product_index') }}"
+                           class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                    </div>
+                </form>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $("#product_kd_materials").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('select_material') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
+            });
+
+            $('#productForm').validate({
+                rules: {
+                    'product[name]': {
+                        required: true,
+                        maxlength: 190
+                    },
+                    'product[designation]': {
+                        required: false,
+                        maxlength: 190
+                    },
+                    'product[weight]': {
+                        required: true,
+                        number: true
+                    },
+                    'product[unit]': {
+                        required: true,
+                    },
+                    'product[product_group]': {
+                        required: true,
+                    },
+                    'product[product_type]': {
+                        required: true,
+                    },
+                    'product[product_kind]': {
+                        required: true,
+                    },
+                    'product[product_category]': {
+                        required: true,
+                    },
+                },
+                messages: {
+                    'product[name]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'product[designation]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'product[weight]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                        number: "{{ 'message.validation.number'|trans }}"
+                    },
+                    'product[unit]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'product[product_group]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'product[product_type]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'product[product_kind]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'product[product_category]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                },
+                errorElement: 'div',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

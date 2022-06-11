@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.edit.norm_document'|trans }}: {{ normDocument.product.name }} {{ normDocument.product.designation }} {% if normDocument.product.weight %} - вес {{ normDocument.product.weight }} кг{% endif %} {% if normDocument.product.productCategory %}, товарная категория - {{ normDocument.product.productCategory.name }} {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="false">Документ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="true">Материалы</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                        <div class="card-body">
+                            <dl>
+                                {% if normDocument.dateDocument %}
+                                    <dt>{{ 'label.date_document'|trans }}</dt>
+                                    <dd>{{ normDocument.dateDocument|date("d.m.Y") }}</dd>
+                                {% endif %}
+                                {% if normDocument.product %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ normDocument.product.name }}</dd>
+                                {% endif %}
+                                {% if normDocument.product.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ normDocument.product.designation }}</dd>
+                                {% endif %}
+                                {% if normDocument.rendition %}
+                                    <dt>{{ 'label.rendition'|trans }}</dt>
+                                    <dd>{{ normDocument.rendition.name}}</dd>
+                                {% endif %}
+                                {% if normDocument.status %}
+                                    <dt>{{ 'label.status'|trans }}</dt>
+                                    <dd>{{ normDocumentStatuses[normDocument.status]|trans }}</dd>
+                                {% endif %}
+                                <dt>Разработал</dt>
+                                <dd>{{ normDocument.user.fullName }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+
+                        {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and normDocument.close != 1) %}
+                            <div class="card-header">
+                                {% include 'norm/norm_document/_controls_edit.html.twig' %}
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body">
+
+                            {% if normDocument.product.kdMaterials.count() > 0 %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-light" role="alert">
+                                            {% if normDocument.product.kdMaterials.count() > 0 %}
+                                                <h4 class="alert-heading">Материал по КД:</h4>
+                                                <ul>
+                                                    {% for kdMaterial in normDocument.product.kdMaterials %}
+                                                        <li>{{ kdMaterial.fullName }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <table id="consumption" class="table table-bordered table-striped table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Материал</th>
+                                        <th>Ед.изм.</th>
+                                        <th>Норма на деталь</th>
+                                        <th>Основной</th>
+                                        <th>Примечание</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>№ п/п</th>
+                                        <th>Материал</th>
+                                        <th>Ед.изм.</th>
+                                        <th>Норма на деталь</th>
+                                        <th>Основной</th>
+                                        <th>Примечание</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/move.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+
+        $(document).ready(function () {
+            let table = $("#consumption").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "name", "targets": 1},
+                    {"name": "unit", "targets": 2},
+                    {"name": "amount", "targets": 3},
+                    {"name": "mainReplacement", "targets": 4, "orderable": false, "searchable": false},
+                    {"name": "note", "targets": 5},
+                ],
+                "ajax": {
+                    "url": "{{ path('consumption_datatables', {'norm_document_id': normDocument.id}) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+                "pageLength": 100,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            let locNormDocumentTab = localStorage.getItem('norm-document-tab');
+            $('#' + locNormDocumentTab).tab('show');
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('norm-document-tab', selectedTabId);
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

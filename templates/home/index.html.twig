@@ -1,0 +1,377 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.main'|trans }}{% endblock %}
+
+{% block body %}
+
+
+	{% if countNullStructures or countNullProductsGroups or countNullProductsKinds or
+      countNullProductsTypes or countNullProductsCategories or countNullMaterialsGroups or
+      countNullMaterialsKinds or countNullMaterialsTypes or countNullMaterialsCategories 
+      or countNullProductsCalculations or countNullMaterialsCalculations 
+      or countNullProductsAnalyticGroups or countNullMaterialsAnalyticGroups
+      or countNullProductsFinanceGroups or countNullMaterialsFinanceGroups %}
+	<!-- Small boxes (Stat box) -->
+    <div class="row">
+
+        {% if countNullStructures %}
+        <div class="col-lg-3 col-6">
+           	<!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullStructures }} </h3>
+
+                <p>Ошибки в спецификациях</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('specification_index_error') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsGroups }} </h3>
+
+                <p>В номенклатуре не указана Группа</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsKinds %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsKinds }} </h3>
+
+                <p>В номенклатуре не указан Вид</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsTypes %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsTypes }} </h3>
+
+                <p>В номенклатуре не указан Тип</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsCategories %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsCategories }} </h3>
+
+                <p>В номенклатуре не указана Категория</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsCalculations %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsCalculations }} </h3>
+
+                <p>В номенклатуре не указана Калькуляция</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsAnalyticGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsAnalyticGroups }} </h3>
+
+                <p>В номенклатуре не указана Группа аналит. учета</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullProductsFinanceGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullProductsFinanceGroups }} </h3>
+
+                <p>В номенклатуре не указана Группа фин. учета</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('product_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+
+        {% if countNullMaterialsGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsGroups }} </h3>
+
+                <p>В материалах не указана Группа</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullMaterialsKinds %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsKinds }} </h3>
+
+                <p>В материалах не указан Вид</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullMaterialsTypes %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsTypes }} </h3>
+
+                <p>В материалах не указан Тип</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullMaterialsCategories %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsCategories }} </h3>
+
+                <p>В материалах не указана Категория</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullMaterialsCalculations %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsCalculations }} </h3>
+
+                <p>В материалах не указана Калькуляция</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+
+        {% if countNullMaterialsAnalyticGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsAnalyticGroups }} </h3>
+
+                <p>В материалах не указана Группа аналит. учета</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if countNullMaterialsFinanceGroups %}
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ countNullMaterialsFinanceGroups }} </h3>
+
+                <p>В материалах не указана Группа фин. учета</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="{{ path('material_index') }}" class="small-box-footer">Больше информации <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ./col -->
+    </div>
+
+{% endif %}
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Как работать с КиТ</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <!-- we are adding the accordion ID so Bootstrap's collapse plugin detects it -->
+                <div id="accordion">
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h4 class="card-title w-100">
+                        <a class="d-block w-100" data-toggle="collapse" href="#collapseOne">
+                          Полезная информация
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                      <div class="card-body">
+                        <p>Информация, которая может помочь при работе с программой</p>
+                        <ul>
+                          <li>
+                            <a href="https://ta-aspect.by/project-materials/kalkulyaciya-sebestoimosti">Калькуляция себестоимости продукции</a>
+                          </li>
+                          <li>
+                            <a href="https://studbooks.net/1231135/buhgalterskiy_uchet_i_audit/ponyatie_klassifikatsiya_materialov">Понятие и классификация материалов</a>
+                          </li>
+                          <li>
+                            <a href="https://habr.com/ru/post/470239/">Недовнедренная ERP-система в производстве</a>
+                          </li>
+                          <li>
+                            <a href="https://lifehacker.ru/pravila-komandnoj-raboty/">Как организовать работу</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                <div id="accordion">
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h4 class="card-title w-100">
+                        <a class="d-block w-100" data-toggle="collapse" href="#collapseTwo">
+                          Правильно разносим номенклатуру и материал Пример №1
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                      <div class="card-body">
+                        <img src="{{ asset('dist/img/faq/example1.png') }}" alt="example1">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h4 class="card-title w-100">
+                        <a class="d-block w-100" data-toggle="collapse" href="#collapseThree">
+                          Правильно разносим номенклатуру и материал Пример №2
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseThree" class="collapse" data-parent="#accordion">
+                      <div class="card-body">
+                        <img src="{{ asset('dist/img/faq/example2.png') }}" alt="example2">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h4 class="card-title w-100">
+                        <a class="d-block w-100" data-toggle="collapse" href="#collapse4">
+                          Правильно разносим номенклатуру и материал Пример №3
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapse4" class="collapse" data-parent="#accordion">
+                      <div class="card-body">
+                        <img src="{{ asset('dist/img/faq/example3.png') }}" alt="example3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- END ACCORDION & CAROUSEL-->
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+
+{% endblock %}

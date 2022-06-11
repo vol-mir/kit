@@ -1,0 +1,944 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.product'|trans }}: {{ product.name }} {{ product.designation }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="true">Номенклатура</a>
+                        </li>
+                        {% if detailing %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="false">Деталировка</a>
+                        </li>
+                        {% endif %}
+                        {% if product.structures.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab3-tab" data-toggle="pill" href="#custom-tabs-four-tab3" role="tab" aria-controls="custom-tabs-four-tab3" aria-selected="false">Входимость</a>
+                        </li>
+                        {% endif %}
+                        {% if product.specifications.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab4-tab" data-toggle="pill" href="#custom-tabs-four-tab4" role="tab" aria-controls="custom-tabs-four-tab4" aria-selected="false">Спецификации</a>
+                        </li>
+                        {% endif %}
+                        {% if product.normDocuments.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab5-tab" data-toggle="pill" href="#custom-tabs-four-tab5" role="tab" aria-controls="custom-tabs-four-tab5" aria-selected="false">Документы установки норм расхода</a>
+                        </li>
+                        {% endif %}
+                        {% if materials %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab6-tab" data-toggle="pill" href="#custom-tabs-four-tab6" role="tab" aria-controls="custom-tabs-four-tab6" aria-selected="false">Нормы расхода</a>
+                        </li>
+                        {% endif %}
+                        {% if product.trackDocuments.count > 0 %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab7-tab" data-toggle="pill" href="#custom-tabs-four-tab7" role="tab" aria-controls="custom-tabs-four-tab7" aria-selected="false">Маршруты</a>
+                        </li>
+                        {% endif %}
+                        {% if actualTracks %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab8-tab" data-toggle="pill" href="#custom-tabs-four-tab8" role="tab" aria-controls="custom-tabs-four-tab8" aria-selected="false">Актуальные маршруты</a>
+                        </li>
+                        {% endif %}
+                        {% if comments %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab9-tab" data-toggle="pill" href="#custom-tabs-four-tab9" role="tab" aria-controls="custom-tabs-four-tab9" aria-selected="false">Комментарии</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                        <div class="card-body">
+                            <dl>
+                                {% if product.name %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ product.name }}</dd>
+                                {% endif %}
+                                {% if product.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ product.designation }}</dd>
+                                {% endif %}
+                                {% if product.weight %}
+                                    <dt>{{ 'label.weight'|trans }}</dt>
+                                    <dd>{{ product.weight }}</dd>
+                                {% endif %}
+                                {% if product.unit %}
+                                    <dt>{{ 'label.unit'|trans }}</dt>
+                                    <dd>{{ product.unit.name }}</dd>
+                                {% endif %}
+
+                                {% if product.productGroup %}
+                                    <dt>
+                                        {{ 'label.product_group'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Группа: Продукция технического назначения, ТНП, основные материалы - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ product.productGroup.name }}</dd>
+                                {% endif %}
+                                {% if product.productType %}
+                                    <dt>
+                                        {{ 'label.product_type'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Используется для дополнительной группировки'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ product.productType.name }}</dd>
+                                {% endif %}
+                                {% if product.productKind %}
+                                    <dt>
+                                        {{ 'label.product_kind'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Вид номенклатуры - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ product.productKind.name }}</dd>
+                                {% endif %}
+                                 {% if product.productCategory %}
+                                    <dt>
+                                        {{ 'label.product_category'|trans }}
+                                        <span data-toggle='tooltip' data-placement='right' title='Товарная категория: покупная или собственного изготовления - если одна и та же деталь может быть либо покупной, либо собственного изготовления, то  необходимо создать 2 элемента в справочнике'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                    </dt>
+                                    <dd>{{ product.productCategory.name }}</dd>
+                                {% endif %}
+                                {% if product.kdMaterials.count > 0 %}
+                                    <dt>
+                                        {{ 'label.materials'|trans }}
+                                    </dt>
+                                    <dd>
+                                        <ul>
+                                            {% for kdMaterial in product.kdMaterials %}
+                                                <li>{{ kdMaterial.fullName }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </dd>
+                                {% endif %}
+
+                                <dt>{{ 'label.id_erp'|trans }}</dt>
+                                <dd>{{ product.idErp }}</dd>
+
+                                {% if product.calculation %}
+                                    <dt>
+                                        {{ 'label.calculation'|trans }}
+                                    </dt>
+                                    <dd>{{ product.calculation.name }}</dd>
+                                {% endif %}
+
+                                {% if product.analyticGroup %}
+                                    <dt>
+                                        {{ 'label.analytic_group'|trans }}
+                                    </dt>
+                                    <dd>{{ product.analyticGroup.name }}</dd>
+                                {% endif %}
+
+                                {% if product.financeGroup %}
+                                    <dt>
+                                        {{ 'label.finance_group'|trans }}
+                                    </dt>
+                                    <dd>{{ product.financeGroup.name }}</dd>
+                                {% endif %}
+
+                            </dl>
+
+                            {# {% if is_granted("ROLE_ADMIN") %} #}
+                            <ul class="products-list product-list-in-card">
+                                {% for productRendition in productRenditions %}
+                                <li class="item">
+                                    <div>
+                                        <a href="{{ path('save_xml', {'id': product.id, 'rendition_id': productRendition.id }) }}" class="product-title">Выгрузить спецификацию - Вариант исполнения: {{ productRendition.name }}</a>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {# {% endif %} #}
+                        </div>
+                    </div>
+
+                    {% if detailing %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+                            <div class="card-body">
+                            {% if detailing %}
+                            <table id="table" class="table table-bordered table-striped table-hover table-sm"></table>
+                            {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Спецификация не задана
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if product.structures.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab3" role="tabpanel" aria-labelledby="custom-tabs-four-tab3-tab">
+                            <div class="card-body">
+                            {% if product.structures.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for structure in product.structures %}
+                                            <tr role="row">
+                                                <td>{{ structure.specification.id }}</td>
+                                                <td>{{ structure.specification.dateSpecification|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if structure.specification.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif structure.specification.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ specificationStatuses[structure.specification.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ structure.specification.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: structure.specification.product.id}) }}' title="Открыть">{{ structure.specification.product.name }}</a></td></td>
+                                                <td>{{ structure.specification.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('specification_show', {id: structure.specification.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не входит в состав изделия/узла
+                                </div>
+                            {% endif %}
+                            </div>
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                    {% endif %}
+
+                    {% if product.specifications.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab4" role="tabpanel" aria-labelledby="custom-tabs-four-tab4-tab">
+                            <div class="card-body">
+                            {% if product.specifications.count > 0 %}
+                                <table id="specifications" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for specification in product.specifications %}
+                                            <tr role="row">
+                                                <td>{{ specification.id }}</td>
+                                                <td>{{ specification.dateSpecification|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if specification.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif specification.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ specificationStatuses[specification.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ specification.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: specification.product.id}) }}' title="Открыть">{{ specification.product.name }}</a></td></td>
+                                                <td>{{ specification.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('specification_show', {id: specification.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Спецификация не задана
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if product.normDocuments.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab5" role="tabpanel" aria-labelledby="custom-tabs-four-tab5-tab">
+                            <div class="card-body">
+                            {% if product.normDocuments.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for normDocument in product.normDocuments %}
+                                            <tr role="row">
+                                                <td>{{ normDocument.id }}</td>
+                                                <td>{{ normDocument.dateDocument|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if normDocument.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif normDocument.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ normDocumentStatuses[normDocument.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ normDocument.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: normDocument.product.id}) }}' title="Открыть">{{ normDocument.product.name }}</a></td></td>
+                                                <td>{{ normDocument.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('norm_document_show', {id: normDocument.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не заданы нормы расхода
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if materials %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab6" role="tabpanel" aria-labelledby="custom-tabs-four-tab6-tab">
+                            {% if materials %}
+
+                                {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT")) %}
+                                    <div class="card-header">
+                                        <button type="button" onclick='location.href = "{{ path('print_product_material_norms', {'id': product.id}) }}";' role="button" class="btn btn-sm btn-default float-left mr-2 mb-1"><i class='fas fa-print'></i> {{ 'title.print'|trans }}</button>
+                                    </div>
+                                {% endif %}
+
+                                <div class="card-body">
+
+                                <table id="materials" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Номенклатура</th>
+                                            <th>Кол-во</th>
+                                            <th>Категория</th>
+                                            <th>Ст. кальк. номенкл.</th>
+                                            <th>Материал</th>
+                                            <th>Ст. кальк. мат.</th>
+                                            <th>Основной</th>
+                                            <th>Норма на деталь</th>
+                                            <th>Норма на изделие</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for material in materials %}
+                                            <tr role="row" {% if material.mainReplacement == 2 %}class="text-secondary"{% endif %}>
+                                                <td>
+                                                    {% if material.intype != 3 %}
+                                                        {{ material.name }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if material.amount and material.intype != 3 %}
+                                                        {{ material.amount }} {{ material.amountUnit }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if material.intype != 3 %}
+                                                        {{ material.category }}
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    {% if material.intype != 3 %}
+                                                        <small>{{ material.calculationName }}</small>
+                                                    {% endif %} 
+                                                </td>
+                                                <td>
+                                                    {% if material.intype == 3 %}
+                                                        {{ material.name }}
+                                                    {% endif %}
+                                                    {{ material.material }}
+                                                </td>
+                                                <td>
+                                                    {% if material.intype == 3 %}
+                                                       <small>{{ material.calculationName }}</small>
+                                                    {% else %}
+                                                        <small>{{ material.materialCalc }}</small>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if material.mainReplacement == 1 %}
+                                                        <span class='badge badge-success'>Да</span>
+                                                    {% elseif material.mainReplacement == 2 %}
+                                                        <span class='badge badge-warning'>Замена</span>
+                                                    {% endif %}
+                                                <td>
+                                                    {% if material.amountOne %}
+                                                        {{ material.amountOne }} {{ material.amountOne?material.amountUnitMaterial:'' }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if material.intype != 3 %}
+                                                        {{ material.amount }} {{ material.amountUnit }}
+                                                    {% elseif material.amountMaterial %}
+                                                        {{ material.amountMaterial }} {{ material.amountUnitMaterial }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Номенклатура</th>
+                                            <th>Кол-во</th>
+                                            <th>Категория</th>
+                                            <th>Ст. кальк. номенкл.</th>
+                                            <th>Материал</th>
+                                            <th>Ст. кальк. мат.</th>
+                                            <th>Основной</th>
+                                            <th>Норма на деталь</th>
+                                            <th>Норма на изделие</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                </div>
+
+                                {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT")) %}
+                                    <div class="card-footer">
+                                        <button type="button" onclick='location.href = "{{ path('print_product_material_norms', {'id': product.id}) }}";' role="button" class="btn btn-sm btn-default float-left mr-2 mb-1"><i class='fas fa-print'></i> {{ 'title.print'|trans }}</button>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Нормы расхода материалов не заданы
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if product.trackDocuments.count > 0 %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab7" role="tabpanel" aria-labelledby="custom-tabs-four-tab7-tab">
+                            <div class="card-body">
+                            {% if product.trackDocuments.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата нач.</th>
+                                            <th>Дата кон.</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for trackDocument in product.trackDocuments %}
+                                            <tr role="row">
+                                                <td>{{ trackDocument.id }}</td>
+                                                <td>{{ trackDocument.dateStart?trackDocument.dateStart|date("d.m.Y"):'' }}</td>
+                                                <td>{{ trackDocument.dateEnd?trackDocument.dateEnd|date("d.m.Y"):'' }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if trackDocument.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif trackDocument.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ trackDocumentStatuses[trackDocument.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ trackDocument.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: trackDocument.product.id}) }}' title="Открыть">{{ trackDocument.product.name }}</a></td></td>
+                                                <td>{{ trackDocument.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('track_document_show', {id: trackDocument.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата нач.</th>
+                                            <th>Дата кон.</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не заданы маршруты
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if actualTracks %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab8" role="tabpanel" aria-labelledby="custom-tabs-four-tab8-tab">
+                            <div class="card-body">
+                            {% if actualTracks %}
+                                {% for actualTrack in actualTracks %}
+                                <h4>{{ actualTrack.rendition.name }}</h4>
+                                <table class="table table-bordered table-striped table-hover table-sm actual-tracks">
+                                    <thead>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Цех</th>
+                                            <th>Номер цеха</th>
+                                            <th>Номер операции</th>
+                                            <th>Операция</th>
+                                            <th>tц, tо, tоп</th>
+                                            <th>tшт</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for track in actualTrack.tracks %}
+                                        <tr>
+                                            <td>{{ track.indexNumber }}</td>
+                                            <td>{{ track.department.name }}</td>
+                                            <td>{{ track.department.numberArea?track.department.numberDepartment~' ('~track.department.numberArea~')':track.department.numberDepartment }}</td>
+                                            <td>{{ track.numberOperation?track.numberOperation:'' }}</td>
+                                            <td>{{ track.technologicalOperation?track.technologicalOperation.fullName:'' }}</td>
+                                            <td>{{ track.timeProcessing?track.timeProcessing:'' }}</td>
+                                            <td>{{ track.timePiece?track.timePiece:'' }}</td>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Цех</th>
+                                            <th>Номер цеха</th>
+                                            <th>Номер операции</th>
+                                            <th>Операция</th>
+                                            <th>tц, tо, tоп</th>
+                                            <th>tшт</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="mt-5"></div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не заданы маршруты
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if comments %}
+                        <div class="tab-pane fade" id="custom-tabs-four-tab9" role="tabpanel" aria-labelledby="custom-tabs-four-tab9-tab">
+                            <div class="card-body">
+                            {% if comments %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Комментарий</th>
+                                            <th>Пользователь</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for comment in comments %}
+                                            <tr role="row">
+                                                <td>{{ comment.createdAt|date("d.m.Y") }}</td>
+                                                <td>{{ comment.description }}</td>
+                                                <td>
+
+                                                   {{ comment.user?comment.user.fullName:'' }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Комментарий</th>
+                                            <th>Пользователь</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Нет комментариев
+                                </div>
+                            {% endif %}
+                            </div>
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+    
+        $(".actual-tracks").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $("#specifications").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $("#entres").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $("#materials").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        let $table = $('#table');
+        // let data = JSON.parse(
+        //     '[{"id":1,"pid":0,"amount":1,"name":"Труба с головками 6430-2929016", "document":"A4"},' +
+        //     '{"id":3,"pid":1,"amount":2,"name":"Труба 6430-2919019","document":"A4"},' +
+        //     '{"id":4,"pid":1,"amount":1,"name":"Головка 64221-2919022","document":"A4"},' +
+        //     '{"id":2,"pid":0,"amount":2,"name":"Шарнир 64221-2919040","document":"A4"},' +
+        //     '{"id":14,"pid":0,"amount":2,"name":"Кольцо 64221-2919026", "document":"A4"},' +
+        //     '{"id":15,"pid":0,"amount":3,"name":"Кольцо 64221-2919032-010","document":"A4"},' +
+        //     '{"id":16,"pid":0,"amount":1,"name":"Табличка ТРШ 18.00003", "document":"A4"},' +
+        //     '{"id":6,"pid":2,"amount":1,"name":"Палец 64221-2919030", "document":"A4"},' +
+        //     '{"id":10,"pid":2,"amount":2,"name":"Обойма 64221-2919048", "document":"A4"},' +
+        //     '{"id":11,"pid":2,"amount":0.3,"name":"Резина 7-ИРП-1315 ТУ 38.105.1910-89", "document":"A4"}]');
+        //
+        // let data = JSON.parse(
+        //     '[{"id":1,"pid":0,"amount":1,"name":"Труба с головками 6430-2929016", "document":"A4"},' +
+        //     '{"id":3,"pid":1,"amount":2,"name":"Труба 6430-2919019","document":"A4"},' +
+        //     '{"id":4,"pid":1,"amount":1,"name":"Головка 64221-2919022","document":"A4"},' +
+        //     '{"id":5,"pid":1,"amount":1,"name":"Головка 64221-2919022","document":"A4"},' +
+        //     '{"id":18,"pid":5,"amount":2,"name":"Шарнир 64221-2919040","document":"A4"},' +
+        //     '{"id":14,"pid":0,"amount":2,"name":"Кольцо 64221-2919026", "document":"A4"},' +
+        //     '{"id":15,"pid":0,"amount":3,"name":"Кольцо 64221-2919032-010","document":"A4"},' +
+        //     '{"id":16,"pid":0,"amount":1,"name":"Табличка ТРШ 18.00003", "document":"A4"},' +
+        //     '{"id":6,"pid":2,"amount":1,"name":"Палец 64221-2919030", "document":"A4"},' +
+        //     '{"id":10,"pid":2,"amount":2,"name":"Обойма 64221-2919048", "document":"A4"},' +
+        //     '{"id":11,"pid":2,"amount":0.3,"name":"Резина 7-ИРП-1315 ТУ 38.105.1910-89", "document":"A4"}]');
+
+        let url = "{{ path('product_detailing', { 'id': product.id }) }}";
+
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {'_method': 'post', '_token': '{{ csrf_token('product-detailing') }}'},
+            dataType: 'json',
+             timeout: 30000,
+        }).done(function (result) {
+            data = result['detailing'];
+            //console.log('dataDEt');
+            loadData(data);
+        });
+
+        function loadData(data) {
+
+            $table.bootstrapTable({
+                data:data,
+                idField: 'id',
+                dataType:'jsonp',
+                columns: [
+                    // { field: 'check',  checkbox: true, formatter: function (value, row, index) {
+                    //         if (row.check == true) {
+                    //             // console.log(row.serverName);
+                    //             //Установить выбрано
+                    //             return {  checked: true };
+                    //         }
+                    //     }
+                    // },
+
+                    { field: 'name',  title: 'Номенклатура', sortable: true },
+                    { field: 'amount',  title: 'Кол-во', sortable: true,  align: 'center'  },
+
+
+
+                    { field: 'category',  title: 'Категория', sortable: true },
+
+                    { field: 'track',  title: 'Маршрут', sortable: true },
+                    ///{ field: 'document',  title: 'Документ КД', sortable: true },
+                    //{ field: 'material',  title: 'Материал', sortable: true },
+                    //{ field: 'amountMaterial',  title: 'Норма на 1шт', sortable: true },
+                    //{ field: 'documentMaterial',  title: 'Документ', srtable: true },
+                    //{ field: 'operate', title: 'operate', align: 'center', events : operateEvents, formatter: 'operateFormatter' },
+                ],
+
+                // bootstrap-table-treegrid.js Конфигурация плагина -- start
+
+                //В каком столбце развернуть дерево
+                treeShowField: 'name',
+                //Укажите столбец родительского идентификатора
+                parentIdField: 'pid',
+
+                onResetView: function(data) {
+                    console.log('load');
+                    $table.treegrid({
+                        initialState: 'collapsed',// Все узлы свернуты
+                        //initialState: 'expanded',// Все узлы развернуты, по умолчанию развернуты
+                        treeColumn: 0,
+                        // expanderExpandedClass: 'glyphicon glyphicon-minus',  //图标样式
+                        // expanderCollapsedClass: 'glyphicon glyphicon-plus',
+                        onChange: function() {
+                            //$table.bootstrapTable('resetWidth');
+                        }
+                    });
+
+                    //Развернуть только узлы первого уровня дерева
+                    // $table.treegrid('getRootNodes').treegrid('expand');
+
+                },
+                onCheck:function(row){
+                    var datas = $table.bootstrapTable('getData');
+                    // Проверить подкатегорию
+                    selectChilds(datas,row,"id","pid",true);
+
+                    // Проверить родительскую категорию
+                    selectParentChecked(datas,row,"id","pid")
+
+                    // Обновить данные
+                    $table.bootstrapTable('load', datas);
+                },
+
+                onUncheck:function(row){
+                    var datas = $table.bootstrapTable('getData');
+                    selectChilds(datas,row,"id","pid",false);
+                    $table.bootstrapTable('load', datas);
+                },
+                // bootstrap-table-treetreegrid.js Конфигурация плагина -- end
+            });
+        };
+
+        // Кнопка форматирования
+        function operateFormatter(value, row, index) {
+            return [
+                '<button type="button" class="RoleOfadd btn-small  btn-primary" style="margin-right:15px;"><i class="fa fa-plus" ></i>&nbsp;Добавить</button>',
+                '<button type="button" class="RoleOfedit btn-small   btn-primary" style="margin-right:15px;"><i class="fa fa-pencil-square-o" ></i>&nbsp;Модифицировать</button>',
+                '<button type="button" class="RoleOfdelete btn-small   btn-primary" style="margin-right:15px;"><i class="fa fa-trash-o" ></i>&nbsp;Удалять</button>'
+            ].join('');
+
+        }
+        // Тип формата
+        function typeFormatter(value, row, index) {
+            if (value === 'menu') {  return 'меню';  }
+            if (value === 'button') {  return 'Кнопка'; }
+            if (value === 'api') {  return 'интерфейс'; }
+            return '-';
+        }
+        // Статус формата
+        function statusFormatter(value, row, index) {
+            if (value === 1) {
+                return '<span class="label label-success">Обычный</span>';
+            } else {
+                return '<span class="label label-default">Запирание</span>';
+            }
+        }
+
+        //Как заблокировать кнопку начальной операции
+        window.operateEvents = {
+            'click .RoleOfadd': function (e, value, row, index) {
+                add(row.id);
+            },
+            'click .RoleOfdelete': function (e, value, row, index) {
+                del(row.id);
+            },
+            'click .RoleOfedit': function (e, value, row, index) {
+                update(row.id);
+            }
+        };
+    </script>
+    <script>
+        function selectChilds(datas,row,id,pid,checked) {
+            for(var i in datas){
+                if(datas[i][pid] == row[id]){
+                    datas[i].check=checked;
+                    selectChilds(datas,datas[i],id,pid,checked);
+                };
+            }
+        }
+
+        function selectParentChecked(datas,row,id,pid){
+            for(var i in datas){
+                if(datas[i][id] == row[pid]){
+                    datas[i].check=true;
+                    selectParentChecked(datas,datas[i],id,pid);
+                };
+            }
+        }
+
+        function test() {
+            var selRows = $table.bootstrapTable("getSelections");
+            if(selRows.length == 0){
+                alert("Выберите хотя бы одну строку");
+                return;
+            }
+
+            var postData = "";
+            $.each(selRows,function(i) {
+                postData +=  this.id;
+                if (i < selRows.length - 1) {
+                    postData += "， ";
+                }
+            });
+            alert("Идентификатор выбранной вами строки："+postData);
+
+        }
+
+        function add(id) {
+            alert("add метод , id = " + id);
+        }
+        function del(id) {
+            alert("del метод , id = " + id);
+        }
+        function update(id) {
+            alert("update метод , id = " + id);
+        }
+
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            let locProductTab = localStorage.getItem('product-tab');
+            if ($('#' + locProductTab).length) {
+                $('#' + locProductTab).tab('show');
+            } else {
+                $('#custom-tabs-four-tab1-tab').tab('show');
+            }
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('product-tab', selectedTabId);
+            });
+
+        });
+    </script>
+
+{% endblock %}

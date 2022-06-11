@@ -1,0 +1,232 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.product'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  or is_granted("ROLE_OGT") or is_granted("ROLE_PEO")  or is_granted("ROLE_BUH") %}
+                <div class="card-header">
+                    {% include 'product/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="products" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th width="3%" class="toggle-all"><i id="select_all" name="select_invoice"></i></th>
+                            <th></th>
+                            <th>Код</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Группы</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Код</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Группы</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  or is_granted("ROLE_OGT") %}
+                <div class="card-footer">
+                    {% include 'product/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/edit_group_products.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            let columnYid = 1;
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            let table = $("#products").DataTable({
+                "columnDefs": [
+                    {
+                        "name": "checkbox",
+                        "targets": 0,
+                        "orderable": false,
+                        "searchable": false,
+                        className: 'select-checkbox'
+                    },
+                    {"name": "yid", "targets": columnYid, "orderable": false, "searchable": false, className: "hide_column",},
+                    {"name": "id", "targets": 2},
+                    {"name": "designation", "targets": 3},
+                    {"name": "name", "targets": 4},
+                    {"name": "groups", "targets": 5},
+                    {"name": "control", "targets": 6, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('product_datatables') }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[2, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                },
+                "select": {
+                    "style": "multi",
+                    "selector": "td:first-child"
+
+                },
+
+            }).on('select.dt deselect.dt', function (evtObj) {
+                let all = table.rows().nodes().length;
+                let sel = table.rows(".selected").nodes().length;
+
+                if (all === sel) {
+
+                    $(".toggle-all").closest("tr").addClass("selected");
+                } else {
+
+                    $(".toggle-all").closest("tr").removeClass("selected");
+                }
+
+            });
+
+
+            $('#products').on('click', '.toggle-all', function () {
+                $(this).closest("tr").toggleClass("selected");
+                if ($(this).closest("tr").hasClass("selected")) {
+                    table.rows().select();
+                } else {
+                    table.rows().deselect();
+                }
+
+            });
+
+            $("#products").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let url = "{{ path('product_delete', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    if (data.messageError) {
+                        toastr.error(data.messageError);
+                    } else if (data.messageSuccess) {
+                        toastr.success(data.messageSuccess);
+                    }
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+
+            let productsEdit = [];
+            $(".edit-group").on("click", function () {
+                productsEdit = table.rows(".selected").data().pluck(columnYid).toArray();
+                if (productsEdit.length > 0) {
+                    $('#modal-edit-group').modal('show');
+                }
+            });
+
+            $("#modal-edit-group").on("click", "#btn-modal-edit", function () {
+
+                if (productsEdit.length === 0) {
+                    $('#modal-edit-group').modal('hide');
+                    return;
+                }
+
+                let formData = {};
+
+                if ($("#edit-form #edit-group").is(':checked')) {
+                    formData.groupSelect = $("#edit-form #group-select").val();
+                }
+                if ($("#edit-form #edit-type").is(':checked')) {
+                    formData.typeSelect = $("#edit-form #type-select").val();
+                }
+                if ($("#edit-form #edit-kind").is(':checked')) {
+                    formData.kindSelect = $("#edit-form #kind-select").val();
+                }
+                if ($("#edit-form #edit-category").is(':checked')) {
+                    formData.categorySelect = $("#edit-form #category-select").val();
+                }
+
+                if ($("#edit-form #edit-calculation").is(':checked')) {
+                    formData.calculationSelect = $("#edit-form #calculation-select").val();
+                }
+
+                if ($("#edit-form #edit-analytic-group").is(':checked')) {
+                    formData.analyticGroupSelect = $("#edit-form #analytic-group-select").val();
+                }
+
+                if ($("#edit-form #edit-finance-group").is(':checked')) {
+                    formData.financeGroupSelect = $("#edit-form #finance-group-select").val();
+                }
+
+                if ($.isEmptyObject(formData)) {
+                    $('#modal-edit-group').modal('hide');
+                    return;
+                }
+
+                let url = "{{ path('products_list_edit') }}";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {
+                        '_method': 'post',
+                        '_token': '{{ csrf_token('products-list-edit') }}',
+                        'productsEdit': JSON.stringify(productsEdit),
+                        'formData': JSON.stringify(formData)
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+
+                $('#modal-edit-group').modal('hide');
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    {% set codePoint='' %}
+    {% set numberStage=1 %}
+    {% set codePointOld='' %}
+    {% for trackPoint in trackPoints %}
+    <specification>
+        {% set numberTrack=1 %}
+        {% set delimiter=loop.first?'':'-' %}
+        {% set codePointOld=codePoint %}
+        {% set codePoint=codePoint~delimiter~trackPoint.number_area %}
+        <name>{{ product.name }} {{ product.designation }}, {{ loop.last?'Изделие':'Заготовка' }} {{codePoint}} {{ loop.last?'('~rendition.name~')':'' }}</name>
+
+        <dateBegin></dateBegin>
+        <dateEnd></dateEnd>
+
+        <departmentManufacturer>
+            <id>0</id>
+            <name></name>
+        </departmentManufacturer>
+
+        <product>
+            {% if loop.last %}<idErp>{{ product.idErp?product.idErp:0 }}</idErp>{% endif %}
+            <idInner>{{ product.id }}</idInner>
+            <name>{{ product.name }}</name>
+            <designation>{{ product.designation }}</designation>
+            <type>{{ loop.last?'Изделие':'Заготовка' }}</type>
+            {% if loop.last %}<weightKg>{{ product.weight }}</weightKg>{% endif %}
+            <unit>
+                <idErp>{{ product.unit.idErp?product.unit.idErp:0 }}</idErp>
+                <idInner>{{ product.unit.id }}</idInner>
+                <name>{{ product.unit.name }}</name>
+            </unit>
+            <characteristic>
+                {% if loop.last %}<rendition>
+                    <idInner>{{ rendition.id }}</idInner>
+                    <name>{{ rendition.name }}</name>
+                </rendition>
+                {% else %}
+                <name>{{ codePoint }}</name>
+                {% endif %}
+            </characteristic>
+            {% if product.productGroup and loop.last %}<productGroup>
+                <idErp>{{ product.productGroup.idErp?product.productGroup.idErp:0 }}</idErp>
+                <idInner>{{ product.productGroup.id }}</idInner>
+                <name>{{ product.productGroup.name }}</name>
+            </productGroup>
+            {% else %}<productGroup>
+                <name>Собственные полуфабрикаты и комплектующие изделия, конструкции и детали</name>
+            </productGroup>
+            {% endif %}
+            {% if product.productKind and loop.last %}<productKind>
+                <idInner>{{ product.productKind.id }}</idInner>
+                <name>{{ product.productKind.name }}</name>
+            </productKind>
+            {% else %}<productKind>
+                <name>Заготовки деталей</name>
+            </productKind>
+            {% endif %}
+            {% if product.productCategory %}<productCategory>
+                <idInner>{{ product.productCategory.id }}</idInner>
+                <name>{{ product.productCategory.name }}</name>
+            </productCategory>
+            {% endif %}
+        </product>
+        {% if materials and loop.first %}<materials>
+        {% for material in materials %}<material>
+            <idErp>{{ material.idErp?material.idErp:0 }}</idErp>
+            <idInner>{{ material.id }}</idInner>
+            <name>{{ material.name }}</name>
+            <designation>{{ material.designation }}</designation>
+            <amount>{{ material.amount }}</amount>
+            <unit>
+                <idErp>{{ material.amountUnitIdErp?material.amountUnitIdErp:0 }}</idErp>
+                <idInner>{{ material.amountUnitId }}</idInner>
+                <name>{{ material.amountUnitName }}</name>
+            </unit>
+            {% if material.category %}<materialCategory>
+                <idInner>{{ material.categoryId }}</idInner>
+                <name>{{ material.category }}</name>
+            </materialCategory>
+            {% endif %}
+        </material>
+        {% endfor %}
+        </materials>
+        {% else %}
+        <materials>
+            <material>
+                <name>{{ product.name }}</name>
+                <designation>{{ product.designation }}</designation>
+                <amount>1</amount>
+                <unit>
+                    <idErp>{{ product.unit.idErp?product.unit.idErp:0 }}</idErp>
+                    <idInner>{{ product.unit.id }}</idInner>
+                    <name>{{ product.unit.name }}</name>
+                </unit>
+                <type>Заготовка</type>
+                <characteristic>
+                    <name>{{ codePointOld }}</name>
+                </characteristic>
+                {% if product.productCategory %}<materialCategory>
+                    <idInner>{{ product.productCategory.id }}</idInner>
+                    <name>{{ product.productCategory.name }}</name>
+                </materialCategory>
+                {% endif %}
+            </material>
+        </materials>
+        {% endif %}
+        <stages>
+            <stage>
+                <number>{{ numberStage }}</number>
+                <name>{{ product.name }} {{ product.designation }}, {{ loop.last?'Изделие':'Заготовка' }} {{codePoint}}</name>
+                <department>
+                    <id>{{ trackPoint.id }}</id>
+                    <name>{{ trackPoint.name }}</name>
+                    <numberArea>{{ trackPoint.number_area }}</numberArea>
+                </department>
+            </stage>
+        </stages>
+        {% if tracks %}<tracks>
+        {% for track in tracks %}{% if track.department.id == trackPoint.id  %}<track>
+            <number>{{ numberTrack }}</number>
+            <typeWork></typeWork>
+            <timeMinutes>{{ track.timePiece }}</timeMinutes>
+            <assignment>Номер операции {{ track.numberOperation?track.numberOperation:'' }}: {{ track.technologicalOperation?track.technologicalOperation.fullName:'' }}</assignment>
+        </track>
+        {% set numberTrack=numberTrack+1 %}
+        {% endif %}{% endfor %}  
+        </tracks>
+        {% endif %}
+    </specification>
+    {% endfor %}
+
+</root>

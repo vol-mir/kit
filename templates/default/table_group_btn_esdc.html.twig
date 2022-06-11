@@ -1,0 +1,16 @@
+<div class='btn-group btn-group-sm'>
+	{% if urlShow %}
+    	<a href='{{ urlShow }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a'></i></a>
+	{% endif %}
+	{% if idCopy %}
+    	<button type='button' class='btn btn-sm btn-dark float-left modal-copy-dialog' data-toggle='modal'
+            data-id='{{ idCopy }}' style="color:white" title="{{ 'title.copy'|trans }}"><i class='fas fa-copy'></i></button>
+	{% endif %}
+	{% if urlEdit %}
+    	<a href='{{ urlEdit }}' class='btn btn-info' title="{{ 'title.edit'|trans }}"><i class='fas fa-edit'></i></a>
+	{% endif %}
+	{% if idDelete %}
+    	<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal'
+            data-id='{{ idDelete }}' title="{{ 'title.delete'|trans }}"><i class='fas fa-trash'></i></button>
+	{% endif %}
+</div>

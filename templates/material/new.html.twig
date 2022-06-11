@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.new.material'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+                <!-- form start -->
+                <form id="materialForm" action="{{ path('material_new') }}" method="POST">
+                    <div class="card-body">
+                        {% include 'material/_form.html.twig' with {'form': form} only %}
+                    </div>
+                    <div class="card-footer">
+                        {{ form_widget(form.save) }}
+                        {{ form_widget(form.saveAndCreateNew) }}
+                        <a href="{{ path('material_index') }}"
+                           class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                    </div>
+                </form>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#formed').click(function() {
+
+                let valMaterialName = $('#material_name').val().trim();
+
+                let valProfileName = $('#material_profile_name').val().trim();
+                let valProfile = $('#material_profile').val().trim();
+                let valProfileStandard = $('#material_profile_standard').val().trim();
+                let valMark = $('#material_mark').val().trim();
+                let valMarkStandard = $('#material_mark_standard').val().trim();
+
+                if (valMaterialName.length === 0) {
+                    temp = valProfileName + ' ' + valProfile;
+                    temp = temp.trim();
+
+                    temp += ' ' + valProfileStandard;
+                    temp = temp.trim();
+
+                    temp += ' ' + valMark;
+                    temp = temp.trim();
+
+                    temp += ' ' + valMarkStandard;
+                    temp = temp.trim();
+
+                    if (temp.length > 0) {
+                        $('#material_name').val(temp);
+                    }
+                }
+
+            });
+
+
+            $('#materialForm').validate({
+                rules: {
+                    'material[name]': {
+                        required: true,
+                        maxlength: 190
+                    },
+                    'material[profile_name]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+                    'material[profile]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+                    'material[profile_standard]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+                    'material[mark]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+                    'material[mark_standard]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+                    'material[material_kind]': {
+                        required: false,
+                        maxlength: 190,
+                    },
+
+                    'material[unit]': {
+                        required: true,
+                    },
+                    'material[product_group]': {
+                        required: true,
+                    },
+                    'material[product_type]': {
+                        required: true,
+                    },
+                    'material[product_kind]': {
+                        required: true,
+                    },
+                    'material[product_category]': {
+                        required: true,
+                    },
+                },
+                messages: {
+                    'material[name]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[profile_name]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[profile]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                     'material[profile_standard]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[mark]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[mark_standard]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[material_kind]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'material[unit]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'material[product_group]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'material[product_type]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'material[product_kind]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'material[product_category]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                },
+                errorElement: 'div',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

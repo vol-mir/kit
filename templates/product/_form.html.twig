@@ -1,0 +1,180 @@
+
+    {{ form_row(form._token) }}
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+
+        {% if form.name.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.name.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.designation) }}
+        {{ form_widget(form.designation) }}
+
+        {% if form.designation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.designation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.weight) }}
+        {{ form_widget(form.weight, {'type' : 'number'})  }}
+
+        {% if form.weight.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.weight.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.unit) }}
+        {{ form_widget(form.unit) }}
+
+        {% if form.unit.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.unit.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_group) }}
+        <span data-toggle='tooltip' data-placement='right' title='Группа: Продукция технического назначения, ТНП, основные материалы - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        {{ form_widget(form.product_group) }}
+
+        {% if form.product_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_type) }}
+        <span data-toggle='tooltip' data-placement='right' title='Используется для дополнительной группировки'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        {{ form_widget(form.product_type) }}
+
+        {% if form.product_type.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_type.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_kind) }}
+        <span data-toggle='tooltip' data-placement='right' title='Вид номенклатуры - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        {{ form_widget(form.product_kind) }}
+
+        {% if form.product_kind.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_kind.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_category) }}
+        <span data-toggle='tooltip' data-placement='right' title='Товарная категория: покупная или собственного изготовления - если одна и та же деталь может быть либо покупной, либо собственного изготовления, то  необходимо создать 2 элемента в справочнике'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+        {{ form_widget(form.product_category) }}
+
+        {% if form.product_category.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_category.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.kd_materials) }}
+        {{ form_widget(form.kd_materials) }}
+
+        {% if form.kd_materials.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.kd_materials.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_PEO")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.calculation) }}
+        {{ form_widget(form.calculation) }}
+
+        {% if form.calculation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.calculation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_BUH")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.analytic_group) }}
+        {{ form_widget(form.analytic_group) }}
+
+        {% if form.analytic_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.analytic_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_BUH")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.finance_group) }}
+        {{ form_widget(form.finance_group) }}
+
+        {% if form.finance_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.finance_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+{# 
+    {% if is_granted("ROLE_ADMIN") %}
+    <div class="form-group">
+        {{ form_label(form.id_erp) }}
+        {{ form_widget(form.id_erp) }}
+
+        {% if form.id_erp.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.id_erp.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% endif %} #}
+
+
+
+
+

@@ -1,0 +1,11 @@
+<div class="row">
+    <div class="col-12">
+    	{% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  %}
+        <a href="{{ path('product_new') }}" class="btn btn-sm btn-success float-left mr-2">{{ 'title.add'|trans }}</a>
+        {% endif %}
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  or is_granted("ROLE_OGT") or is_granted("ROLE_PEO")  or is_granted("ROLE_BUH") %}
+            <button type="button" class="btn btn-sm btn-default edit-group"><i
+                        class='fas fa-edit'></i> {{ 'title.edit_selected'|trans }}</button>
+        {% endif %}
+    </div>
+</div>

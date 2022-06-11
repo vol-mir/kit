@@ -1,0 +1,37 @@
+<div class='btn-group btn-group-sm dropleft mt-1'>
+
+	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {% if product.ready == 100 %}
+            <i class="fa fa-check text-success" aria-hidden="true"></i>
+        {% else %}
+            <img src="{{ asset('dist/img/fire.gif') }}"  width="20">
+        {% endif %}
+        {{ product.ready }} %
+    </button>
+    <ul class="dropdown-menu">
+        <li class='dropdown-item'>
+        	Группа: {{ product.productGroup?product.productGroup.name:'-' }}
+        </li>
+        <li class='dropdown-item'>
+            Тип: {{ product.productType?product.productType.name:'-' }}
+        </li>
+        <li class='dropdown-item'>
+            Вид: {{ product.productKind?product.productKind.name:'-' }}
+        </li>
+        <li class='dropdown-item'>
+            Категория: {{ product.productCategory?product.productCategory.name:'-' }}
+        </li>
+        <li class='dropdown-item'>
+            Статья калькуляции: {{ product.calculation?product.calculation.name:'-' }}
+        </li>
+
+        <li class='dropdown-item'>
+            Группа аналит. учета: {{ product.analyticGroup?product.analyticGroup.name:'-' }}
+        </li>
+        <li class='dropdown-item'>
+            Группа фин. учета: {{ product.financeGroup?product.financeGroup.name:'-' }}
+        </li>
+    </ul>
+
+</div>
+

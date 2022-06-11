@@ -1,0 +1,104 @@
+{% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+<dl>
+    {% if is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+
+        <dt>{{ 'label.name'|trans }}</dt>
+        <dd>{{ material.name }}</dd>
+
+        {% if material.profileName %}
+            <dt>{{ 'label.profile_name'|trans }}</dt>
+            <dd>{{ material.profileName }}</dd>
+        {% endif %}
+
+        {% if material.profile %}
+            <dt>{{ 'label.profile'|trans }}</dt>
+            <dd>{{ material.profile}}</dd>
+        {% endif %}
+
+        {% if material.profileStandard %}
+            <dt>{{ 'label.profile_standard'|trans }}</dt>
+            <dd>{{ material.profileStandard}}</dd>
+        {% endif %}
+
+        {% if material.mark %}
+            <dt>{{ 'label.mark'|trans }}</dt>
+            <dd>{{ material.mark }}</dd>
+        {% endif %}
+
+        {% if material.markStandard %}
+            <dt>{{ 'label.mark_standard'|trans }}</dt>
+            <dd>{{ material.markStandard }}</dd>
+        {% endif %}
+
+        {% if material.materialKind %}
+            <dt>{{ 'label.material_kind'|trans }}</dt>
+            <dd>{{ material.materialKind }}</dd>
+        {% endif %}
+
+        {% if material.unit %}
+            <dt>{{ 'label.unit'|trans }}</dt>
+            <dd>{{ material.unit.name }}</dd>
+        {% endif %}
+
+        {% if material.productGroup %}
+            <dt>
+                {{ 'label.product_group'|trans }}
+                <span data-toggle='tooltip' data-placement='right' title='Группа: Продукция технического назначения, ТНП, основные материалы - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+            </dt>
+            <dd>{{ material.productGroup.name }}</dd>
+        {% endif %}
+        {% if material.productType %}
+            <dt>
+                {{ 'label.product_type'|trans }}
+                <span data-toggle='tooltip' data-placement='right' title='Используется для дополнительной группировки'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+            </dt>
+            <dd>{{ material.productType.name }}</dd>
+        {% endif %}
+        {% if material.productKind %}
+            <dt>
+                {{ 'label.product_kind'|trans }}
+                <span data-toggle='tooltip' data-placement='right' title='Вид номенклатуры - должно быть как в 1С'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+            </dt>
+            <dd>{{ material.productKind.name }}</dd>
+        {% endif %}
+        {% if material.productCategory %}
+            <dt>
+                {{ 'label.product_category'|trans }}
+                <span data-toggle='tooltip' data-placement='right' title='Товарная категория: покупная или собственного изготовления - если одна и та же деталь может быть либо покупной, либо собственного изготовления, то  необходимо создать 2 элемента в справочнике'><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+            </dt>
+            <dd>{{ material.productCategory.name }}</dd>
+        {% endif %}
+
+    {% endif %}
+
+    {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT")  or is_granted("ROLE_BUH") %}
+
+    {% if material.calculation %}
+        <dt>
+            {{ 'label.calculation'|trans }}
+        </dt>
+        <dd>{{ material.calculation.name }}</dd>
+    {% endif %}
+
+    {% endif %}
+
+    {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT")  or is_granted("ROLE_PEO") %}
+
+    {% if material.analyticGroup %}
+        <dt>
+            {{ 'label.analytic_group'|trans }}
+        </dt>
+        <dd>{{ material.analyticGroup.name }}</dd>
+    {% endif %}
+
+    {% if material.financeGroup %}
+        <dt>
+            {{ 'label.finance_group'|trans }}
+        </dt>
+        <dd>{{ material.financeGroup.name }}</dd>
+    {% endif %}
+
+    {% endif %}
+    </dl>
+{% endif %}
+                

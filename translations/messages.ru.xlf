@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+
+      <trans-unit id="title.copy">
+        <source>title.copy</source>
+        <target>Копировать</target>
+      </trans-unit>
+      <trans-unit id="title.print">
+        <source>title.print</source>
+        <target>Печать</target>
+      </trans-unit>
+      <trans-unit id="title.edit">
+        <source>title.edit</source>
+        <target>Редактировать</target>
+      </trans-unit>
+      <trans-unit id="title.show">
+        <source>title.show</source>
+        <target>Открыть</target>
+      </trans-unit>
+      <trans-unit id="title.save">
+        <source>title.save</source>
+        <target>Сохранить</target>
+      </trans-unit>
+      <trans-unit id="title.delete">
+        <source>title.delete</source>
+        <target>Удалить</target>
+      </trans-unit>
+      <trans-unit id="title.cancel">
+        <source>title.cancel</source>
+        <target>Отмена</target>
+      </trans-unit>
+      <trans-unit id="title.add">
+        <source>title.add</source>
+        <target>Добавить</target>
+      </trans-unit>
+      <trans-unit id="title.back">
+        <source>title.back</source>
+        <target>Назад</target>
+      </trans-unit>
+      <trans-unit id="title.save_and_stay">
+        <source>title.save_and_stay</source>
+        <target>Сохранить и остаться</target>
+      </trans-unit>
+      <trans-unit id="title.save_and_create_new">
+        <source>title.save_and_create_new</source>
+        <target>Сохранить и создать новую</target>
+      </trans-unit>
+      <trans-unit id="title.add_product">
+        <source>title.add_product</source>
+        <target>Добавить номенклатуру</target>
+      </trans-unit>
+      <trans-unit id="title.add_section">
+        <source>title.add_section</source>
+        <target>Добавить раздел</target>
+      </trans-unit>
+      <trans-unit id="title.add_material">
+        <source>title.add_material</source>
+        <target>Добавить материал</target>
+      </trans-unit>
+      <trans-unit id="title.add_document">
+        <source>title.add_document</source>
+        <target>Добавить документацию</target>
+      </trans-unit>
+      <trans-unit id="title.formed">
+        <source>title.formed</source>
+        <target>Сформировать</target>
+      </trans-unit>
+      <trans-unit id="title.edit_selected">
+        <source>title.edit_selected</source>
+        <target>Редактировать выделенные</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.main">
+        <source>title.page.main</source>
+        <target>Главная</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.product">
+        <source>title.page.index.product</source>
+        <target>Номенклатура</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.product">
+        <source>title.page.new.product</source>
+        <target>Добавление новой номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.product">
+        <source>title.page.edit.product</source>
+        <target>Редактирование данных о номенклатуре</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.product">
+        <source>title.page.show.product</source>
+        <target>Номенклатура</target>
+      </trans-unit>
+      <trans-unit id="title.page.replacement.structure">
+        <source>title.page.replacement.structure</source>
+        <target>Замена элемента</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.department">
+        <source>title.page.index.department</source>
+        <target>Подразделения</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.department">
+        <source>title.page.new.department</source>
+        <target>Добавление нового подразделения</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.department">
+        <source>title.page.edit.department</source>
+        <target>Редактирование данных о подразделении</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.department">
+        <source>title.page.show.department</source>
+        <target>Подразделение</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.technological_operation_menu">
+        <source>title.page.index.technological_operation_menu</source>
+        <target>Технологические опер.</target>
+      </trans-unit>
+      <trans-unit id="title.page.index.technological_operation">
+        <source>title.page.index.technological_operation</source>
+        <target>Технологические операции</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.technological_operation">
+        <source>title.page.new.technological_operation</source>
+        <target>Добавление новой технологической операции</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.technological_operation">
+        <source>title.page.edit.technological_operation</source>
+        <target>Редактирование данных о технологической операции</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.technological_operation">
+        <source>title.page.show.technological_operation</source>
+        <target>Технологическя операция</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.material">
+        <source>title.page.index.material</source>
+        <target>Материалы</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.material">
+        <source>title.page.new.material</source>
+        <target>Добавление нового материала</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.material">
+        <source>title.page.edit.material</source>
+        <target>Редактирование данных о материале</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.material">
+        <source>title.page.show.material</source>
+        <target>Материал</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.document">
+        <source>title.page.index.document</source>
+        <target>Документация</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.document">
+        <source>title.page.new.document</source>
+        <target>Добавление новой документации</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.document">
+        <source>title.page.edit.document</source>
+        <target>Редактирование данных о документации</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.document">
+        <source>title.page.show.document</source>
+        <target>Документация</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.rendition">
+        <source>title.page.index.rendition</source>
+        <target>Варианты исполнения</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.rendition">
+        <source>title.page.new.rendition</source>
+        <target>Добавление нового варианта исполнения</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.rendition">
+        <source>title.page.edit.rendition</source>
+        <target>Редактирование данных о варианте исполнения</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.rendition">
+        <source>title.page.show.rendition</source>
+        <target>Исполнение</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.unit">
+        <source>title.page.index.unit</source>
+        <target>Единицы измерения</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.unit">
+        <source>title.page.new.unit</source>
+        <target>Добавление новой единицы измерения</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.unit">
+        <source>title.page.edit.unit</source>
+        <target>Редактирование данных о единице измерения</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.product_kind">
+        <source>title.page.index.product_kind</source>
+        <target>Виды номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.product_kind">
+        <source>title.page.new.product_kind</source>
+        <target>Добавление нового вида номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.product_kind">
+        <source>title.page.edit.product_kind</source>
+        <target>Редактирование данных о виде номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.product_kind">
+        <source>title.page.show.product_kind</source>
+        <target>Вид номенклатуры</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.product_category">
+        <source>title.page.index.product_category</source>
+        <target>Товарная категория</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.product_category">
+        <source>title.page.new.product_category</source>
+        <target>Добавление новой товарной категории</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.product_category">
+        <source>title.page.edit.product_category</source>
+        <target>Редактирование данных о товарной категории</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.product_category">
+        <source>title.page.show.product_category</source>
+        <target>Товарная категория</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.calculation">
+        <source>title.page.index.calculation</source>
+        <target>Статьи калькуляции</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.calculation">
+        <source>title.page.new.calculation</source>
+        <target>Добавление новой статьи калькуляции</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.calculation">
+        <source>title.page.edit.calculation</source>
+        <target>Редактирование данных о статье калькуляции</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.calculation">
+        <source>title.page.show.calculation</source>
+        <target>Статья калькуляции</target>
+      </trans-unit>
+
+
+      <trans-unit id="title.page.index.finance_group">
+        <source>title.page.index.finance_group</source>
+        <target>Группы фин. учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.finance_group">
+        <source>title.page.new.finance_group</source>
+        <target>Добавление новой группы финансового учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.finance_group">
+        <source>title.page.edit.finance_group</source>
+        <target>Редактирование данных о группе финансового учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.finance_group">
+        <source>title.page.show.finance_group</source>
+        <target>Группа финансового учета</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.analytic_group">
+        <source>title.page.index.analytic_group</source>
+        <target>Группы аналит. учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.analytic_group">
+        <source>title.page.new.analytic_group</source>
+        <target>Добавление новой группы аналитического учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.analytic_group">
+        <source>title.page.edit.analytic_group</source>
+        <target>Редактирование данных о группе аналитического учета</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.analytic_group">
+        <source>title.page.show.analytic_group</source>
+        <target>Группа аналитического учета</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.product_type">
+        <source>title.page.index.product_type</source>
+        <target>Типы номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.product_type">
+        <source>title.page.new.product_type</source>
+        <target>Добавление нового типа номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.product_type">
+        <source>title.page.edit.product_type</source>
+        <target>Редактирование данных о типе номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.index.show">
+        <source>title.page.show.product_type</source>
+        <target>Тип номенклатуры</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.product_group">
+        <source>title.page.index.product_group</source>
+        <target>Группы номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.product_group">
+        <source>title.page.new.product_group</source>
+        <target>Добавление новой группы номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.product_group">
+        <source>title.page.edit.product_group</source>
+        <target>Редактирование данных о группе номенклатуры</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.product_group">
+        <source>title.page.show.product_group</source>
+        <target>Группа номенклатуры</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.specification_section">
+        <source>title.page.index.specification_section</source>
+        <target>Разделы спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.specification_section">
+        <source>title.page.new.specification_section</source>
+        <target>Добавление нового раздела спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.specification_section">
+        <source>title.page.edit.specification_section</source>
+        <target>Редактирование данных о разделе спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.specification_section">
+        <source>title.page.show.specification_section</source>
+        <target>Раздел спецификации</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.specification">
+        <source>title.page.index.specification</source>
+        <target>Спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.index.specification_with_error">
+        <source>title.page.index.specification_with_error</source>
+        <target>Спецификации с ошибками</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.specification">
+        <source>title.page.new.specification</source>
+        <target>Добавление новой спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.specification">
+        <source>title.page.edit.specification</source>
+        <target>Редактирование спецификации</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.specification">
+        <source>title.page.show.specification</source>
+        <target>Спецификация</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.norm_document">
+        <source>title.page.index.norm_document</source>
+        <target>Нормы на материал</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.norm_document">
+        <source>title.page.new.norm_document</source>
+        <target>Добавление нового документа установки норм расхода материалов</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.norm_document">
+        <source>title.page.edit.norm_document</source>
+        <target>Редактирование документа установки норм расхода материалов</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.track_document">
+        <source>title.page.index.track_document</source>
+        <target>Маршруты</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.track_document">
+        <source>title.page.new.track_document</source>
+        <target>Добавление нового маршрута</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.track_document">
+        <source>title.page.edit.track_document</source>
+        <target>Редактирование маршрута</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.track_document">
+        <source>title.page.show.track_document</source>
+        <target>Маршрут</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.index.plan_document">
+        <source>title.page.index.plan_document</source>
+        <target>План производства</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.plan_document">
+        <source>title.page.new.plan_document</source>
+        <target>Добавление нового плана</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.plan_document">
+        <source>title.page.edit.plan_document</source>
+        <target>Редактирование плана</target>
+      </trans-unit>
+      <trans-unit id="title.page.show.plan_document">
+        <source>title.page.show.plan_document</source>
+        <target>План производства</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.new.structure">
+        <source>title.page.new.structure</source>
+        <target>Добавление нового элемента</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.structure">
+        <source>title.page.edit.structure</source>
+        <target>Изменение элемента</target>
+      </trans-unit>
+
+      <trans-unit id="title.page.new.material_norm">
+        <source>title.page.new.material_norm</source>
+        <target>Добавление нового элемента</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.material_norm">
+        <source>title.page.edit.material_norm</source>
+        <target>Изменение элемента</target>
+      </trans-unit>
+
+
+      <trans-unit id="title.page.new.track">
+        <source>title.page.new.track</source>
+        <target>Добавление нового элемента</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.track">
+        <source>title.page.edit.track</source>
+        <target>Изменение элемента</target>
+      </trans-unit>
+
+      <trans-unit id="label.finance_group">
+        <source>label.finance_group</source>
+        <target>Группа фин. учета</target>
+      </trans-unit>
+      <trans-unit id="label.analytic_group">
+        <source>label.analytic_group</source>
+        <target>Группа аналит. учета</target>
+      </trans-unit>
+
+      <trans-unit id="label.number_operation">
+        <source>label.number_operation</source>
+        <target>Номер операции</target>
+      </trans-unit>
+      <trans-unit id="label.name">
+        <source>label.name</source>
+        <target>Наименование</target>
+      </trans-unit>
+      <trans-unit id="label.designation">
+        <source>label.designation</source>
+        <target>Обозначение</target>
+      </trans-unit>
+      <trans-unit id="label.product">
+        <source>label.product</source>
+        <target>Номенклатура</target>
+      </trans-unit>
+      <trans-unit id="label.materials">
+        <source>label.materials</source>
+        <target>Материал по КД</target>
+      </trans-unit>
+      <trans-unit id="label.date_specification">
+        <source>label.date_specification</source>
+        <target>Дата</target>
+      </trans-unit>
+      <trans-unit id="label.date_document">
+        <source>label.date_document</source>
+        <target>Дата</target>
+      </trans-unit>
+      <trans-unit id="label.date_start">
+        <source>label.date_start</source>
+        <target>Дата начало</target>
+      </trans-unit>
+        <trans-unit id="label.date_end">
+        <source>label.date_end</source>
+        <target>Дата окончания</target>
+      </trans-unit>
+      <trans-unit id="label.status">
+        <source>label.status</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="label.specification">
+        <source>label.specification</source>
+        <target>Спецификация</target>
+      </trans-unit>
+      <trans-unit id="label.comment">
+        <source>label.comment</source>
+        <target>Комментарий</target>
+      </trans-unit>
+      <trans-unit id="label.department_parent">
+        <source>label.department_parent</source>
+        <target>Вышестоящие подразделение</target>
+      </trans-unit>
+      <trans-unit id="label.id_erp">
+        <source>label.id_erp</source>
+        <target>Код 1С ЕРП</target>
+      </trans-unit>
+      <trans-unit id="label.calculation">
+        <source>label.calculation</source>
+        <target>Статья калькуляции</target>
+      </trans-unit>
+      
+
+      <trans-unit id="label.time_cycle">
+        <source>label.time_cycle</source>
+        <target>Время ---</target>
+      </trans-unit>
+      <trans-unit id="label.time_piece">
+        <source>label.time_piece</source>
+        <target>Время штучное (tшт), мин</target>
+      </trans-unit>
+      <trans-unit id="label.time_processing">
+        <source>label.time_processing</source>
+        <target>Время обработки (tц, tо, tоп), мин</target>
+      </trans-unit>
+
+      <trans-unit id="label.code_operation">
+        <source>label.code_operation</source>
+        <target>Код операции</target>
+      </trans-unit>
+      <trans-unit id="label.type_operation">
+        <source>label.type_operation</source>
+        <target>Тип операции</target>
+      </trans-unit>
+      <trans-unit id="label.code_type_operation">
+        <source>label.code_type_operation</source>
+        <target>Код типа</target>
+      </trans-unit>
+
+      <trans-unit id="label.technological_operation">
+        <source>label.technological_operation</source>
+        <target>Технологическая операция</target>
+      </trans-unit>
+
+
+      <trans-unit id="placeholder.not_specified">
+        <source>placeholder.not_specified</source>
+        <target>Не указан</target>
+      </trans-unit>
+
+      <trans-unit id="label.document">
+        <source>label.document</source>
+        <target>Документация</target>
+      </trans-unit>
+      <trans-unit id="label.normDocument">
+        <source>label.normDocument</source>
+        <target>Документ установки норм расхода</target>
+      </trans-unit>
+
+      <trans-unit id="label.format">
+        <source>label.format</source>
+        <target>Формат</target>
+      </trans-unit>
+      <trans-unit id="label.area">
+        <source>label.area</source>
+        <target>Зона</target>
+      </trans-unit>
+      <trans-unit id="label.position">
+        <source>label.position</source>
+        <target>Позиция</target>
+      </trans-unit>
+      <trans-unit id="label.amount">
+        <source>label.amount</source>
+        <target>Количество</target>
+      </trans-unit>
+      <trans-unit id="label.amountMaterial">
+        <source>label.amountMaterial</source>
+        <target>Норма на деталь</target>
+      </trans-unit>
+      <trans-unit id="label.note">
+        <source>label.note</source>
+        <target>Примечание</target>
+      </trans-unit>
+      <trans-unit id="label.section">
+        <source>label.section</source>
+        <target>Раздел</target>
+      </trans-unit>
+      <trans-unit id="label.weight">
+        <source>label.weight</source>
+        <target>Вес, кг</target>
+      </trans-unit>
+      <trans-unit id="label.my_unit">
+        <source>label.unit</source>
+        <target>Единица измерения</target>
+      </trans-unit>
+      <trans-unit id="label.rendition">
+        <source>label.rendition</source>
+        <target>Исполнение</target>
+      </trans-unit>
+
+      <trans-unit id="label.product_group">
+        <source>label.product_group</source>
+        <target>Группа</target>
+      </trans-unit>
+      <trans-unit id="label.product_type">
+        <source>label.product_type</source>
+        <target>Тип</target>
+      </trans-unit>
+      <trans-unit id="label.product_kind">
+        <source>label.product_kind</source>
+        <target>Вид</target>
+      </trans-unit>
+      <trans-unit id="label.product_category">
+        <source>label.product_category</source>
+        <target>Товарная категория</target>
+      </trans-unit>
+
+      <trans-unit id="label.profile_name">
+        <source>label.profile_name</source>
+        <target>Наименование профиля</target>
+      </trans-unit>
+      <trans-unit id="label.profile">
+        <source>label.profile</source>
+        <target>Профиль</target>
+      </trans-unit>
+      <trans-unit id="label.profile_standard">
+        <source>label.profile_standard</source>
+        <target>Стандарт профиля</target>
+      </trans-unit>
+      <trans-unit id="label.mark">
+        <source>label.mark</source>
+        <target>Марка</target>
+      </trans-unit>
+      <trans-unit id="label.mark_standard">
+        <source>label.mark_standard</source>
+        <target>Стандарт марки</target>
+      </trans-unit>
+      <trans-unit id="label.material_kind">
+        <source>label.material_kind</source>
+        <target>Вид материала</target>
+      </trans-unit>
+
+      <trans-unit id="item.deleted_successfully">
+        <source>item.deleted_successfully</source>
+        <target>Запись успешно удалена!</target>
+      </trans-unit>
+      <trans-unit id="item.copy_successfully">
+        <source>item.copy_successfully</source>
+        <target>Запись успешно скопирована!</target>
+      </trans-unit>
+      <trans-unit id="item.created_successfully">
+        <source>item.created_successfully</source>
+        <target>Запись успешно добавлена!</target>
+      </trans-unit>
+      <trans-unit id="item.edited_successfully">
+        <source>item.edited_successfully</source>
+        <target>Запись успешно изменена!</target>
+      </trans-unit>
+      <trans-unit id="item.deleted_use">
+        <source>item.deleted_use</source>
+        <target>Запись используется, удалить невозможно!</target>
+      </trans-unit>
+      <trans-unit id="items.edited_successfully">
+        <source>items.edited_successfully</source>
+        <target>Записи успешно изменены!</target>
+      </trans-unit>
+
+      <trans-unit id="message.validation.required">
+        <source>message.validation.required</source>
+        <target>Введите данные, поле не должно быть пустым</target>
+      </trans-unit>
+      <trans-unit id="message.validation.number">
+        <source>message.validation.number</source>
+        <target>Поле должно содержать число</target>
+      </trans-unit>
+      <trans-unit id="message.validation.too_long_content">
+        <source>message.validation.too_long_content</source>
+        <target>Запись слишком длинная (максимум %limit% символов).</target>
+      </trans-unit>
+
+      <trans-unit id="format.EMPTY">
+        <source>format.EMPTY</source>
+        <target>Не указан</target>
+      </trans-unit>
+      <trans-unit id="format.A4">
+        <source>format.A4</source>
+        <target>А4</target>
+      </trans-unit>
+      <trans-unit id="format.A3">
+        <source>format.A3</source>
+        <target>А3</target>
+      </trans-unit>
+      <trans-unit id="format.A2">
+        <source>format.A2</source>
+        <target>А2</target>
+      </trans-unit>
+      <trans-unit id="format.A1">
+        <source>format.A1</source>
+        <target>А1</target>
+      </trans-unit>
+      <trans-unit id="format.A0">
+        <source>format.A0</source>
+        <target>А0</target>
+      </trans-unit>
+      <trans-unit id="format.BCH">
+        <source>format.BCH</source>
+        <target>БЧ</target>
+      </trans-unit>
+      <trans-unit id="format.OTHER">
+        <source>format.OTHER</source>
+        <target>*)</target>
+      </trans-unit>
+
+      <trans-unit id="status.in_developing">
+        <source>status.in_developing</source>
+        <target>В разработке</target>
+      </trans-unit>
+      <trans-unit id="status.on_approval">
+        <source>status.on_approval</source>
+        <target>На согласовании</target>
+      </trans-unit>
+      <trans-unit id="status.approval">
+        <source>status.approval</source>
+        <target>Утвержден</target>
+      </trans-unit>
+      <trans-unit id="status.in_developing_bgvp">
+        <source>status.in_developing_bgvp</source>
+        <target>В разработке для БГВП</target>
+      </trans-unit>
+      <trans-unit id="status.annul">
+        <source>status.annul</source>
+        <target>Аннулирован</target>
+      </trans-unit>
+
+      <trans-unit id="label.username">
+        <source>label.username</source>
+        <target>Табельный номер</target>
+      </trans-unit>
+      <trans-unit id="label.department">
+        <source>label.department</source>
+        <target>Отдел</target>
+      </trans-unit>
+      <trans-unit id="label.plain_password">
+        <source>label.plain_password</source>
+        <target>Пароль</target>
+      </trans-unit>
+      <trans-unit id="label.roles">
+        <source>label.roles</source>
+        <target>Роли</target>
+      </trans-unit>
+
+      <trans-unit id="label.first_name">
+        <source>label.first_name</source>
+        <target>Имя</target>
+      </trans-unit>
+      <trans-unit id="label.last_name">
+        <source>label.last_name</source>
+        <target>Фамилия</target>
+      </trans-unit>
+      <trans-unit id="label.middle_name">
+        <source>label.middle_name</source>
+        <target>Отчество</target>
+      </trans-unit>
+
+      <trans-unit id="department.oit">
+        <source>department.oit</source>
+        <target>ОИТ</target>
+      </trans-unit>
+      <trans-unit id="department.op">
+        <source>department.op</source>
+        <target>ОП</target>
+      </trans-unit>
+      <trans-unit id="department.om">
+        <source>department.om</source>
+        <target>ОМ</target>
+      </trans-unit>
+      <trans-unit id="department.omp">
+        <source>department.omp</source>
+        <target>ОМП</target>
+      </trans-unit>
+      <trans-unit id="department.omtsvk">
+        <source>department.omtsvk</source>
+        <target>ОМТСиВК</target>
+      </trans-unit>
+      <trans-unit id="department.ogt">
+        <source>department.ogt</source>
+        <target>ОГТ</target>
+      </trans-unit>
+      <trans-unit id="department.ogk">
+        <source>department.ogk</source>
+        <target>ОГК</target>
+      </trans-unit>
+      <trans-unit id="department.oge">
+        <source>department.oge</source>
+        <target>ОГЭ</target>
+      </trans-unit>
+      <trans-unit id="department.rsmy">
+        <source>department.rsmy</source>
+        <target>РСМУ</target>
+      </trans-unit>
+      <trans-unit id="department.atc">
+        <source>department.atc</source>
+        <target>АТЦ</target>
+      </trans-unit>
+      <trans-unit id="department.cil">
+        <source>department.cil</source>
+        <target>ЦИЛ</target>
+      </trans-unit>
+      <trans-unit id="department.ogm">
+        <source>department.ogm</source>
+        <target>ОГМ</target>
+      </trans-unit>
+      <trans-unit id="department.canteen">
+        <source>department.canteen</source>
+        <target>Столовая</target>
+      </trans-unit>
+      <trans-unit id="department.ootpbie">
+        <source>department.ootpbie</source>
+        <target>ООТПБиЭ</target>
+      </trans-unit>
+      <trans-unit id="department.peo">
+        <source>department.peo</source>
+        <target>ПЭО</target>
+      </trans-unit>
+      <trans-unit id="department.accounts">
+        <source>department.accounts</source>
+        <target>Бухгалтерия</target>
+      </trans-unit>
+
+     <trans-unit id="title.page.index.user">
+        <source>title.page.index.user</source>
+        <target>Пользователи</target>
+      </trans-unit>
+      <trans-unit id="title.page.new.user">
+        <source>title.page.new.user</source>
+        <target>Добавление нового пользователя</target>
+      </trans-unit>
+      <trans-unit id="title.page.edit.user">
+        <source>title.page.edit.user</source>
+        <target>Редактирование данных о пользователе</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>

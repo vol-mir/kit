@@ -1,0 +1,73 @@
+<div class="card-body">
+
+    {{ form_row(form._token) }}
+
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+
+        {% if form.name.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.name.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.code_operation) }}
+        {{ form_widget(form.code_operation) }}
+
+        {% if form.code_operation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.code_operation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.type_operation) }}
+        {{ form_widget(form.type_operation) }}
+
+        {% if form.type_operation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.type_operation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.code_type_operation) }}
+        {{ form_widget(form.code_type_operation) }}
+
+        {% if form.code_type_operation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.code_type_operation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+
+    <div class="form-group">
+        {{ form_label(form.note) }}
+        {{ form_widget(form.note) }}
+
+        {% if form.note.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.note.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+<!-- /.card-body -->
+
+

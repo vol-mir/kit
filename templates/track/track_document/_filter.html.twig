@@ -1,0 +1,18 @@
+<div class="row pt-2">
+    <div class="col-4">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="status-check">
+                        </span>
+                </div>
+                <select class="form-control" id="status-select">
+                    {% for key, status in statuses %}
+                        <option value="{{ key }}">{{ status|trans }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

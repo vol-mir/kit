@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.finance_group'|trans }}: {{ financeGroup.name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-body">
+
+                    <dl>
+                        {% if financeGroup.name %}
+                            <dt>{{ 'label.name'|trans }}</dt>
+                            <dd>{{ financeGroup.name }}</dd>
+                        {% endif %}
+                    </dl>
+
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+
+{% endblock %}

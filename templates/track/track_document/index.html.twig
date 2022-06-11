@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.track_document'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGT") %}
+                <div class="card-header">
+                    {% include 'track/track_document/_controls.html.twig' %}
+                    {% include 'track/track_document/_filter.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="trackDocuments" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th>Код</th>
+                            <th>Дата нач.</th>
+                            <th>Дата кон.</th>
+                            <th>Статус</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Исполнение</th>
+                            <th>Сотрудник</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Код</th>
+                            <th>Дата нач.</th>
+                            <th>Дата кон.</th>
+                            <th>Статус</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Исполнение</th>
+                            <th>Сотрудник</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGT") %}
+                <div class="card-footer">
+                    {% include 'track/track_document/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/copy.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            let columnStatus = 3;
+
+            let statusCheck = $('#status-check');
+            let statusSelect = $('#status-select');
+
+            let table = $("#trackDocuments").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "id_document", "targets": 0},
+                    {"name": "date_start", "targets": 1},
+                    {"name": "date_end", "targets": 2},
+                    {"name": "status_document", "targets": columnStatus,  "orderable": false, "searchable": false},
+                    {"name": "product_designation", "targets": 4},
+                    {"name": "product_name", "targets": 5},
+                    {"name": "rendition", "targets": 6},
+                    {"name": "user", "targets": 7},
+                    {"name": "control", "targets": 8, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('track_document_datatables') }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[1, 'desc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#trackDocuments").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#trackDocuments").on("click", ".modal-copy-dialog", function () {
+                $('#btn-modal-copy').attr("data-confirm-copy-id", $(this).attr('data-id'));
+                $('#modal-copy').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let url = "{{ path('track_document_delete', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+            $("#modal-copy").on("click", "#btn-modal-copy", function () {
+
+                let url = "{{ path('track_document_copy', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-copy-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('copy-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-copy').attr("data-confirm-copy-id", null);
+                $('#modal-copy').modal('hide');
+            });
+
+            let state = table.state.loaded();
+
+            if (state) {
+                let colStatusSearch = state.columns[columnStatus].search;
+                if (colStatusSearch.search) {
+                    statusCheck.prop("checked", true);
+                    statusSelect.val(colStatusSearch.search);
+                }
+            }
+
+            statusCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnStatus).search(statusSelect.val()).draw();
+                } else {
+                    table.column(columnStatus).search('').draw();
+                }
+            });
+
+            statusSelect.on('change', function () {
+                if (statusCheck.is(":checked")) {
+                    table.column(columnStatus).search(statusSelect.val()).draw();
+                }
+            });
+
+        });
+    </script>
+
+{% endblock %}

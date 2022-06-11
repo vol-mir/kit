@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.new.structure'|trans }} - {{ specification.product.name }}  {{ specification.product.designation }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- jquery validation -->
+            <div class="card card-default">
+                <!-- form start -->
+                <form id="structureForm" action="{{ path('structure_material_new', {'specification_id': specification.id}) }}" method="POST">
+                    {% include 'specification/structure/_form_material.html.twig' with {'form': form} only %}
+                    <div class="card-footer">
+                        {{ form_widget(form.save) }}
+                        {{ form_widget(form.saveAndCreateNew) }}
+                        <a href="{{ path('specification_edit', {'id': specification.id}) }}"
+                           class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                    </div>
+                </form>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#structure_material_product").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('select_material') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
+            });
+
+            $('#structureForm').validate({
+                rules: {
+                    'structure[area]': {
+                        maxlength: 190,
+                    },
+                    'structure[position]': {
+                        required: true,
+                        number: true
+                    },
+                    'structure[content]': {
+                        required: true,
+                    },
+                    'structure[amount]': {
+                        required: true,
+                        number: true
+                    },
+                },
+                messages: {
+                    'structure[area]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'structure[position]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                        number: "{{ 'message.validation.number'|trans }}"
+                    },
+                    'structure[content]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'structure[amount]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                        number: "{{ 'message.validation.number'|trans }}"
+                    },
+                },
+                errorElement: 'div',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

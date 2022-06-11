@@ -1,0 +1,115 @@
+<div class="modal fade" id="modal-edit-group">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Редактирование записей</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+
+                {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_ADMIN") %}
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editGroup" id="edit-group">
+                        <label class="custom-control-label" for="edit-group">{{ 'label.product_group'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="group-select" name="groupSelect">
+                        {% for group in productGroups %}
+                            <option value="{{ group.id }}" {{ group.id==1?'selected':'' }}>{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editType" id="edit-type">
+                        <label class="custom-control-label" for="edit-type">{{ 'label.product_type'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="type-select" name="typeSelect">
+                        {% for type in productTypes %}
+                            <option value="{{ type.id }}" {{ type.id==1?'selected':'' }}>{{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editKind" id="edit-kind">
+                        <label class="custom-control-label" for="edit-kind">{{ 'label.product_kind'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="kind-select" name="kindSelect">
+                        {% for kind in productKinds %}
+                            <option value="{{ kind.id }}" {{ kind.id==1?'selected':'' }}>{{ kind.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editCategory" id="edit-category">
+                        <label class="custom-control-label" for="edit-category">{{ 'label.product_category'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="category-select" name="categorySelect">
+                        {% for category in productCategories %}
+                            <option value="{{ category.id }}" {{ category.id==1?'selected':'' }}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                {% if is_granted("ROLE_PEO") or is_granted("ROLE_ADMIN") %}
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editCalculation" id="edit-calculation">
+                        <label class="custom-control-label" for="edit-calculation">{{ 'label.calculation'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="calculation-select" name="calculationSelect">
+                        {% for calculation in calculations %}
+                            <option value="{{ calculation.id }}" {{ calculation.id==1?'selected':'' }}>{{ calculation.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                {% if is_granted("ROLE_BUH") or is_granted("ROLE_ADMIN") %}
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editAnalyticGroup" id="edit-analytic-group">
+                        <label class="custom-control-label" for="edit-analytic-group">{{ 'label.analytic_group'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="analytic-group-select" name="analyticGroupSelect">
+                        {% for analyticGroup in analyticGroups %}
+                            <option value="{{ analyticGroup.id }}" {{ analyticGroup.id==1?'selected':'' }}>{{ analyticGroup.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" name="editFinanceGroup" id="edit-finance-group">
+                        <label class="custom-control-label" for="edit-finance-group">{{ 'label.finance_group'|trans }}</label>
+                    </div>
+                    <select class="form-control" id="finance-group-select" name="financeGroupSelect">
+                        {% for financeGroup in financeGroups %}
+                            <option value="{{ financeGroup.id }}" {{ financeGroup.id==1?'selected':'' }}>{{ financeGroup.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                
+
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Отмена</button>
+                <button type="button" id="btn-modal-edit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

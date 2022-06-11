@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.document'|trans }}: {{ document.name }} {{ document.designation }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="true">Документация</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="false">Входимость</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                            <dl>
+                                {% if document.name %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ document.name }}</dd>
+                                {% endif %}
+                                {% if document.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ document.designation }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+                            {% if document.structures.count > 0 %}
+                                <table id="entres" class="table table-bordered table-striped table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for structure in document.structures %}
+                                            <tr role="row">
+                                                <td>{{ structure.specification.id }}</td>
+                                                <td>{{ structure.specification.dateSpecification|date("d.m.Y") }}</td>
+                                                <td>
+                                                {% set style = 'primary' %}
+                                                {% if structure.specification.status == 1 %}
+                                                        {% set style = 'primary' %}
+                                                {% elseif structure.specification.status == 3%}
+                                                        {% set style = 'success' %}
+                                                {% else %}
+                                                    {% set style = 'secondary' %}
+                                                {% endif %}
+                                                <span class='badge badge-{{style}}'>{{ specificationStatuses[structure.specification.status]|trans }}</span>
+                                                </td>
+                                                <td>{{ structure.specification.product.designation }}</td>
+                                                <td><a href='{{ path('product_show', {id: structure.specification.product.id}) }}' title="Открыть">{{ structure.specification.product.name }}</a></td></td>
+                                                <td>{{ structure.specification.rendition.name }}</td>
+                                                <td>
+                                                    <div class='btn-group btn-group-sm'>
+                                                        <a href='{{ path('specification_show', {id: structure.specification.id}) }}' class='btn btn-secondary' title="{{ 'title.show'|trans }}"><i class='fas fa-eye'></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Код</th>
+                                            <th>Дата</th>
+                                            <th>Статус</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Исполнение</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                {% else %}
+                                <div class="alert alert-light text-center" role="alert">
+                                    Не входит в состав изделия/узла
+                                </div>
+                            {% endif %}
+                            {# <br/>
+                            <button onclick="test()">Выбрать</button> #}
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+
+        $("#entres").DataTable({
+            "stateSave": true,
+            "processing": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "language": {
+                 "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            let locDocumentTab = localStorage.getItem('document-tab');
+            $('#' + locDocumentTab).tab('show');
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('document-tab', selectedTabId);
+            });
+
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Изменения в версиях{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Описание изменение в версиях</h3>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body">
+
+                    <div id="accordion">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <h4 class="card-title w-100">
+                                    <a class="d-block w-100" data-toggle="collapse" href="#collapseOne">
+                                        1.2.1 от 04.04.2022
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Изменение шрифта</li>
+                                        <li>Исправление поведение системы, когда сессия закончилась, редирект на страницу входа</li>
+                                        <li>Исправление отображение нормы на изделие, в карточке для номенклатуры</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /.card-body -->
+                </div>
+            <!-- /.card -->
+            </div>
+        <!-- /.col -->
+        </div>
+    </div>
+{% endblock %}

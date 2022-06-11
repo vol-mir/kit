@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.track_document'|trans }}: {{ trackDocument.product.name }} {{ trackDocument.product.designation }} {% if trackDocument.product.weight %} - вес {{ trackDocument.product.weight }} кг{% endif %} {% if trackDocument.product.productCategory %}, товарная категория - {{ trackDocument.product.productCategory.name }} {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="false">Документ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="true">Маршрут</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                            <dl>
+                                {% if trackDocument.dateStart %}
+                                    <dt>{{ 'label.date_start'|trans }}</dt>
+                                    <dd>{{ trackDocument.dateStart|date("d.m.Y") }}</dd>
+                                {% endif %}
+                                {% if trackDocument.dateEnd %}
+                                    <dt>{{ 'label.date_end'|trans }}</dt>
+                                    <dd>{{ trackDocument.dateEnd|date("d.m.Y") }}</dd>
+                                {% endif %}
+                                {% if trackDocument.product %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ trackDocument.product.name }}</dd>
+                                {% endif %}
+                                {% if trackDocument.product.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ trackDocument.product.designation }}</dd>
+                                {% endif %}
+                                {% if trackDocument.rendition %}
+                                    <dt>{{ 'label.rendition'|trans }}</dt>
+                                    <dd>{{ trackDocument.rendition.name}}</dd>
+                                {% endif %}
+                                {% if trackDocument.status %}
+                                    <dt>{{ 'label.status'|trans }}</dt>
+                                    <dd>{{ trackDocumentStatuses[trackDocument.status]|trans }}</dd>
+                                {% endif %}
+                                <dt>Разработал</dt>
+                                <dd>{{ trackDocument.user.fullName }}</dd>
+                            </dl>
+                        </div>
+                        <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+
+                            <table id="track" class="table table-bordered table-striped table-hover table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Цех</th>
+                                            <th>Номер цеха</th>
+                                            <th>Номер операции</th>
+                                            <th>Операция</th>
+                                            <th>tц, tо, tоп</th>
+                                            <th>tшт</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Цех</th>
+                                            <th>Номер цеха</th>
+                                            <th>Номер операции</th>
+                                            <th>Операция</th>
+                                            <th>tц, tо, tоп</th>
+                                            <th>tшт</th>
+                                            <th></th>
+                                        </tr>
+                                        </tfoot>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/move.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+
+    <script>
+
+        $(document).ready(function () {
+            let table = $("#track").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "name_department", "targets": 1},
+                    {"name": "number_department", "targets": 2},
+                    {"name": "number_operation", "targets": 3},
+                    {"name": "technological_operation", "targets": 4},
+                    {"name": "time_processing", "targets": 5},
+                    {"name": "time_piece", "targets": 6},
+                    {"name": "control", "targets": 7, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('track_datatables', {'track_document_id': trackDocument.id}) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+                "pageLength": 100,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            let locTrackDocumentTab = localStorage.getItem('track-document-tab');
+            $('#' + locTrackDocumentTab).tab('show');
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('track-document-tab', selectedTabId);
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

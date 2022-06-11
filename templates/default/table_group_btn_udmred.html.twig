@@ -1,0 +1,25 @@
+<div class='btn-group btn-group-sm'>
+    {% if idUp %}
+    <button type='button' class='btn btn-sm btn-default element-up'
+            data-id='{{ idUp }}' title="Вверх"><i class='fas fa-arrow-up'></i></button>
+    {% endif %}
+    {% if idDown %}
+    <button type='button' class='btn btn-sm btn-default element-adown'
+            data-id='{{ idDown }}' title="Вниз"><i class='fas fa-arrow-down'></i></button>
+    {% endif %}
+    {% if idMove %}
+    <button type='button' class='btn btn-sm btn-default element-move'
+            data-id='{{ idMove }}'  title="Переместить"><i class='fas fa-share'></i></button>
+    {% endif %}
+	{% if urlReplacement %}
+    	<a href='{{ urlReplacement }}' class='btn btn-warning' title="Замена"><i class='fas fa-reply-all '></i></a>
+	{% endif %}
+	{% if urlEdit %}
+    <a href='{{ urlEdit }}' class='btn btn-info' title="Изменить"><i class='fas fa-edit'></i></a>
+    {% endif %}
+    {% if idDelete %}
+    <button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal'
+            data-id='{{ idDelete }}' title="Удалить"><i class='fas fa-trash'></i></button>
+    {% endif %}
+
+</div>

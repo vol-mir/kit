@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.specification_section'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") %}
+                <div class="card-header">
+                    {% include 'specification_section/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="specificationSections" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th>Наименование</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Наименование</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") %}
+                <div class="card-footer">
+                    {% include 'specification_section/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            let table = $("#specificationSections").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "name", "targets": 0},
+                    {"name": "control", "targets": 1, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('specification_section_datatables') }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#specificationSections").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let url = "{{ path('specification_section_delete', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    if (data.messageError) {
+                        toastr.error(data.messageError);
+                    } else if (data.messageSuccess) {
+                        toastr.success(data.messageSuccess);
+                    }
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+        });
+    </script>
+
+{% endblock %}

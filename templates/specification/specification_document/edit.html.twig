@@ -1,0 +1,359 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.edit.specification'|trans }}: {{ specification.product.name }} {{ specification.product.designation }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill" href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1" aria-selected="false">Документ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill" href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2" aria-selected="true">Детализация</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="custom-tabs-four-tabContent">
+                    <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel" aria-labelledby="custom-tabs-four-tab1-tab">
+                        {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGK") and specification.close != 1) %}
+                        <!-- form start -->
+                        <form id="specificationForm" action="{{ app.request.get('list_error')?path('specification_edit', {'id': specification.id, 'list_error': 'true'}):path('specification_edit', {'id': specification.id}) }}" method="POST">
+                            {% include 'specification/specification_document/_form.html.twig' with {'form': form} only %}
+                            <div class="card-footer">
+
+                                {{ form_widget(form.save) }}
+                                {{ form_widget(form.saveAndStay) }}
+
+                                <a href="{{ app.request.get('list_error')?path('specification_index_error'):path('specification_index') }}"
+                                   class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                            </div>
+                        </form>
+                        {% else %}
+                            <div class="card-body">
+                            <dl>
+                                {% if specification.dateSpecification %}
+                                    <dt>{{ 'label.date_specification'|trans }}</dt>
+                                    <dd>{{ specification.dateSpecification|date("d.m.Y") }}</dd>
+                                {% endif %}
+                                {% if specification.product %}
+                                    <dt>{{ 'label.name'|trans }}</dt>
+                                    <dd>{{ specification.product.name }}</dd>
+                                {% endif %}
+                                {% if specification.product.designation %}
+                                    <dt>{{ 'label.designation'|trans }}</dt>
+                                    <dd>{{ specification.product.designation }}</dd>
+                                {% endif %}
+                                {% if specification.rendition %}
+                                    <dt>{{ 'label.rendition'|trans }}</dt>
+                                    <dd>{{ specification.rendition.name}}</dd>
+                                {% endif %}
+                                {% if specification.status %}
+                                    <dt>{{ 'label.status'|trans }}</dt>
+                                    <dd>{{ specificationStatuses[specification.status]|trans }}</dd>
+                                {% endif %}
+                            </dl>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{ path('specification_index') }}"
+                                   class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel" aria-labelledby="custom-tabs-four-tab2-tab">
+
+
+                            {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGK") and specification.close != 1) %}
+                            <div class="card-header">
+                                {% include 'specification/structure/_controls.html.twig' %}
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <table id="structure" class="table table-bordered table-striped table-hover table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Формат</th>
+                                            <th>Позиция</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Кол</th>
+                                            <th>Примечание</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <th>№ п/п</th>
+                                            <th>Формат</th>
+                                            <th>Позиция</th>
+                                            <th>Обозначение</th>
+                                            <th>Наименование</th>
+                                            <th>Кол</th>
+                                            <th>Примечание</th>
+                                            <th></th>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                            </div>
+                            {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGK") and specification.close != 1) %}
+                            <div class="card-footer">
+                                {% include 'specification/structure/_controls.html.twig' %}
+                            </div>
+                            {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/move.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jquery-validation -->
+    <script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#specificationForm').validate({
+                rules: {
+                    'specification[date_specification]': {
+                        maxlength: 190,
+                        required: false,
+                    },
+                    'specification[product]': {
+                        required: true,
+                    },
+                    'specification[rendition]': {
+                        required: true,
+                    },
+                },
+                messages: {
+                    'specification[date_specification]': {
+                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    },
+                    'specification[product]': {
+                        required: "{{ 'message.validation.required'|trans }}"
+                    },
+                    'specification[rendition]': {
+                        required: "{{ 'message.validation.required'|trans }}"
+                    },
+                },
+                errorElement: 'div',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+
+
+            $(".print-specification").on("click", function () {
+
+                let url = "{{ path('print_specification', {'id': specification.id}) }}";
+                let specificationId = "{{ specification.id }}";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {
+                        '_method': 'post',
+                        '_token': '{{ csrf_token('print-specification') }}',
+                        'specificationId': specificationId
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+
+                });
+
+            });
+
+
+        });
+    </script>
+
+    <script>
+        $(function () {
+            let table = $("#structure").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "indexNumber", "targets": 0},
+                    {"name": "format", "targets": 1},
+                    {"name": "position", "targets": 2},
+                    {"name": "designation", "targets": 3},
+                    {"name": "name", "targets": 4},
+                    {"name": "amount", "targets": 5},
+                    {"name": "note", "targets": 6},
+                    {"name": "control", "targets": 7, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('structure_datatables', {'specification_id': specification.id}) }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+                "pageLength": 100,
+                "order": [[0, 'asc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#structure").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#structure").on("click", ".element-move", function () {
+
+                $("#option-index-numbers option").remove();
+
+                $.each(table.column(0).data(), function() {
+                    $('#option-index-numbers').append($('<option>', {
+                        value: this,
+                        text: this
+                    }));
+                });
+
+
+                $('#btn-modal-move').attr("data-move-id", $(this).attr('data-id'));
+                $('#modal-move').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let structureId = $(this).attr('data-confirm-delete-id');
+                let url = " /specification/" + {{ specification.id }} + "/edit/structure/" + structureId + "/delete";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+            $("#modal-move").on("click", "#btn-modal-move", function () {
+
+                let structureId = $(this).attr('data-move-id');
+                let newIndexNumber = $("#option-index-numbers").val();
+
+                let url = " /specification/" + {{ specification.id }} + "/edit/structure/" + structureId + "/move/" + newIndexNumber + "/new-index";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('structure-item-move') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-move').attr("data-move-id", null);
+                $('#modal-move').modal('hide');
+            });
+
+            $(document).on('click','.element-up',function(){
+
+                let structureId = $(this).attr('data-id');
+                let url = "/specification/" + {{ specification.id }} + "/edit/structure/" + structureId + "/up";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('structure-item-up') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+            });
+
+            $(document).on('click','.element-adown',function(){
+
+                let structureId = $(this).attr('data-id');
+                let url = "/specification/" + {{ specification.id }} + "/edit/structure/" + structureId + "/adown";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('structure-item-adown') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    console.log(data);
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+            });
+
+        });
+
+
+
+        $(document).ready(function () {
+
+            let locSpecificationTab = localStorage.getItem('specification-tab');
+            $('#' + locSpecificationTab).tab('show');
+
+            $('a[data-toggle="pill"]').on('click', function (e) {
+                let selectedTabId = e.target.id;
+                localStorage.setItem('specification-tab', selectedTabId);
+            });
+
+            $("#specification_product").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('select_product') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

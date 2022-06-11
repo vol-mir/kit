@@ -1,0 +1,10 @@
+<div class='btn-group btn-group-sm'>
+    <button type='button' class='btn btn-sm btn-dark float-left modal-copy-dialog' data-toggle='modal'
+            data-id='{{ idCopy }}' style="color:white"><i class='fas fa-copy'></i></button>
+    <a href='{{ urlEdit }}' class='btn btn-info'><i class='fas fa-edit'></i></a>
+
+    {% if specificationClose != 1 %}
+    <button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal'
+            data-id='{{ idDelete }}'><i class='fas fa-trash'></i></button>
+    {% endif %}
+</div>

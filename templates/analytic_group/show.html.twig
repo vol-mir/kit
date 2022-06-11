@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.show.analytic_group'|trans }}: {{ analyticGroup.name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-primary card-outline card-outline-tabs">
+                <div class="card-body">
+
+                    <dl>
+                        {% if analyticGroup.name %}
+                            <dt>{{ 'label.name'|trans }}</dt>
+                            <dd>{{ analyticGroup.name }}</dd>
+                        {% endif %}
+                    </dl>
+
+                </div>
+                <!-- /.card -->
+            </div>
+
+        </div>
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+
+{% block javascripts %}
+
+
+{% endblock %}

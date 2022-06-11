@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-12">
+
+        <button type="button" class="btn btn-sm btn-success float-left mr-2 mb-1 dropdown-toggle" data-toggle="dropdown">
+            {{ 'title.add'|trans }}
+        </button>
+        <ul class="dropdown-menu button-ul">
+            <li class="dropdown-item"><a href="{{ path('structure_product_new', {'specification_id': specification.id}) }}">{{ 'title.add_product'|trans }}</a></li>
+            <li class="dropdown-item"><a href="{{ path('structure_section_new', {'specification_id': specification.id}) }}">{{ 'title.add_section'|trans }}</a></li>
+            <li class="dropdown-item"><a href="{{ path('structure_material_new', {'specification_id': specification.id}) }}">{{ 'title.add_material'|trans }}</a></li>
+            <li class="dropdown-item"><a href="{{ path('structure_document_new', {'specification_id': specification.id}) }}">{{ 'title.add_document'|trans }}</a></li>
+        </ul>
+
+        <button type="button" onclick='location.href = "{{ path('print_specification', {'id': specification.id}) }}";' role="button" class="btn btn-sm btn-default float-left mr-2 mb-1"><i class='fas fa-print'></i> {{ 'title.print'|trans }}</button>
+
+
+
+
+    </div>
+
+
+</div>

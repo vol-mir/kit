@@ -1,0 +1,204 @@
+    {{ form_row(form._token) }}
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.name) }}
+
+        <div class="input-group mb-3">
+            {{ form_widget(form.name) }}
+
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="formed">{{ 'title.formed'|trans }}</button>
+            </div>
+
+        </div>
+
+        {% if form.name.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.name.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.profile_name) }}
+        {{ form_widget(form.profile_name) }}
+
+        {% if form.profile_name.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.profile_name.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.profile) }}
+        {{ form_widget(form.profile) }}
+
+        {% if form.profile.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.profile.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.profile_standard) }}
+        {{ form_widget(form.profile_standard) }}
+
+        {% if form.profile_standard.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.profile_standard.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.mark) }}
+        {{ form_widget(form.mark) }}
+
+        {% if form.mark.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.mark.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.mark_standard) }}
+        {{ form_widget(form.mark_standard) }}
+
+        {% if form.mark_standard.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.mark_standard.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.material_kind) }}
+        {{ form_widget(form.material_kind) }}
+
+        {% if form.material_kind.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.material_kind.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.unit) }}
+        {{ form_widget(form.unit) }}
+
+        {% if form.unit.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.unit.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_group) }}
+        {{ form_widget(form.product_group) }}
+
+        {% if form.product_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_type) }}
+        {{ form_widget(form.product_type) }}
+
+        {% if form.product_type.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_type.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_kind) }}
+        {{ form_widget(form.product_kind) }}
+
+        {% if form.product_kind.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_kind.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_OGK")==false and is_granted("ROLE_OGT")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.product_category) }}
+        {{ form_widget(form.product_category) }}
+
+        {% if form.product_category.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.product_category.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_PEO")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.calculation) }}
+        {{ form_widget(form.calculation) }}
+
+        {% if form.calculation.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.calculation.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_BUH")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.analytic_group) }}
+        {{ form_widget(form.analytic_group) }}
+
+        {% if form.analytic_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.analytic_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group {{ is_granted("ROLE_BUH")==false and is_granted("ROLE_ADMIN")==false ? 'd-none' : '' }}">
+        {{ form_label(form.finance_group) }}
+        {{ form_widget(form.finance_group) }}
+
+        {% if form.finance_group.vars['errors']|length > 0 %}
+            <ul class="list-unstyled">
+                {% for error in form.finance_group.vars['errors'] %}
+                    <li class="text-danger small">{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+
+<!-- /.card-body -->
+
+

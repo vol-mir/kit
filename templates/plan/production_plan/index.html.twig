@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.plan_document'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") %}
+                <div class="card-header">
+
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="production-plans" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th>Код</th>
+                            <th>Код ЕРП</th>
+                            <th>Дата ЕРП</th>
+                            <th>Тип счета</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Код</th>
+                            <th>Код ЕРП</th>
+                            <th>Дата ЕРП</th>
+                            <th>Тип счета</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") %}
+                <div class="card-footer">
+
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            let table = $("#production-plans").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {
+                       'render': function (data, type, row) {
+                            return row["id"];
+                        },
+                        "name": "id_document",
+                        "targets": 0
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            return row["id_erp"];
+                        },
+                        "name": "id_erp",
+                        "targets": 1
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            let dateErp = row["date_erp"]?moment(new Date(row["date_erp"].date)).format('DD.MM.YYYY'):'';
+                            return dateErp;
+                        },
+                        "name": "date_erp",
+                        "targets": 2
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            return row["account_type"];
+                        },
+                        "name": "account_type",
+                        "targets": 3
+                    },
+                ],
+                "ajax": {
+                    "url": "{{ path('datatable_production_plans') }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[1, 'desc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#production-plans").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#production-plans").on("click", ".modal-copy-dialog", function () {
+                $('#btn-modal-copy').attr("data-confirm-copy-id", $(this).attr('data-id'));
+                $('#modal-copy').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let url = "{{ path('production_plan_delete', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+        });
+    </script>
+
+{% endblock %}

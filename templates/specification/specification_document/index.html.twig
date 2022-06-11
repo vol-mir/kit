@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.specification'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") %}
+                <div class="card-header">
+                    {% include 'specification/specification_document/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="specifications" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th>Код</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Исполнение</th>
+                            <th>Сотрудник</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Код</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Обозначение</th>
+                            <th>Наименование</th>
+                            <th>Исполнение</th>
+                            <th>Сотрудник</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") %}
+                <div class="card-footer">
+                    {% include 'specification/specification_document/_controls.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    {% include 'modals/delete.html.twig' %}
+    {% include 'modals/copy.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $(function () {
+            let table = $("#specifications").DataTable({
+                "columnDefs": [
+                    // These are the column name variables that will be sent to the server
+                    {"name": "id_specification", "targets": 0},
+                    {"name": "date_specification", "targets": 1},
+                    {"name": "status_specification", "targets": 2,  "orderable": false, "searchable": false},
+                    {"name": "product_designation", "targets": 3},
+                    {"name": "product_name", "targets": 4},
+                    {"name": "rendition", "targets": 5},
+                    {"name": "user", "targets": 6},
+                    {"name": "control", "targets": 7, "orderable": false, "searchable": false},
+                ],
+                "ajax": {
+                    "url": "{{ path('specification_datatables') }}",
+                    "type": "POST"
+                },
+                "stateSave": true,
+                "processing": true,
+                "serverSide": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "order": [[1, 'desc']],
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+            $("#specifications").on("click", ".modal-delete-dialog", function () {
+                $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+                $('#modal-delete').modal('show');
+            });
+
+            $("#specifications").on("click", ".modal-copy-dialog", function () {
+                $('#btn-modal-copy').attr("data-confirm-copy-id", $(this).attr('data-id'));
+                $('#modal-copy').modal('show');
+            });
+
+            $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+                let url = "{{ path('specification_delete', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+                $('#modal-delete').modal('hide');
+            });
+
+            $("#modal-copy").on("click", "#btn-modal-copy", function () {
+
+                let url = "{{ path('specification_copy', { 'id': 0 }) }}";
+                url = url.replace("0", $(this).attr('data-confirm-copy-id'));
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('copy-item') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    table.ajax.reload(null, false);
+                    toastr.success(data.message);
+                });
+
+                $('#btn-modal-copy').attr("data-confirm-copy-id", null);
+                $('#modal-copy').modal('hide');
+            });
+
+        });
+    </script>
+
+{% endblock %}

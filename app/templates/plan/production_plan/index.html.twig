@@ -16,9 +16,11 @@
                     <table id="production-plans" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th>Код</th>
-                            <th>Код ЕРП</th>
-                            <th>Дата ЕРП</th>
+                            <th></th>
+                            <th>Дата</th>
+                            <th>Номер</th>
+                            <th>Начало периода</th>
+                            <th>Окончание периода</th>
                             <th>Тип счета</th>
                         </tr>
                         </thead>
@@ -26,9 +28,11 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>Код</th>
-                            <th>Код ЕРП</th>
-                            <th>Дата ЕРП</th>
+                            <th></th>
+                            <th>Дата</th>
+                            <th>Номер</th>
+                            <th>Начало периода</th>
+                            <th>Окончание периода</th>
                             <th>Тип счета</th>
                         </tr>
                         </tfoot>
@@ -60,6 +64,7 @@
                     // These are the column name variables that will be sent to the server
                     {
                        'render': function (data, type, row) {
+                            console.log(row);
                             return row["id"];
                         },
                         "name": "id_document",
@@ -67,25 +72,46 @@
                     },
                     {
                        'render': function (data, type, row) {
-                            return row["id_erp"];
-                        },
-                        "name": "id_erp",
-                        "targets": 1
-                    },
-                    {
-                       'render': function (data, type, row) {
                             let dateErp = row["date_erp"]?moment(new Date(row["date_erp"].date)).format('DD.MM.YYYY'):'';
                             return dateErp;
                         },
                         "name": "date_erp",
+                        "targets": 1
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            return row["id_erp"];
+                        },
+                        "name": "id_erp",
                         "targets": 2
                     },
                     {
                        'render': function (data, type, row) {
-                            return row["account_type"];
+                            let dateBegin = row["date_begin"]?moment(new Date(row["date_begin"].date)).format('DD.MM.YYYY'):'';
+                            return dateBegin;
+                        },
+                        "name": "date_begin",
+                        "targets": 3
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            let dateEnd = row["date_end"]?moment(new Date(row["date_end"].date)).format('DD.MM.YYYY'):'';
+                            return dateEnd;
+                        },
+                        "name": "date_end",
+                        "targets": 4
+                    },
+                    {
+                       'render': function (data, type, row) {
+                            accountTypes = '{{ accountTypes|join(',') }}';
+                            accountTypes = accountTypes.split(',');
+                            id = row["account_type"];
+                            return accountTypes[id];
                         },
                         "name": "account_type",
-                        "targets": 3
+                        "targets": 5,
+                        "orderable": false, 
+                        "searchable": false
                     },
                 ],
                 "ajax": {
@@ -106,6 +132,7 @@
                     "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
                 }
             });
+            table.column('id_document:name').visible(false);
 
             $("#production-plans").on("click", ".modal-delete-dialog", function () {
                 $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));

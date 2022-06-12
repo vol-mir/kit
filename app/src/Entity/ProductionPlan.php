@@ -15,6 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ProductionPlan
 {
+    public const ACCOUNT_TYPES = ['Предварительный', '1-е извещение', '2-е извещение', '3-е извещение', '4-е извещение', '5-е извещение', '6-е извещение', '7-е извещение', '8-е извещение'];
+
     /**
      * @var int
      *

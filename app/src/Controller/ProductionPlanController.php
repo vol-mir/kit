@@ -46,7 +46,9 @@ class ProductionPlanController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('plan/production_plan/index.html.twig');
+        return $this->render('plan/production_plan/index.html.twig', [
+            'accountTypes' => ProductionPlan::ACCOUNT_TYPES
+        ]);
     }
 
 	/**

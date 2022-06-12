@@ -44,7 +44,7 @@ class ProductionPlanRepository extends ServiceEntityRepository
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
-        $query->select("t0.id, t0.id_erp, t0.date_erp, t0.account_type, t1.last_name");
+        $query->select("t0.id, t0.id_erp, t0.date_erp, t0.account_type, t0.date_begin, t0.date_end, t1.last_name");
 
         // Create Count Query
         $countQuery = $this->createQueryBuilder("t0");

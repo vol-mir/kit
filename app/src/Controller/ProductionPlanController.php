@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Traits\ListDatatable;
 use App\Entity\ProductionPlan;
-use App\Serializer\Normalizer\ProductionPlansNormalizer;
+use App\Form\ProductionPlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 
 class ProductionPlanController extends AbstractController
 {
-	use ListDatatable;
+    use ListDatatable;
 
     private $entityManager;
 
@@ -30,8 +30,7 @@ class ProductionPlanController extends AbstractController
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->translator = $translator;
         $this->logger = $logger;
@@ -46,12 +45,12 @@ class ProductionPlanController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('plan/production_plan/index.html.twig', [
+        return $this->render('production/plan/index.html.twig', [
             'accountTypes' => ProductionPlan::ACCOUNT_TYPES
         ]);
     }
 
-	/**
+    /**
      * List datatable action
      *
      * @Route("/datatable/production/plans", methods="POST", name="datatable_production_plans")
@@ -81,8 +80,9 @@ class ProductionPlanController extends AbstractController
      */
     public function show(ProductionPlan $productionPlan): Response
     {
-        return $this->render('plan/production_plan/show.html.twig', [
+        return $this->render('production/plan/show.html.twig', [
             'productionPlan' => $productionPlan,
+            'productionPlanAccountTypes' => ProductionPlan::ACCOUNT_TYPES,
         ]);
     }
 
@@ -106,5 +106,80 @@ class ProductionPlanController extends AbstractController
         }
 
         return new JsonResponse(['message' => $this->translator->trans('item.deleted_successfully')]);
+    }
+
+    /**
+     * Creates a new production plan entity
+     *
+     * @Route("/production/plan/new", methods="GET|POST", name="production_plan_new")
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
+     */
+    public function new(Request $request): Response
+    {
+        $productionPlan = new ProductionPlan();
+
+        $productionPlan->setUser($this->getUser());
+
+        $form = $this->createForm(ProductionPlanType::class, $productionPlan);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+
+            $this->entityManager->persist($productionPlan);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', $this->translator->trans('item.created_successfully'));
+
+            if ($form->getClickedButton() && 'saveAndCreateNew' === $form->getClickedButton()->getName()) {
+
+                return $this->redirectToRoute('production_plan_new');
+            }
+
+            return $this->redirectToRoute('production_plan_edit', ['id' => $productionPlan->getId()]);
+        }
+
+        return $this->render('production/plan/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Edit the production plan entity
+     *
+     * @Route("/production/plan/{id}/edit", methods="GET|POST", name="production_plan_edit", requirements={"id" = "\d+"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     *
+     * @param Request $request
+     * @param ProductionPlan $productionPlan
+     *
+     * @return Response
+     */
+    public function edit(Request $request, ProductionPlan $productionPlan): Response
+    {
+        $form = $this->createForm(ProductionPlanType::class, $productionPlan);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', $this->translator->trans('item.edited_successfully'));
+
+            if ($form->getClickedButton() && 'saveAndStay' === $form->getClickedButton()->getName()) {
+
+                return $this->redirectToRoute('production_plan_edit', ['id' => $productionPlan->getId()]);
+            }
+
+            return $this->redirectToRoute('production_plan_index');
+        }
+
+        return $this->render('production/plan/edit.html.twig', [
+            'form' => $form->createView(),
+            'productionPlan' => $productionPlan,
+            'productionPlanAccountTypes' => ProductionPlan::ACCOUNT_TYPES,
+        ]);
     }
 }

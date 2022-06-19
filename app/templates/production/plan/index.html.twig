@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.production_plan'|trans }}{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% if is_granted("ROLE_ADMIN") %}
+            <div class="card-header">
+                {% include 'production/plan/_controls.html.twig' %}
+            </div>
+            {% endif %}
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="production-plans" class="table table-bordered table-striped table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Дата</th>
+                            <th>Номер</th>
+                            <th>Начало периода</th>
+                            <th>Окончание периода</th>
+                            <th>Тип счета</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th>Дата</th>
+                            <th>Номер</th>
+                            <th>Начало периода</th>
+                            <th>Окончание периода</th>
+                            <th>Тип счета</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- /.card-body -->
+            {% if is_granted("ROLE_ADMIN") %}
+            <div class="card-footer">
+                {% include 'production/plan/_controls.html.twig' %}
+            </div>
+            {% endif %}
+            <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+
+{% include 'modals/delete.html.twig' %}
+{% endblock %}
+
+
+{% block javascripts %}
+<script>
+    $(function () {
+        let table = $("#production-plans").DataTable({
+            "columnDefs": [
+                // These are the column name variables that will be sent to the server
+                {
+                    'render': function (data, type, row) {
+                        return row["id"];
+                    },
+                    "name": "id_document",
+                    "targets": 0
+                },
+                {
+                    'render': function (data, type, row) {
+                        let dateErp = row["date_erp"] ? moment(new Date(row["date_erp"].date)).format('DD.MM.YYYY') : '';
+                        return dateErp;
+                    },
+                    "name": "date_erp",
+                    "targets": 1
+                },
+                {
+                    'render': function (data, type, row) {
+                        return "<a href='/production/plan/" + row["id"] + "' class='float-left'>" + row["id_erp"] + "</a>";
+                    },
+                    "name": "id_erp",
+                    "targets": 2
+                },
+                {
+                    'render': function (data, type, row) {
+                        let dateBegin = row["date_begin_erp"] ? moment(new Date(row["date_begin_erp"].date)).format('DD.MM.YYYY') : '';
+                        return dateBegin;
+                    },
+                    "name": "date_begin_erp",
+                    "targets": 3
+                },
+                {
+                    'render': function (data, type, row) {
+                        let dateEnd = row["date_end_erp"] ? moment(new Date(row["date_end_erp"].date)).format('DD.MM.YYYY') : '';
+                        return dateEnd;
+                    },
+                    "name": "date_end_erp",
+                    "targets": 4
+                },
+                {
+                    'render': function (data, type, row) {
+                        accountTypes = '{{ accountTypes|join(', ') }}';
+                        accountTypes = accountTypes.split(',');
+                        id = row["account_type"];
+                        return accountTypes[id];
+                    },
+                    "name": "account_type",
+                    "targets": 5,
+                    "orderable": false,
+                    "searchable": false
+                },
+                {
+                    'render': function (data, type, row) {
+
+                        let urlShow = "{{ path('production_plan_show', { 'id': 0 }) }}";
+                        urlShow = urlShow.replace("0", row["id"]);
+
+                        let urlEdit = "{{ path('production_plan_edit', { 'id': 0 }) }}";
+                        urlEdit = urlEdit.replace("0", row["id"]);
+
+                        let buttonShow = "<a href='" + urlShow + "' class='btn btn-secondary' title='{{ 'title.show'|trans }}'><i class='fas fa-eye'></i></a'></i></a>";
+                        let buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}'><i class='fas fa-edit'></i></a>";
+                        let buttonDelete = "<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal' data-id='" + row["id"] + "' title='{{ 'title.delete'|trans }}'><i class='fas fa-trash'></i></button>";
+                        return "<div class='btn-group btn-group-sm'>" + buttonShow + buttonEdit + buttonDelete + "</div>";
+                    },
+                    "name": "control",
+                    "orderable": false,
+                    "searchable": false,
+                    "targets": 6
+                },
+            ],
+            "ajax": {
+                "url": "{{ path('datatable_production_plans') }}",
+                "type": "POST"
+            },
+            "stateSave": true,
+            "processing": true,
+            "serverSide": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "pageLength": 25,
+            "order": [[1, 'desc']],
+            "language": {
+                "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
+        });
+        table.column('id_document:name').visible(false);
+
+        $("#production-plans").on("click", ".modal-delete-dialog", function () {
+            $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+            $('#modal-delete').modal('show');
+        });
+
+        $("#production-plans").on("click", ".modal-copy-dialog", function () {
+            $('#btn-modal-copy').attr("data-confirm-copy-id", $(this).attr('data-id'));
+            $('#modal-copy').modal('show');
+        });
+
+        $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+            let url = "{{ path('production_plan_delete', { 'id': 0 }) }}";
+            url = url.replace("0", $(this).attr('data-confirm-delete-id'));
+
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: {'_method': 'delete', '_token': '{{ csrf_token("delete-item") }}'},
+                dataType: 'json'
+            }).done(function (data) {
+                table.ajax.reload(null, false);
+                toastr.success(data.message);
+            });
+
+            $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+            $('#modal-delete').modal('hide');
+        });
+
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+<div class="card-body">
+    {{ form_row(form._token) }}
+    <div class="form-group">
+        {{ form_label(form.id_erp) }}
+        {{ form_widget(form.id_erp) }}
+
+        {% if form.id_erp.vars['errors']|length > 0 %}
+        <ul class="list-unstyled">
+            {% for error in form.id_erp.vars['errors'] %}
+            <li class="text-danger small">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.date_erp) }}
+        {{ form_widget(form.date_erp) }}
+
+        {% if form.date_erp.vars['errors']|length > 0 %}
+        <ul class="list-unstyled">
+            {% for error in form.date_erp.vars['errors'] %}
+            <li class="text-danger small">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.date_begin_erp) }}
+        {{ form_widget(form.date_begin_erp) }}
+
+        {% if form.date_begin_erp.vars['errors']|length > 0 %}
+        <ul class="list-unstyled">
+            {% for error in form.date_begin_erp.vars['errors'] %}
+            <li class="text-danger small">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.date_end_erp) }}
+        {{ form_widget(form.date_end_erp) }}
+
+        {% if form.date_end_erp.vars['errors']|length > 0 %}
+        <ul class="list-unstyled">
+            {% for error in form.date_end_erp.vars['errors'] %}
+            <li class="text-danger small">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.account_type) }}
+        {{ form_widget(form.account_type) }}
+
+        {% if form.account_type.vars['errors']|length > 0 %}
+        <ul class="list-unstyled">
+            {% for error in form.account_type.vars['errors'] %}
+            <li class="text-danger small">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+<!-- /.card-body -->

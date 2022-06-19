@@ -2,12 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductionPlanRepository;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\ProductionPlanRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass=ProductionPlanRepository::class)
  * @ORM\Table(name="production_plans")
@@ -54,14 +53,14 @@ class ProductionPlan
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $date_begin;
+    private $date_begin_erp;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $date_end;
+    private $date_end_erp;
 
     /**
      * @var User
@@ -127,26 +126,26 @@ class ProductionPlan
         return $this;
     }
 
-    public function getDateBegin(): ?\DateTimeInterface
+    public function getDateBeginErp(): ?\DateTimeInterface
     {
-        return $this->date_begin;
+        return $this->date_begin_erp;
     }
 
-    public function setDateBegin(\DateTimeInterface $date_begin): self
+    public function setDateBeginErp(\DateTimeInterface $date_begin_erp): self
     {
-        $this->date_begin = $date_begin;
+        $this->date_begin_erp = $date_begin_erp;
 
         return $this;
     }
 
-    public function getDateEnd(): ?\DateTimeInterface
+    public function getDateEndErp(): ?\DateTimeInterface
     {
-        return $this->date_end;
+        return $this->date_end_erp;
     }
 
-    public function setDateEnd(\DateTimeInterface $date_end): self
+    public function setDateEndErp(\DateTimeInterface $date_end_erp): self
     {
-        $this->date_end = $date_end;
+        $this->date_end_erp = $date_end_erp;
 
         return $this;
     }

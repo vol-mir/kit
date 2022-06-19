@@ -391,20 +391,20 @@
         <target>Маршрут</target>
       </trans-unit>
 
-      <trans-unit id="title.page.index.plan_document">
-        <source>title.page.index.plan_document</source>
+      <trans-unit id="title.page.index.production_plan">
+        <source>title.page.index.production_plan</source>
         <target>План производства</target>
       </trans-unit>
-      <trans-unit id="title.page.new.plan_document">
-        <source>title.page.new.plan_document</source>
+      <trans-unit id="title.page.new.production_plan">
+        <source>title.page.new.production_plan</source>
         <target>Добавление нового плана</target>
       </trans-unit>
-      <trans-unit id="title.page.edit.plan_document">
-        <source>title.page.edit.plan_document</source>
+      <trans-unit id="title.page.edit.production_plan">
+        <source>title.page.edit.production_plan</source>
         <target>Редактирование плана</target>
       </trans-unit>
-      <trans-unit id="title.page.show.plan_document">
-        <source>title.page.show.plan_document</source>
+      <trans-unit id="title.page.show.production_plan">
+        <source>title.page.show.production_plan</source>
         <target>План производства</target>
       </trans-unit>
 
@@ -499,13 +499,28 @@
       </trans-unit>
       <trans-unit id="label.id_erp">
         <source>label.id_erp</source>
-        <target>Код 1С ЕРП</target>
+        <target>Номер 1С ЕРП</target>
+      </trans-unit>
+      <trans-unit id="label.date_erp">
+        <source>label.date_erp</source>
+        <target>Дата 1С ЕРП</target>
+      </trans-unit>
+      <trans-unit id="label.date_begin_erp">
+        <source>label.date_begin_erp</source>
+        <target>Начало периода</target>
+      </trans-unit>
+      <trans-unit id="label.date_end_erp">
+        <source>label.date_end_erp</source>
+        <target>Окончание периода</target>
       </trans-unit>
       <trans-unit id="label.calculation">
         <source>label.calculation</source>
         <target>Статья калькуляции</target>
       </trans-unit>
-      
+      <trans-unit id="label.account_type">
+        <source>label.account_type</source>
+        <target>Тип счета</target>
+      </trans-unit>
 
       <trans-unit id="label.time_cycle">
         <source>label.time_cycle</source>

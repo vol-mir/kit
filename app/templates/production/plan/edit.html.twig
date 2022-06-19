@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'title.page.show.production_plan'|trans }}: {{ productionPlan.idErp }} от {{productionPlan.dateErp|date("d.m.Y") }}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-primary card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-tab1-tab" data-toggle="pill"
+                            href="#custom-tabs-four-tab1" role="tab" aria-controls="custom-tabs-four-tab1"
+                            aria-selected="false">Документ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill"
+                            href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2"
+                            aria-selected="true">Состав</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content" id="custom-tabs-four-tabContent">
+                <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel"
+                    aria-labelledby="custom-tabs-four-tab1-tab">
+                    <!-- form start -->
+                    <form id="productionPlanForm" action="{{ path('production_plan_edit', {'id': productionPlan.id}) }}"
+                        method="POST">
+                        {% include 'production/plan/_form.html.twig' with {'form': form} only %}
+                        <div class="card-footer">
+
+                            {{ form_widget(form.save) }}
+                            {{ form_widget(form.saveAndStay) }}
+
+                            <a href="{{ path('production_plan_index') }}" class="btn btn-default float-right">{{
+                                'title.cancel'|trans }}</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="custom-tabs-four-tab2" role="tabpanel"
+                    aria-labelledby="custom-tabs-four-tab2-tab">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-12">
+                                Тест
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        let locProductionPlanTab = localStorage.getItem('production-plan-tab');
+        if ($('#' + locProductionPlanTab).length) {
+            $('#' + locProductionPlanTab).tab('show');
+        } else {
+            $('#custom-tabs-four-tab1-tab').tab('show');
+        }
+
+        $('a[data-toggle="pill"]').on('click', function (e) {
+            let selectedTabId = e.target.id;
+            localStorage.setItem('production-plan-tab', selectedTabId);
+        });
+
+    });
+</script>
+{% endblock %}

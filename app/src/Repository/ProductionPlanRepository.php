@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\ProductionPlan;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method ProductionPlan|null find($id, $lockMode = null, $lockVersion = null)
@@ -44,7 +44,7 @@ class ProductionPlanRepository extends ServiceEntityRepository
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
-        $query->select("t0.id, t0.id_erp, t0.date_erp, t0.account_type, t0.date_begin, t0.date_end, t1.last_name");
+        $query->select("t0.id, t0.id_erp, t0.date_erp, t0.account_type, t0.date_begin_erp, t0.date_end_erp, t1.last_name");
 
         // Create Count Query
         $countQuery = $this->createQueryBuilder("t0");

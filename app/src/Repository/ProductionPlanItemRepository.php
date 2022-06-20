@@ -48,7 +48,7 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
-        $query->select("t0.id, t0.index_number, t0.amount, t1.name, t1.designation, t2.name as rendition");
+        $query->select("t0.id, t0.index_number, t0.amount, t1.name, t1.designation, t2.name as rendition, t3.name as unit");
 
         // Create Count Query
         $countQuery = $this->createQueryBuilder("t0");
@@ -59,6 +59,9 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
         $countQuery->join('t0.product', 't1');
         $query->join('t0.rendition', 't2');
         $countQuery->join('t0.rendition', 't2');
+
+        $query->join('t1.unit', 't3');
+        $countQuery->join('t1.unit', 't3');
 
         // Fields Search
         if ($search['value'] !== '') {

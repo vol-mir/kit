@@ -18,7 +18,7 @@
                     <li class="nav-item">
                         <a class="nav-link" id="custom-tabs-four-tab2-tab" data-toggle="pill"
                             href="#custom-tabs-four-tab2" role="tab" aria-controls="custom-tabs-four-tab2"
-                            aria-selected="true">Состав</a>
+                            aria-selected="true">Продукция</a>
                     </li>
                 </ul>
             </div>
@@ -43,11 +43,52 @@
                     aria-labelledby="custom-tabs-four-tab2-tab">
                     <div class="card-header">
                         <div class="row">
+                            {% if is_granted("ROLE_ADMIN") %}
                             <div class="col-md-12">
-                                Тест
+                                {% include 'production/item/_controls.html.twig' %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table id="production-plan-item" class="table table-bordered table-striped table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>№ п/п</th>
+                                    <th>Обозначение</th>
+                                    <th>Наименование</th>
+                                    <th>Исполнение</th>
+                                    <th>Количество</th>
+                                    <th>Ед.изм.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>№ п/п</th>
+                                    <th>Обозначение</th>
+                                    <th>Наименование</th>
+                                    <th>Исполнение</th>
+                                    <th>Количество</th>
+                                    <th>Ед.изм.</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_OGT") and trackDocument.close != 1)%}
+
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% include 'production/item/_controls.html.twig' %}
                             </div>
                         </div>
                     </div>
+
+                    {% endif %}
+
                 </div>
             </div>
         </div>
@@ -71,6 +112,72 @@
         $('a[data-toggle="pill"]').on('click', function (e) {
             let selectedTabId = e.target.id;
             localStorage.setItem('production-plan-tab', selectedTabId);
+        });
+
+        let table = $("#production-plan-item").DataTable({
+            "columnDefs": [
+                {
+                    'render': function (data, type, row) {
+                        return row["index_number"];
+                    },
+                    "name": "index_number",
+                    "targets": 0
+                },
+                {
+                    'render': function (data, type, row) {
+                        return row["designation"];
+                    },
+                    "name": "designation",
+                    "targets": 1
+                },
+                {
+                    'render': function (data, type, row) {
+                        return row["name"];
+                    },
+                    "name": "name",
+                    "targets": 2
+                },
+                {
+                    'render': function (data, type, row) {
+                        return row["rendition"];
+                    },
+                    "name": "rendition",
+                    "targets": 3
+                },
+                {
+                    'render': function (data, type, row) {
+                        return row["amount"];
+                    },
+                    "name": "amount",
+                    "targets": 4
+                },
+                {
+                    'render': function (data, type, row) {
+                        return row["unit"];
+                    },
+                    "name": "unit",
+                    "targets": 5
+                },
+
+            ],
+            "ajax": {
+                "url": "{{ path('datatable_production_plan_item', {'production_plan_id': productionPlan.id}) }}",
+                "type": "POST"
+            },
+            "stateSave": true,
+            "processing": true,
+            "serverSide": true,
+            "responsive": true,
+            "autoWidth": false,
+            "paging": true,
+            "info": true,
+            "searching": true,
+            "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+            "pageLength": 100,
+            "order": [[0, 'asc']],
+            "language": {
+                "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+            }
         });
 
     });

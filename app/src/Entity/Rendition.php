@@ -66,11 +66,19 @@ class Rendition
      */
     private $track_documents;
 
+    /**
+     * @var ProductionPlanItem
+     *
+     * @ORM\OneToMany(targetEntity=ProductionPlanItem::class, mappedBy="rendition", orphanRemoval=true, cascade={"remove"})
+     */
+    private $productionPlanItems;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
         $this->norm_documents = new ArrayCollection();
         $this->track_documents = new ArrayCollection();
+        $this->productionPlanItems = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,6 +206,36 @@ class Rendition
             // set the owning side to null (unless already changed)
             if ($track_document->getRendition() === $this) {
                 $track_document->setRendition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductionPlanItem>
+     */
+    public function getProductionPlanItems(): Collection
+    {
+        return $this->productionPlanItems;
+    }
+
+    public function addProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if (!$this->productionPlanItems->contains($productionPlanItem)) {
+            $this->productionPlanItems[] = $productionPlanItem;
+            $productionPlanItem->setRendition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if ($this->productionPlanItems->removeElement($productionPlanItem)) {
+            // set the owning side to null (unless already changed)
+            if ($productionPlanItem->getRendition() === $this) {
+                $productionPlanItem->setRendition(null);
             }
         }
 

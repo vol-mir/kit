@@ -291,6 +291,13 @@ class Product
      */
     private $analytic_group;
 
+    /**
+     * @var ProductionPlanItem
+     *
+     * @ORM\OneToMany(targetEntity=ProductionPlanItem::class, mappedBy="product", orphanRemoval=true, cascade={"remove"})
+     */
+    private $productionPlanItems;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
@@ -300,6 +307,7 @@ class Product
         $this->norm_documents = new ArrayCollection();
         $this->material_norms = new ArrayCollection();
         $this->track_documents = new ArrayCollection();
+        $this->productionPlanItems = new ArrayCollection();
     }
 
     public function __toString(): ?string
@@ -896,6 +904,36 @@ class Product
     public function setAnalyticGroup(?AnalyticGroup $analytic_group): self
     {
         $this->analytic_group = $analytic_group;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductionPlanItem>
+     */
+    public function getProductionPlanItems(): Collection
+    {
+        return $this->productionPlanItems;
+    }
+
+    public function addProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if (!$this->productionPlanItems->contains($productionPlanItem)) {
+            $this->productionPlanItems[] = $productionPlanItem;
+            $productionPlanItem->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if ($this->productionPlanItems->removeElement($productionPlanItem)) {
+            // set the owning side to null (unless already changed)
+            if ($productionPlanItem->getProduct() === $this) {
+                $productionPlanItem->setProduct(null);
+            }
+        }
 
         return $this;
     }

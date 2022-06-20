@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use DateTime;
 use App\Repository\ProductionPlanRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -84,6 +86,18 @@ class ProductionPlan
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
+
+    /**
+     * @var ProductionPlanItem
+     *
+     * @ORM\OneToMany(targetEntity=ProductionPlanItem::class, mappedBy="production_plan", orphanRemoval=true, cascade={"remove"})
+     */
+    private $productionPlanItems;
+
+    public function __construct()
+    {
+        $this->productionPlanItems = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -187,5 +201,35 @@ class ProductionPlan
     public function preUpdate(): void
     {
         $this->updated_at = new DateTime();
+    }
+
+    /**
+     * @return Collection<int, ProductionPlanItem>
+     */
+    public function getProductionPlanItems(): Collection
+    {
+        return $this->productionPlanItems;
+    }
+
+    public function addProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if (!$this->productionPlanItems->contains($productionPlanItem)) {
+            $this->productionPlanItems[] = $productionPlanItem;
+            $productionPlanItem->setProductionPlan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductionPlanItem(ProductionPlanItem $productionPlanItem): self
+    {
+        if ($this->productionPlanItems->removeElement($productionPlanItem)) {
+            // set the owning side to null (unless already changed)
+            if ($productionPlanItem->getProductionPlan() === $this) {
+                $productionPlanItem->setProductionPlan(null);
+            }
+        }
+
+        return $this;
     }
 }

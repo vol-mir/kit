@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.page.index.material_requirement'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% if is_granted("ROLE_ADMIN") %}
+                <div class="card-header">
+                    {% include 'material/_controls_requirement.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th width="3%" class="toggle-all"><i id="select_all" name="select_invoice"></i></th>
+                            <th></th>
+                            <th>Код</th>
+                            <th>Наименование</th>
+                            <th>Группы</th>
+                            <th width="5%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Код</th>
+                            <th>Наименование</th>
+                            <th>Группы</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                {% if is_granted("ROLE_ADMIN") %}
+                <div class="card-footer">
+                    {% include 'material/_controls_requirement.html.twig' %}
+                </div>
+                {% endif %}
+                <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+
+        $(function () {
+
+            $(document).on('click','.js-calculate-requirement-materials',function(){
+
+                console.log('hello');
+
+                let url = "{{ path('materials_requirement_calculate') }}";
+
+                $.ajax({
+                    type: 'post',
+                    url: url,
+                    data: {'_method': 'post', '_token': '{{ csrf_token('calculate-requirement-materials') }}'},
+                    dataType: 'json'
+                }).done(function (data) {
+                    console.log(data);
+                });
+
+            });
+
+        });
+
+    </script>
+{% endblock %}

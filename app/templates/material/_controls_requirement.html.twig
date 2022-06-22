@@ -1,0 +1,8 @@
+<div class="row">
+    <div class="col-12">
+        {% if is_granted("ROLE_ADMIN") %}
+            <button type="button" class="btn btn-sm btn-default edit-group js-calculate-requirement-materials"><i
+                        class='fa fa-asterisk'></i> {{ 'title.calculate'|trans }}</button>
+        {% endif %}
+    </div>
+</div>

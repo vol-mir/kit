@@ -75,6 +75,11 @@
         <target>Редактировать выделенные</target>
       </trans-unit>
 
+      <trans-unit id="title.calculate">
+        <source>title.calculate</source>
+        <target>Рассчитать</target>
+      </trans-unit>
+
       <trans-unit id="title.page.main">
         <source>title.page.main</source>
         <target>Главная</target>
@@ -436,6 +441,12 @@
         <target>Изменение элемента</target>
       </trans-unit>
 
+
+      <trans-unit id="title.page.index.material_requirement">
+        <source>title.page.index.material_requirement</source>
+        <target>Потребность материалов</target>
+      </trans-unit>
+
       <trans-unit id="label.finance_group">
         <source>label.finance_group</source>
         <target>Группа фин. учета</target>
@@ -674,6 +685,11 @@
       <trans-unit id="items.edited_successfully">
         <source>items.edited_successfully</source>
         <target>Записи успешно изменены!</target>
+      </trans-unit>
+
+      <trans-unit id="items.calculated_successfully">
+        <source>items.calculated_successfully</source>
+        <target>Успешно рассчитано!</target>
       </trans-unit>
 
       <trans-unit id="message.validation.required">

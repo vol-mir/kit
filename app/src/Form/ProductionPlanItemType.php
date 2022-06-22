@@ -4,14 +4,12 @@ namespace App\Form;
 
 use App\Entity\ProductionPlanItem;
 use App\Entity\Product;
+use App\Entity\Rendition;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Repository\ProductionPlanItemRepository;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use App\Repository\ProductRepository;
@@ -40,6 +38,24 @@ class ProductionPlanItemType extends AbstractType
                 ]
             ]);
         };
+
+        $builder->add('rendition', EntityType::class, [
+            'class' => Rendition::class,
+            'label' => 'label.rendition',
+            'query_builder' => static function (EntityRepository $er) {
+                return $er->createQueryBuilder('o')
+                    ->orderBy('o.name', 'ASC');
+            },
+            'choice_label' => 'name',
+            'choice_value' => 'id',
+            'attr' => [
+                'placeholder' => 'label.rendition',
+                'title' => 'label.rendition',
+                'class' => 'form-control select2',
+                'style' => 'width: 100%;',
+                'name' => 'production_plan_item_rendition'
+            ]
+        ]);
 
         $builder->add('amount', NumberType::class, [
             'label' => 'label.amount',

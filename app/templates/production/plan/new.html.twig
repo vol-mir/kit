@@ -8,7 +8,7 @@
         <!-- jquery validation -->
         <div class="card card-default">
             <!-- form start -->
-            <form id="productionForm" action="{{ path('production_plan_new') }}" method="POST">
+            <form id="production-plan-form" action="{{ path('production_plan_new') }}" method="POST">
                 {% include 'production/plan/_form.html.twig' with {'form': form} only %}
                 <div class="card-footer">
                     {{ form_widget(form.save) }}
@@ -32,28 +32,39 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $('#specificationForm').validate({
+        $('#production-plan-form').validate({
             rules: {
-                'production_plan[date_specification]': {
-                    maxlength: 190,
+                'production_plan[id_erp]': {
                     required: false,
                 },
-                'production_plan[product]': {
+                'production_plan[date_erp]': {
                     required: true,
                 },
-                'production_plan[rendition]': {
+                'production_plan[date_begin_erp]': {
+                    required: true,
+                },
+                'production_plan[date_end_erp]': {
+                    required: true,
+                },
+                'production_plan[account_type]': {
                     required: true,
                 },
             },
             messages: {
-                'production_plan[date_specification]': {
-                    maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
-                },
-                'production_plan[product]': {
+                'production_plan[id_erp]': {
                     required: "{{ 'message.validation.required'|trans }}"
                 },
-                'production_plan[rendition]': {
+                'production_plan[date_erp]': {
                     required: "{{ 'message.validation.required'|trans }}"
+                },
+                'production_plan[date_begin_erp]': {
+                    required: "{{ 'message.validation.required'|trans }}"
+                },
+                'production_plan[date_end_erp]': {
+                    required: true,
+                },
+                'production_plan[account_type]': {
+                    required: true,
                 },
             },
             errorElement: 'div',

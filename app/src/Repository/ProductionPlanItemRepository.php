@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ProductionPlanItem;
+use App\Entity\ProductionPlan;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -103,5 +104,30 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
             'listCount' => $listCount,
             'countRecords' => $this->getCountRecords()
         ];
+    }
+
+    public function getMaxIndexNumber(int $productionPlanId = null): int
+    {
+        $maxIndexNumber = (int)$this
+            ->createQueryBuilder('t0')
+            ->select("max(t0.index_number)")
+            ->where('t0.production_plan = :productionPlan')
+            ->setParameter('productionPlan', $productionPlanId)
+            ->getQuery()
+            ->getSingleScalarResult();
+        return $maxIndexNumber;
+    }
+
+    public function getProductionPlanItemHalfDown(ProductionPlan $productionPlan, ProductionPlanItem $productionPlanItem)
+    {
+        return $this
+            ->createQueryBuilder('t0')
+            ->where('t0.production_plan = :productionPlantId')
+            ->andWhere('t0.index_number > :productionPlanItemIndexNumber')
+            ->orderBy('t0.index_number', 'ASC')
+            ->setParameter('productionPlantId', $productionPlan->getId())
+            ->setParameter('productionPlanItemIndexNumber', $productionPlanItem->getIndexNumber())
+            ->getQuery()
+            ->getResult();
     }
 }

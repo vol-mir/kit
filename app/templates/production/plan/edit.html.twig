@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ 'title.page.show.production_plan'|trans }}: {{ productionPlan.idErp }} от {{productionPlan.dateErp|date("d.m.Y") }}
+{{ 'title.page.show.production_plan'|trans }}: {{ productionPlan.idErp }} от {{productionPlan.dateErp|date("d.m.Y") }}
 {% endblock %}
 
 {% block body %}
@@ -26,7 +26,7 @@
                 <div class="tab-pane fade" id="custom-tabs-four-tab1" role="tabpanel"
                     aria-labelledby="custom-tabs-four-tab1-tab">
                     <!-- form start -->
-                    <form id="productionPlanForm" action="{{ path('production_plan_edit', {'id': productionPlan.id}) }}"
+                    <form id="production-plan-form" action="{{ path('production_plan_edit', {'id': productionPlan.id}) }}"
                         method="POST">
                         {% include 'production/plan/_form.html.twig' with {'form': form} only %}
                         <div class="card-footer">
@@ -51,7 +51,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="production-plan-item" class="table table-bordered table-striped table-hover table-sm">
+                        <table id="production-plan-item"
+                            class="table table-bordered table-striped table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>№ п/п</th>
@@ -60,6 +61,7 @@
                                     <th>Исполнение</th>
                                     <th>Количество</th>
                                     <th>Ед.изм.</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,6 +74,7 @@
                                     <th>Исполнение</th>
                                     <th>Количество</th>
                                     <th>Ед.изм.</th>
+                                    <th></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -96,11 +99,65 @@
 </div>
 <!-- /.row -->
 
+{% include 'modals/delete.html.twig' %}
+
 {% endblock %}
 
 {% block javascripts %}
+<!-- jquery-validation -->
+<script src="{{ asset('plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $('#production-plan-form').validate({
+            rules: {
+                'production_plan[id_erp]': {
+                    required: false,
+                },
+                'production_plan[date_erp]': {
+                    required: true,
+                },
+                'production_plan[date_begin_erp]': {
+                    required: true,
+                },
+                'production_plan[date_end_erp]': {
+                    required: true,
+                },
+                'production_plan[account_type]': {
+                    required: true,
+                },
+            },
+            messages: {
+                'production_plan[id_erp]': {
+                    required: "{{ 'message.validation.required'|trans }}"
+                },
+                'production_plan[date_erp]': {
+                    required: "{{ 'message.validation.required'|trans }}"
+                },
+                'production_plan[date_begin_erp]': {
+                    required: "{{ 'message.validation.required'|trans }}"
+                },
+                'production_plan[date_end_erp]': {
+                    required: true,
+                },
+                'production_plan[account_type]': {
+                    required: true,
+                },
+            },
+            errorElement: 'div',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
+        });
 
         let locProductionPlanTab = localStorage.getItem('production-plan-tab');
         if ($('#' + locProductionPlanTab).length) {
@@ -158,6 +215,20 @@
                     "name": "unit",
                     "targets": 5
                 },
+                {
+                    'render': function (data, type, row) {
+
+                        let urlEdit = "/production/plan/" + {{ productionPlan.id }} + "/edit/item/" + row["id"] + "/edit"
+
+                        let buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}'><i class='fas fa-edit'></i></a>";
+                        let buttonDelete = "<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal' data-id='" + row["id"] + "' title='{{ 'title.delete'|trans }}'><i class='fas fa-trash'></i></button>";
+                        return "<div class='btn-group btn-group-sm'>" + buttonEdit + buttonDelete + "</div>";
+                    },
+                    "name": "control",
+                    "orderable": false,
+                    "searchable": false,
+                    "targets": 6
+                },
 
             ],
             "ajax": {
@@ -172,7 +243,7 @@
             "paging": true,
             "info": true,
             "searching": true,
-            "aLengthMenu": [ 10, 25, 50, 100, 150, 200, 250 ],
+            "aLengthMenu": [10, 25, 50, 100, 150, 200, 250],
             "pageLength": 100,
             "order": [[0, 'asc']],
             "language": {
@@ -180,6 +251,32 @@
             }
         });
 
+        $("#production-plan-item").on("click", ".modal-delete-dialog", function () {
+            $('#btn-modal-delete').attr("data-confirm-delete-id", $(this).attr('data-id'));
+            $('#modal-delete').modal('show');
+        });
+
+
+        $("#modal-delete").on("click", "#btn-modal-delete", function () {
+
+            let itemId = $(this).attr('data-confirm-delete-id');
+            let url = "/production/plan/" + {{ productionPlan.id }} + "/edit/item/" + itemId + "/delete";
+
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: { '_method': 'delete', '_token': '{{ csrf_token('delete-item') }}'},
+                dataType: 'json'
+            }).done(function (data) {
+                table.ajax.reload(null, false);
+                toastr.success(data.message);
+            });
+
+            $('#btn-modal-delete').attr("data-confirm-delete-id", null);
+            $('#modal-delete').modal('hide');
+        });
+
+    
     });
 </script>
 {% endblock %}

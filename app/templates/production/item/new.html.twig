@@ -10,7 +10,7 @@
             <!-- jquery validation -->
             <div class="card card-default">
                 <!-- form start -->
-                <form id="trackForm" action="{{ path('production_plan_item_new', {'production_plan_id': productionPlan.id}) }}" method="POST">
+                <form id="production-plan-item-form" action="{{ path('production_plan_item_new', {'production_plan_id': productionPlan.id}) }}" method="POST">
                     {% include 'production/item/_form.html.twig' with {'form': form} only %}
                     <div class="card-footer">
                         {{ form_widget(form.save) }}
@@ -52,14 +52,26 @@
                 }
             });
 
-            $('#trackForm').validate({
+            $('#production-plan-item-form').validate({
                 rules: {
                     'production_plan_item[product]': {
+                        required: true,
+                    },
+                    'production_plan_item[rendition]': {
+                        required: true,
+                    },
+                    'production_plan_item[amount]': {
                         required: true,
                     },
                 },
                 messages: {
                     'production_plan_item[product]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'production_plan_item[rendition]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'production_plan_item[amount]': {
                         required: "{{ 'message.validation.required'|trans }}",
                     },
                 },

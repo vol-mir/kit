@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'title.page.edit.track'|trans }} - {{ trackDocument.product.name }}  {{ trackDocument.product.designation }}{% endblock %}
+{% block title %}
+Редактирование элемента - {{ 'title.page.show.production_plan'|trans }} {{ productionPlan.idErp }} от {{productionPlan.dateErp|date("d.m.Y") }}
+{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -8,12 +10,12 @@
             <!-- jquery validation -->
             <div class="card card-default">
                 <!-- form start -->
-                <form id="trackForm" action="{{ path('track_edit', {'id': track.id, 'track_document_id':trackDocument.id}) }}" method="POST">
-                    {% include 'track/track/_form.html.twig' with {'form': form} only %}
+                <form id="production-plan-item-form" action="{{ path('production_plan_item_edit', {'production_plan_id': productionPlan.id, 'id': productionPlanItem.id }) }}" method="POST">
+                    {% include 'production/item/_form.html.twig' with {'form': form} only %}
                     <div class="card-footer">
                         {{ form_widget(form.save) }}
                         {{ form_widget(form.saveAndStay) }}
-                        <a href="{{ path('track_document_edit', {'id': trackDocument.id}) }}"
+                        <a href="{{ path('production_plan_edit', {'id': productionPlan.id}) }}"
                            class="btn btn-default float-right">{{ 'title.cancel'|trans }}</a>
                     </div>
                 </form>
@@ -34,22 +36,43 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#trackForm').validate({
+            $("#production_plan_item_product").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('select_product') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
+            });
+
+            $('#production-plan-item-form').validate({
                 rules: {
-                    'track[department]': {
+                    'production_plan_item[product]': {
                         required: true,
                     },
-                    'track[number_operation]': {
-                        maxlength: 190,
-                        required: false,
+                    'production_plan_item[rendition]': {
+                        required: true,
+                    },
+                    'production_plan_item[amount]': {
+                        required: true,
                     },
                 },
                 messages: {
-                    'track[department]': {
+                    'production_plan_item[product]': {
                         required: "{{ 'message.validation.required'|trans }}",
                     },
-                    'track[number_operation]': {
-                        maxlength: "{{ 'message.validation.too_long_content'|trans({ '%limit%': 190 }) }}"
+                    'production_plan_item[rendition]': {
+                        required: "{{ 'message.validation.required'|trans }}",
+                    },
+                    'production_plan_item[amount]': {
+                        required: "{{ 'message.validation.required'|trans }}",
                     },
                 },
                 errorElement: 'div',

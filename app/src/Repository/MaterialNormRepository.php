@@ -236,10 +236,10 @@ class MaterialNormRepository extends ServiceEntityRepository
     }
 
 
-    public function getActualNormMaterials($productId, $date, $status = 3)
+    public function getActualNormMaterials($productId, $date, $status = 3, $renditionId = null)
     {
 
-        $dateMax = $this
+        $query = $this
             ->createQueryBuilder('t0')
             ->select('MAX(t1.date_document)')
             ->join('t0.norm_document', 't1')
@@ -248,13 +248,19 @@ class MaterialNormRepository extends ServiceEntityRepository
             ->andWhere('t1.status = :status')
             ->setParameter('productId', $productId)
             ->setParameter('date', $date)
-            ->setParameter('status', $status)
-            ->orderBy('t1.date_document', 'desc')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('status', $status);
 
-        return $this
+        if ($renditionId) {
+            $query
+                ->andWhere('t1.rendition = :renditionId')
+                ->setParameter('renditionId', $renditionId);
+        }
+
+        $query->orderBy('t1.date_document', 'desc')->setMaxResults(1);
+
+        $dateMax = $query->getQuery()->getResult();
+
+        $query = $this
             ->createQueryBuilder('t0')
             ->join('t0.norm_document', 't1')
             ->where('t1.product = :productId')
@@ -262,9 +268,17 @@ class MaterialNormRepository extends ServiceEntityRepository
             ->andWhere('t1.status = :status')
             ->setParameter('productId', $productId)
             ->setParameter('date', $dateMax)
-            ->setParameter('status', $status)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('status', $status);
+
+        if ($renditionId) {
+            $query
+                ->andWhere('t1.rendition = :renditionId')
+                ->setParameter('renditionId', $renditionId);
+        }
+
+        $result = $query->getQuery()->getResult();
+
+        return $result;
     }
 
 }

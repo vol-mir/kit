@@ -16,24 +16,34 @@
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th width="3%" class="toggle-all"><i id="select_all" name="select_invoice"></i></th>
-                            <th></th>
-                            <th>Код</th>
-                            <th>Наименование</th>
-                            <th>Группы</th>
-                            <th width="5%"></th>
+                            <th>amount</th>
+                            <th>amountUnit</th>
+                            <th>name</th>
+                            <th>category</th>
+                            <th>material</th>
+                            <th>amountMaterial</th>
+                            <th>amountUnitMaterial</th>
+                            <th>nameKD</th>
+                            <th>designationKD</th>
+                            <th>renditionName</th>
+                            <th>info</th>
                         </tr>
                         </thead>
                         <tbody>
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th></th>
-                            <th></th>
-                            <th>Код</th>
-                            <th>Наименование</th>
-                            <th>Группы</th>
-                            <th></th>
+                            <th>amount</th>
+                            <th>amountUnit</th>
+                            <th>name</th>
+                            <th>category</th>
+                            <th>material</th>
+                            <th>amountMaterial</th>
+                            <th>amountUnitMaterial</th>
+                            <th>nameKD</th>
+                            <th>designationKD</th>
+                            <th>renditionName</th>
+                            <th>info</th>
                         </tr>
                         </tfoot>
                     </table>
@@ -59,6 +69,34 @@
 
         $(function () {
 
+            let table = $("#materials-requirement").DataTable({
+                "columns": [
+                    {"data": "amount"},
+                    {"data": "amountUnit"},
+                    {"data": "name"},
+                    {"data": "category"},
+                    {"data": "material"},
+                    {"data": "amountMaterial"},
+                    {"data": "amountUnitMaterial"},
+                    {"data": "nameKD"},
+                    {"data": "designationKD"},
+                    {"data": "renditionName"},
+                    {"data": "info"},
+                ],
+                "stateSave": true,
+                "processing": true,
+                "responsive": true,
+                "autoWidth": false,
+                "paging": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 25,
+                "language": {
+                    "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
+                }
+            });
+
+
             $(document).on('click','.js-calculate-requirement-materials',function(){
 
                 console.log('hello');
@@ -72,6 +110,11 @@
                     dataType: 'json'
                 }).done(function (data) {
                     console.log(data);
+
+                    table.clear();
+                    table.rows.add( data.temp ).draw();
+
+
                 });
 
             });

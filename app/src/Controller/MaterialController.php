@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\ListMaterialsService;
 use App\Entity\Product;
 use App\Entity\NormDocument;
 use App\Entity\Specification;
@@ -541,11 +542,11 @@ class MaterialController extends AbstractController
      *
      * @param Request $request
      * @param TranslatorInterface $translator
+     * @param ListMaterialsService $listMaterialsService
      *
      * @return JsonResponse
      */
-    
-    public function materialRequirementCalculate(Request $request, TranslatorInterface $translator): JsonResponse
+    public function materialRequirementCalculate(Request $request, TranslatorInterface $translator, ListMaterialsService $listMaterialsService): JsonResponse
     {
         if ($this->isCsrfTokenValid('calculate-requirement-materials', $request->request->get('_token'))) {
 
@@ -557,263 +558,23 @@ class MaterialController extends AbstractController
             foreach ($productionPlan->getProductionPlanItems() as $productionPlanItems) {
 
                 $product = $productionPlanItems->getProduct();
+                $rendition = $productionPlanItems->getRendition();
 
-                $temp = array_merge($temp, $this->getMaterials($product, $product->getId(),  $productionPlanItems->getAmount(), 0, $date));
+                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product->getId(), $productionPlanItems->getAmount(), 0, $date, $rendition));
 
             }
 
-            $materials = $this->getGroupsMaterials($temp);
+            //$materials = $listMaterialsService->getGroupsMaterials($temp);
 
         }
 
 
         return new JsonResponse([
             'message' => $translator->trans('items.calculated_successfully'),
-            'temp' => $materials
+            'temp' => $temp
         ]);
     }
 
 
-    public function getMaterials(Product $product, $original, $count = 1, $parent, $date)
-    {
-        $arrPrint = [];
 
-        $specification = $this->entityManager->getRepository(Specification::class)->getActualSpecification($product->getId(), $date);
-
-        if ($specification) {
-
-            foreach ($specification->getStructures() as  $structure) {
-
-                if ($structure->getProduct()->getIntype() !== Product::INTYPE_PRODUCT && $structure->getProduct()->getIntype() !== Product::INTYPE_MATERIAL) {
-                    continue;
-                }
-
-                if (!$structure->getMainReplacement()) {
-                    continue;
-                }
-
-                $productForStructure = $structure->getProduct();
-
-                $id = $productForStructure->getId();
-                $pid = $specification->getProduct()->getId()===$original?0:$specification->getProduct()->getId().'-'.$parent;
-
-                if ($productForStructure->getSpecifications()->count() > 0) {
-
-                    $arrTemp=$this->getMaterials($productForStructure, $original, $count * $structure->getAmount(), $pid, $date);
-
-                    foreach ($arrTemp as  $elemTemp) {
-                        $arrPrint[] = $elemTemp;
-                    }
-
-                } else {
-                    $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productForStructure->getId(), $date);
-
-                    if (count($normMaterials) == 0) {
-
-                        $tempMaterial = '';
-                            if (!$tempMaterial) {
-                                foreach ($productForStructure->getKdMaterials() as  $materialKD) {
-                                    $tempMaterial .=  trim($materialKD->getFullName()) . ', ';
-                            }
-                        }
-                        $tempMaterial = trim($tempMaterial);
-                        if (strlen($tempMaterial) >0 && $tempMaterial[strlen($tempMaterial)-1] == ',') {
-                            $tempMaterial = substr($tempMaterial,0,-1);
-                        }
-
-                        $arrStr = [];
-                        $arrStr['amount'] = strval((double)($count * $structure->getAmount()));
-                        $arrStr['amountUnit'] = $structure->getProduct()->getUnit()->getName();
-                        $arrStr['name'] = $productForStructure->getFullName();
-                        $arrStr['category'] = $productForStructure->getProductCategory()->getName();
-                        $arrStr['material'] =$tempMaterial;
-
-                        $arrStr['materialCalc'] =  '';
-
-                        $arrStr['amountMaterial'] =  '';
-                        $arrStr['amountUnitMaterial'] =  '';
-                        $arrStr['amountOne'] =  '';
-                        $arrStr['mainReplacement'] =  1;
-
-                        $arrStr['nameKD'] = $productForStructure->getName();
-                        $arrStr['designationKD'] = $productForStructure->getDesignation();
-                        $arrStr['productId'] = $productForStructure->getId();
-
-                        $arrStr['intype'] = $productForStructure->getIntype();
-
-                        $arrStr['weight'] =  $productForStructure->getWeight();
-                        $arrStr['categoryId'] =  $productForStructure->getProductCategory()->getId();
-
-                        $arrStr['calculationId'] =  $productForStructure->getCalculation()->getId();
-                        $arrStr['calculationName'] =  $productForStructure->getCalculation()->getName();
-
-                        $arrPrint[]=$arrStr;
-                    } else {
-
-                        foreach ($normMaterials as  $materialNorm) {
-
-                            $tempMaterial = $materialNorm?$materialNorm->getMaterial()->getFullName():'';
-
-                            $materialCalc = $materialNorm?$materialNorm->getMaterial()->getCalculation()->getName():'';
-
-
-                            if (!$tempMaterial) {
-                                foreach ($productForStructure->getKdMaterials() as  $materialKD) {
-                                    $tempMaterial .= trim($materialKD->getFullName()) . ', ';
-                                }
-                            }
-                            $tempMaterial = trim($tempMaterial);
-                            if (strlen($tempMaterial) >0 && $tempMaterial[strlen($tempMaterial)-1] == ',') {
-                                $tempMaterial = substr($tempMaterial,0,-1);
-                            }
-
-                            $arrStr = [];
-                            $arrStr['amount'] = strval((double)($count * $structure->getAmount()));
-                            $arrStr['amountUnit'] = $structure->getProduct()->getUnit()->getName();
-                            $arrStr['name'] = $productForStructure->getFullName();
-                            $arrStr['category'] = $productForStructure->getProductCategory()?$productForStructure->getProductCategory()->getName():'';
-                            $arrStr['material'] = $tempMaterial;
-
-                            $arrStr['materialCalc'] =  $materialCalc;
-
-                            $arrStr['amountMaterial'] = $materialNorm?strval($count * $structure->getAmount()*$materialNorm->getAmount()):'';
-                            $arrStr['amountUnitMaterial'] = $materialNorm?$materialNorm->getMaterial()->getUnit()->getName():'';
-                            $arrStr['amountOne'] =  '';
-
-                            $arrStr['weight'] =  $productForStructure->getWeight();
-                            $arrStr['categoryId'] =  $productForStructure->getProductCategory()?$productForStructure->getProductCategory()->getId():'';
-
-                            $arrStr['nameKD'] = $productForStructure->getName();
-                            $arrStr['designationKD'] = $productForStructure->getDesignation();
-                            $arrStr['productId'] = $productForStructure->getId();
-
-                            $mainReplacement = 0;
-                            if ($materialNorm && $materialNorm->getMainReplacement() == 1) {
-                                $mainReplacement = 1;
-                            } else if ($materialNorm) {
-                                $mainReplacement = 2;
-                            }
-                            $arrStr['mainReplacement'] =  $mainReplacement;
-
-                            $arrStr['intype'] = $productForStructure->getIntype();
-
-                            $arrStr['calculationId'] = $productForStructure->getCalculation()->getId();
-                            $arrStr['calculationName'] = $productForStructure->getCalculation()->getName();
-
-                            $arrPrint[]=$arrStr;
-                        }
-
-                    }
-
-
-                }
-            }
-
-
-        }
-
-        $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date);
-
-        if ($normMaterials) {
-            foreach ($normMaterials as  $materialNorm) {
-                $arrStr = [];
-                $arrStr['amount'] = '';
-                $arrStr['amountUnit'] = '';
-                $arrStr['name'] = '';
-                $arrStr['nameKD'] = '';
-                $arrStr['designationKD'] = '';
-                $arrStr['productId'] = '';
-                $arrStr['category'] = '';
-                $arrStr['material'] = ($materialNorm?$materialNorm->getMaterial()->getFullName():'');
-
-                $arrStr['materialCalc'] =  '';
-
-                $arrStr['amountMaterial'] = $materialNorm?strval($materialNorm->getAmount()):'';
-                $arrStr['amountUnitMaterial'] = $materialNorm?$materialNorm->getMaterial()->getUnit()->getName():'';
-                $arrStr['amountOne'] =  '';
-                $mainReplacement = 0;
-                if ($materialNorm && $materialNorm->getMainReplacement() == 1) {
-                    $mainReplacement = 1;
-                } else if ($materialNorm) {
-                    $mainReplacement = 2;
-                }
-                $arrStr['mainReplacement'] =  $mainReplacement;
-
-                $arrStr['intype'] = $materialNorm->getMaterial()->getIntype();
-
-                $arrStr['weight'] =  '';
-                $arrStr['categoryId'] =  '';
-
-                $arrStr['calculationId'] = $materialNorm->getMaterial()->getCalculation()->getId();
-                $arrStr['calculationName'] = $materialNorm->getMaterial()->getCalculation()->getName();
-
-                $arrPrint[]=$arrStr;
-            }
-        }
-
-        return $arrPrint;
-    }
-
-
-    public function getGroupsMaterials($materials) {
-        $result = [];
-
-        $sum = array(0);
-
-        foreach ($materials as $material)
-        {
-
-            $context = $material['amountUnit'].'-'.$material['name'].'-'.$material['category'].'-'.$material['material'].'-'.$material['amountUnitMaterial'].'-'.$material['mainReplacement'].'-'.$material['calculationName'].'-'.$material['materialCalc'];
-
-            $search = 0;
-
-            foreach ($result as $key => $item) {
-                if ($item['context'] == $context)
-                {
-                    $search = 1;
-                    $amountTemp = (double)$item['amount'] + (double)$material['amount'];
-                    $amountMaterialTemp = (double)$item['amountMaterial'] + (double)$material['amountMaterial'];
-                    $result[$key]['amount'] = $amountTemp?$amountTemp:'';
-                    $result[$key]['amountMaterial'] = $amountMaterialTemp?$amountMaterialTemp:'';
-                    $result[$key]['amountOne'] = $amountMaterialTemp&&$amountTemp?$amountMaterialTemp/$amountTemp:'';
-                    break;
-                }
-            }
-
-            if ($search == 0) {
-                $arrStr = [];
-                $arrStr['amount'] =  (double)$material['amount'];
-                $arrStr['amountUnit'] = $material['amountUnit'];
-                $arrStr['name'] = $material['name'];
-                $arrStr['category'] = $material['category'];
-                $arrStr['material'] = $material['material'];
-
-                $arrStr['materialCalc'] = $material['materialCalc'];
-
-                $arrStr['amountMaterial'] = $material['amountMaterial'];
-                $arrStr['amountUnitMaterial'] = $material['amountUnitMaterial'];
-                $arrStr['context'] = $context;
-                $arrStr['amountOne'] = $material['amountMaterial']&&$material['amount']?$material['amountMaterial']/$material['amount']:'';
-                $arrStr['mainReplacement'] =  $material['mainReplacement'];
-
-                $arrStr['nameKD'] = $material['nameKD'];
-                $arrStr['designationKD'] = $material['designationKD'];
-                $arrStr['productId'] = $material['productId'];
-
-                $arrStr['intype'] =  $material['intype'];
-
-                $arrStr['weight'] =  $material['weight'];
-                $arrStr['categoryId'] =  $material['categoryId'];
-
-
-                $arrStr['calculationId'] = $material['calculationId'];
-                $arrStr['calculationName'] = $material['calculationName'];
-
-
-                $result[]=$arrStr;
-            }
-        }
-
-        return $result;
-    }
 }

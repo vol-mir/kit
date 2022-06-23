@@ -161,20 +161,29 @@ class SpecificationRepository extends ServiceEntityRepository
     }
 
     // Get the total number of elements
-    public function getActualSpecification($productId, $date, $status = 3)
+    public function getActualSpecification($productId, $date, $status = 3, $renditionId = null)
     {
-        return $this
+        $query = $this
             ->createQueryBuilder('t0')
             ->where('t0.product = :productId')
             ->andWhere('t0.date_specification < :date')
             ->andWhere('t0.status = :status')
             ->setParameter('productId', $productId)
             ->setParameter('date', $date)
-            ->setParameter('status', $status)
-            ->orderBy('t0.date_specification', 'desc')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->setParameter('status', $status);
+
+        if ($renditionId) {
+            $query
+                ->andWhere('t0.rendition = :renditionId')
+                ->setParameter('renditionId', $renditionId);
+        }
+
+        $query->orderBy('t0.date_specification', 'desc')
+            ->setMaxResults(1);
+
+        $result = $query->getQuery()->getOneOrNullResult();
+
+        return $result;
     }
 
 

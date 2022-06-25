@@ -550,7 +550,7 @@ class MaterialController extends AbstractController
     {
         if ($this->isCsrfTokenValid('calculate-requirement-materials', $request->request->get('_token'))) {
 
-            $productionPlan = $this->entityManager->getRepository(ProductionPlan::class)->find(1);
+            $productionPlan = $this->entityManager->getRepository(ProductionPlan::class)->find($request->request->get('idProductionPlan'));
 
             $date = new \DateTime();
 
@@ -560,18 +560,17 @@ class MaterialController extends AbstractController
                 $product = $productionPlanItems->getProduct();
                 $rendition = $productionPlanItems->getRendition();
 
-                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product->getId(), $productionPlanItems->getAmount(), 0, $date, $rendition));
+                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition));
 
             }
 
-            //$materials = $listMaterialsService->getGroupsMaterials($temp);
-
+            $materials = $listMaterialsService->getGroupsMaterials($temp);
         }
-
 
         return new JsonResponse([
             'message' => $translator->trans('items.calculated_successfully'),
-            'temp' => $temp
+            'temp' => $temp,
+            'materials' => $materials
         ]);
     }
 

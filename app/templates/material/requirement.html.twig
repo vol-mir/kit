@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'title.page.index.material_requirement'|trans }}{% endblock %}
+{% block title %}{{ 'title.page.index.material_requirement'|trans }} <span id="requirement-error" class="badge badge-danger"></span>{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -16,45 +16,29 @@
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th>amount</th>
-                            <th>amountUnit</th>
-                            <th>name</th>
-                            <th>category</th>
-                            <th>material</th>
-                            <th>amountMaterial</th>
-                            <th>amountUnitMaterial</th>
-                            <th>nameKD</th>
-                            <th>designationKD</th>
-                            <th>renditionName</th>
-                            <th>info</th>
+                            <th>Изделие</th>
+                            <th>Код</th>
+                            <th>Наименование</th>
+                            <th>Обозначение</th>
+                            <th>Ед.изм.</th>
+                            <th>Кол-во</th>
                         </tr>
                         </thead>
                         <tbody>
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>amount</th>
-                            <th>amountUnit</th>
-                            <th>name</th>
-                            <th>category</th>
-                            <th>material</th>
-                            <th>amountMaterial</th>
-                            <th>amountUnitMaterial</th>
-                            <th>nameKD</th>
-                            <th>designationKD</th>
-                            <th>renditionName</th>
-                            <th>info</th>
+                            <th>Изделие</th>
+                            <th>Код</th>
+                            <th>Наименование</th>
+                            <th>Обозначение</th>
+                            <th>Ед.изм.</th>
+                            <th>Кол-во</th>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
-                {% if is_granted("ROLE_ADMIN") %}
-                <div class="card-footer">
-                    {% include 'material/_controls_requirement.html.twig' %}
-                </div>
-                {% endif %}
-                <!-- /.card-footer -->
             </div>
             <!-- /.card -->
         </div>
@@ -71,17 +55,72 @@
 
             let table = $("#materials-requirement").DataTable({
                 "columns": [
-                    {"data": "amount"},
-                    {"data": "amountUnit"},
-                    {"data": "name"},
-                    {"data": "category"},
-                    {"data": "material"},
-                    {"data": "amountMaterial"},
-                    {"data": "amountUnitMaterial"},
-                    {"data": "nameKD"},
-                    {"data": "designationKD"},
-                    {"data": "renditionName"},
-                    {"data": "info"},
+                    {
+                        'render': function (data, type, row) {
+                            rootObj = row["root"];
+                            str = '';
+                            for (key in rootObj) {
+                                //str += '<span class="badge badge-success">' + rootObj[key]['name'] + ' ' + rootObj[key]['designation'] + ' = ' + rootObj[key]['nomenclatureAmount'] + '</span>';
+                                str += '<tr><td>' + rootObj[key]['name'] + '</td><td>' + rootObj[key]['designation'] + '</td><td>' + rootObj[key]['nomenclatureAmount'] + '</td><td>' + rootObj[key]['nomenclaturePlan'] + '</td></tr>';
+                            }
+                            return '<table class="table table-sm"><tr><th width="40%">Наименование</th><th width="30%">Обозначение</th><th>Норма</th><th>План</th></tr>' + str + '</table>';
+
+                        },
+                        "name": "root",
+                        "targets": 0
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["id"];
+                        },
+                        "name": "id",
+                        "targets": 1
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            str = row["name"];
+                            if (Object.keys(row["error"]).length > 0) {
+                                str += ' <span class="badge badge-danger">Ошибки</span>';
+                            }
+
+                            strTr = '';
+                            errorObj = row["error"];
+                            for (key in errorObj) {
+                                strTr += '<tr><td>' + errorObj[key]['info'] + ' - ' + errorObj[key]['productName'] + ' ' + errorObj[key]['productDesignation'] + '</td></tr>';
+                            }
+
+                            strTable = '<table>' + strTr + '</table>';
+
+                            if (strTr.length > 0) {
+                                str += strTable
+                                $("#requirement-error").text('Внимание! Есть ошибки!');
+                            }
+                            return str;
+                        },
+                        "name": "name",
+                        "targets": 2
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["designation"];
+                        },
+                        "name": "designation",
+                        "targets": 3
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["unitName"];
+                        },
+                        "name": "unitName",
+                        "targets": 4
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["amount"];
+                        },
+                        "name": "amount",
+                        "targets": 5
+                    },
                 ],
                 "stateSave": true,
                 "processing": true,
@@ -99,24 +138,48 @@
 
             $(document).on('click','.js-calculate-requirement-materials',function(){
 
-                console.log('hello');
+                idProductionPlan = $('#production_plans').val();
+
+                if (!idProductionPlan) {
+                    alert('Необходимо выбрать план');
+                    return;
+                };
 
                 let url = "{{ path('materials_requirement_calculate') }}";
 
                 $.ajax({
                     type: 'post',
                     url: url,
-                    data: {'_method': 'post', '_token': '{{ csrf_token('calculate-requirement-materials') }}'},
+                    data: {
+                        '_method': 'post', 
+                        '_token': '{{ csrf_token('calculate-requirement-materials') }}',
+                        'idProductionPlan': idProductionPlan
+                        
+                    },
                     dataType: 'json'
                 }).done(function (data) {
                     console.log(data);
 
                     table.clear();
-                    table.rows.add( data.temp ).draw();
-
-
+                    table.rows.add(data.materials).draw();
                 });
 
+            });
+
+            $("#production_plans").select2({
+                ajax: {
+                    type: "POST",
+                    url: "{{ path('production_plans') }}",
+                    dataType: 'json',
+                    delay: 350,
+                    cache: true,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1
+                        };
+                    }
+                }
             });
 
         });

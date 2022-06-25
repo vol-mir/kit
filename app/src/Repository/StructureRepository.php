@@ -406,4 +406,51 @@ class StructureRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+
+
+    public function getActualStructure($productId, $date, $status = 3, $renditionId = null)
+    {
+
+        $query = $this
+            ->createQueryBuilder('t0')
+            ->select('MAX(t1.date_specification)')
+            ->join('t0.specification', 't1')
+            ->where('t1.product = :productId')
+            ->andWhere('t1.date_specification <= :date')
+            ->andWhere('t1.status = :status')
+            ->setParameter('productId', $productId)
+            ->setParameter('date', $date)
+            ->setParameter('status', $status);
+
+        if ($renditionId) {
+            $query
+                ->andWhere('t1.rendition = :renditionId')
+                ->setParameter('renditionId', $renditionId);
+        }
+
+        $query->orderBy('t1.date_specification', 'desc')->setMaxResults(1);
+
+        $dateMax = $query->getQuery()->getResult();
+
+        $query = $this
+            ->createQueryBuilder('t0')
+            ->join('t0.specification', 't1')
+            ->where('t1.product = :productId')
+            ->andWhere('t1.date_specification = :date')
+            ->andWhere('t1.status = :status')
+            ->setParameter('productId', $productId)
+            ->setParameter('date', $dateMax)
+            ->setParameter('status', $status);
+
+        if ($renditionId) {
+            $query
+                ->andWhere('t1.rendition = :renditionId')
+                ->setParameter('renditionId', $renditionId);
+        }
+
+        $result = $query->getQuery()->getResult();
+
+        return $result;
+    }
 }

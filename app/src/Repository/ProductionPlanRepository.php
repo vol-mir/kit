@@ -91,4 +91,38 @@ class ProductionPlanRepository extends ServiceEntityRepository
             'countRecords' => $this->getCountRecords()
         ];
     }
+
+    public function getRequiredSelectProductionPlansData($kwd, $page, $limit, $offset)
+    {
+
+         $query = $this
+            ->createQueryBuilder('p')
+            ->orderBy('p.id_erp', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+         // Create Count Query
+        $countQuery = $this->createQueryBuilder('p');
+        $countQuery->select('COUNT(p)');
+
+
+        if ($kwd !== '') {
+            // $searchItem is what we are looking for
+            $searchItem = $kwd;
+            $searchQuery = 'p.id_erp LIKE \'%' . $searchItem . '%\'';
+
+            $query->andWhere($searchQuery);
+            $countQuery->andWhere($searchQuery);
+        }
+
+
+        $results = $query->getQuery()->getResult();
+        $countResult = $countQuery->getQuery()->getSingleScalarResult();
+
+
+        return [
+            "results" => $results,
+            "countResult" => $countResult
+        ];
+    }
 }

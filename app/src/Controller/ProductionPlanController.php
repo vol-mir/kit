@@ -61,7 +61,7 @@ class ProductionPlanController extends AbstractController
      */
     public function listDatatableAction(Request $request): JsonResponse
     {
-        $response = $this->getListDatatable($request, ProductionPlan::class);
+        $response = $this->getListDatatable($request, null, ProductionPlan::class);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setData($response);
@@ -181,5 +181,57 @@ class ProductionPlanController extends AbstractController
             'productionPlan' => $productionPlan,
             'productionPlanAccountTypes' => ProductionPlan::ACCOUNT_TYPES,
         ]);
+    }
+
+    /**
+     * Data for select
+     *
+     * @Route("/select/production_plans", methods="POST", name="production_plans")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function listSelectProductionPlansAction(Request $request): JsonResponse
+    {
+        // Get the parameters from DataTable Ajax Call
+        if ($request->getMethod() === 'POST') {
+            $page = (int)$request->request->get('page');
+            $kwd = $request->request->get('q');
+        } else // If the request is not a POST one, die hard
+        {
+            die;
+        }
+
+        $limit = 25;
+        $offset = ($page - 1) * $limit;
+
+        $results = $this->entityManager->getRepository(ProductionPlan::class)->getRequiredSelectProductionPlansData($kwd, $page, $limit, $offset);
+
+        $objects = $results["results"];
+        $count = $results["countResult"];
+
+        $endCount = $offset + $limit;
+        $morePages = $count > $endCount;
+
+        $data = [];
+        foreach ($objects as $productionPlan) {
+            $data[] = [
+                'id' => $productionPlan->getId(),
+                'text' => $productionPlan->getIdErp() . ' от ' . $productionPlan->getDateErp()->format('d.m.Y')
+            ];
+        }
+
+        $response = [
+            'results' => $data,
+            'pagination' => [
+                'more' => $morePages
+            ]
+        ];
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setData($response);
+
+        return $returnResponse;
     }
 }

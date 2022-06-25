@@ -61,9 +61,9 @@ class ProductionPlanItemController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function listDatatableAction(Request $request): JsonResponse
+    public function listDatatableAction(Request $request, ProductionPlan $productionPlan): JsonResponse
     {
-        $response = $this->getListDatatable($request, ProductionPlanItem::class);
+        $response = $this->getListDatatable($request, $productionPlan, ProductionPlanItem::class);
 
         $returnResponse = new JsonResponse();
         $returnResponse->setData($response);

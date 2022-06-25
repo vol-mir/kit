@@ -45,7 +45,7 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
      * @param  array $search
      * @return array
      */
-    public function getListForDataTable($start, $length, $orders, $search): array
+    public function getListForDataTable($start, $length, $orders, $search, $idDoc): array
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
@@ -96,6 +96,12 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
         }
 
         // Execute
+        $query->andWhere('t0.production_plan = :productionPlanId');
+        $query->setParameter('productionPlanId', $idDoc);
+
+        $countQuery->andWhere('t0.production_plan = :productionPlanId');
+        $countQuery->setParameter('productionPlanId', $idDoc);
+
         $listObjects = $query->getQuery()->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $listCount = $countQuery->getQuery()->getSingleScalarResult();
 

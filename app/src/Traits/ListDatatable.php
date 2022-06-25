@@ -19,7 +19,7 @@ trait ListDatatable {
     	$this->entityManager = $entityManager;
 	}
 
-    public function getListDatatable(Request $request, $entity): array {
+    public function getListDatatable(Request $request, $idDoc = null, $entity): array {
 
         // Get the parameters from DataTable Ajax Call
         $draw = (int)$request->request->get('draw');
@@ -37,7 +37,7 @@ trait ListDatatable {
 
         $results = $this->entityManager
             ->getRepository($entity)
-            ->getListForDataTable($start, $length, $orders, $search);
+            ->getListForDataTable($start, $length, $orders, $search, $idDoc);
 
         return [
             'draw' => $draw,

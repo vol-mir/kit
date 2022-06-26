@@ -48,6 +48,10 @@
                             <dt>{{ 'label.account_type'|trans }}</dt>
                             <dd>{{ productionPlanAccountTypes[productionPlan.accountType] }}</dd>
                             {% endif %}
+                            {% if productionPlan.note %}
+                            <dt>{{ 'label.note'|trans }}</dt>
+                            <dd>{{ productionPlan.note }}</dd>
+                            {% endif %}
 
                         </dl>
                     </div>

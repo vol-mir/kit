@@ -48,7 +48,7 @@ class ProductionPlan
      * @ORM\Column(type="integer", nullable=false)
      * @Assert\NotBlank
      */
-    private $account_type = 1;
+    private $account_type = 0;
 
     /**
      * @var DateTime
@@ -93,6 +93,11 @@ class ProductionPlan
      * @ORM\OneToMany(targetEntity=ProductionPlanItem::class, mappedBy="production_plan", orphanRemoval=true, cascade={"remove"})
      */
     private $productionPlanItems;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $note;
 
     public function __construct()
     {
@@ -229,6 +234,18 @@ class ProductionPlan
                 $productionPlanItem->setProductionPlan(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
 
         return $this;
     }

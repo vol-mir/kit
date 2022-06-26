@@ -6,6 +6,10 @@
 parameters:
     locale: 'ru'
     app_locales: ru
+    app.erp_ip: '%env(ERP_IP)%'
+    app.erp_port: '%env(ERP_PORT)%'
+    app.erp_user: '%env(ERP_USER)%'
+    app.erp_pass: '%env(ERP_PASS)%'
 
 services:
     # default configuration for services in *this* file
@@ -34,3 +38,10 @@ services:
 
     App\Listener\ProductListener:
         tags: [doctrine.orm.entity_listener]
+
+    App\Services\HTTPERPService:
+        arguments:
+            $erpIp: '%app.erp_ip%'
+            $erpPort: '%app.erp_port%'
+            $erpUser: '%app.erp_user%'
+            $erpPass: '%app.erp_pass%'

@@ -97,7 +97,7 @@ class ProductionPlanRepository extends ServiceEntityRepository
 
          $query = $this
             ->createQueryBuilder('p')
-            ->orderBy('p.id_erp', 'ASC')
+            ->orderBy('p.id_erp', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 

@@ -26,6 +26,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Services\HTTPERPService;
 
 /**
  * Class HomeController
@@ -71,7 +72,7 @@ class HomeController extends AbstractController
      *
      * @return Response
      */
-    public function index(LoggerInterface $logger): Response
+    public function index(LoggerInterface $logger, HTTPERPService $httpERPService): Response
     {
 
         $countNullStructures = $this->structureRepository->getCountNullStructures();
@@ -96,6 +97,7 @@ class HomeController extends AbstractController
         $countNullMaterialsAnalyticGroups = $this->productRepository->getCountNullMaterialsForGroup('analytic_group');
         $countNullMaterialsFinanceGroups = $this->productRepository->getCountNullMaterialsForGroup('finance_group');
 
+        dump($httpERPService->fetchPlan('00-00000001'));
 /*
         $spreadsheet = IOFactory::load('materialnew.xlsx');
         //get current active sheet (first sheet)

@@ -147,6 +147,8 @@
 
                 let url = "{{ path('materials_requirement_calculate') }}";
 
+                $(this).attr("disabled", true);
+
                 $.ajax({
                     type: 'post',
                     url: url,
@@ -162,6 +164,7 @@
 
                     table.clear();
                     table.rows.add(data.materials).draw();
+                    $(this).removeAttr("disabled");
                 });
 
             });

@@ -1,5 +1,7 @@
 FROM php:7.4-fpm
 
+#COPY conf/php.ini /usr/local/etc/php/php.ini
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libssl-dev zlib1g-dev g++ curl git zip unzip netcat libxml2-dev libpq-dev libzip-dev libicu-dev && \
     pecl install apcu && \
@@ -13,6 +15,8 @@ RUN apt-get update && \
 WORKDIR /var/www/project
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 RUN curl -sS https://get.symfony.com/cli/installer | bash
+
 RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+
+

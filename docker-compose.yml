@@ -30,6 +30,7 @@ services:
             - "9000:9000"
         volumes:
             - ./app:/var/www/project
+            - ./php/conf/php.ini:/conf/php.ini:cached
         networks:
             - nginx-php74-node-kit
 

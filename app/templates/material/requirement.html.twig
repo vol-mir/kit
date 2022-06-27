@@ -152,6 +152,8 @@
                 $.ajax({
                     type: 'post',
                     url: url,
+                    timeout: 90000,
+                    // async: false,
                     data: {
                         '_method': 'post', 
                         '_token': '{{ csrf_token('calculate-requirement-materials') }}',
@@ -162,10 +164,14 @@
                 }).done(function (data) {
                     console.log(data);
 
+                    $('.js-calculate-requirement-materials').prop("disabled", false);
+
                     table.clear();
                     table.rows.add(data.materials).draw();
-                    $(this).removeAttr("disabled");
+                    
                 });
+
+                
 
             });
 

@@ -16,6 +16,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class ProductionPlanController
+ * @package App\Controller
+ *
+ * @Security("is_granted('ROLE_USER')")
+ */
 class ProductionPlanController extends AbstractController
 {
     use ListDatatable;

@@ -170,6 +170,11 @@
                                 </p>
                             </a>
                         </li>
+
+                        {% endif %}
+
+                        {% if is_granted("ROLE_PLAN") or is_granted("ROLE_OMTSiVK") or is_granted("ROLE_ADMIN") %}
+
                         <li class="nav-item">
                             <a href="{{ path('production_plan_index') }}"
                                 class="nav-link {% if app.request.get('_route') == 'production_plan_index' %} active {% endif %}">
@@ -180,11 +185,14 @@
                             </a>
                         </li>
 
+                        {% endif %}
+
+                        {% if is_granted("ROLE_OMTSiVK") or is_granted("ROLE_ADMIN") %}
 
                         <li class="nav-item">
                             <a href="{{ path('materials_requirement_index') }}"
                                 class="nav-link {% if app.request.get('_route') == 'materials_requirement_index' %} active {% endif %}">
-                                <i class="fa fa-question nav-icon"></i>
+                                <i class="fa fa-coffee nav-icon"></i>
                                 <p>
                                     {{ 'title.page.index.material_requirement'|trans }}
                                 </p>

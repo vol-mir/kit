@@ -71,6 +71,14 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
             $searchQuery .= ' or t0.index_number LIKE \'%' . $searchItem . '%\'';
             $searchQuery .= ' or t0.amount LIKE \'%' . $searchItem . '%\'';
 
+            $searchQuery .= ' or t1.designation LIKE \'%' . $searchItem . '%\'';
+            $searchQuery .= ' or t1.name LIKE \'%' . $searchItem . '%\'';
+
+            $searchQuery .= ' or t2.name LIKE \'%' . $searchItem . '%\'';
+
+            $searchQuery .= ' or t3.name LIKE \'%' . $searchItem . '%\'';
+
+
             $query->andWhere($searchQuery);
             $countQuery->andWhere($searchQuery);
         }
@@ -90,6 +98,16 @@ class ProductionPlanItemRepository extends ServiceEntityRepository
                         break;
                     case "amount":
                         $query->orderBy("t0.amount", $order["dir"]);
+                        break;
+
+                    case "designation":
+                        $query->orderBy("t1.designation", $order["dir"]);
+                        break;
+                    case "rendition":
+                        $query->orderBy("t2.name", $order["dir"]);
+                        break;
+                    case "unit":
+                        $query->orderBy("t3.name", $order["dir"]);
                         break;
                 }
             }

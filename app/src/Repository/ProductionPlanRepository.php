@@ -77,6 +77,20 @@ class ProductionPlanRepository extends ServiceEntityRepository
                     case "id_erp":
                         $query->orderBy("t0.id_erp", $order["dir"]);
                         break;
+
+                    case "date_erp":
+                        $query->orderBy("t0.date_erp", $order["dir"]);
+                        break;
+                    case "date_begin_erp":
+                        $query->orderBy("t0.date_begin_erp", $order["dir"]);
+                        break;
+
+                    case "date_end_erp":
+                        $query->orderBy("t0.date_end_erp", $order["dir"]);
+                        break;
+                    case "account_type":
+                        $query->orderBy("t0.account_type", $order["dir"]);
+                        break;
                 }
             }
         }

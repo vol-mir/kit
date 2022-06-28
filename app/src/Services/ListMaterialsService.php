@@ -37,11 +37,14 @@ class ListMaterialsService
         
         // Get specification on the date
         $structures = $this->entityManager->getRepository(Structure::class)->getActualStructure($product->getId(), $date, 3, $rendition->getId());
+        if (!$structures) {
+            $structures = $this->entityManager->getRepository(Structure::class)->getActualStructure($product->getId(), $date, 3, 1);
+        }
 
         foreach ($structures as  $structure) {
 
-            // Take only product and material
-            if (!in_array($structure->getProduct()->getIntype(), [Product::INTYPE_PRODUCT, Product::INTYPE_MATERIAL])) {
+            // Take only product ??? and material - , Product::INTYPE_MATERIAL
+            if (!in_array($structure->getProduct()->getIntype(), [Product::INTYPE_PRODUCT])) {
                 continue;
             }
 
@@ -91,6 +94,7 @@ class ListMaterialsService
                         'rootRenditionId' => $rendition->getId(),
                         'rootRenditionName' => $rendition->getName(),
                         'rootPlan' => $count,
+                        'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                         'error' => $categoryId === 3,
                         'info' => $categoryId === 3 ? 'Не указана норма материала' : '',
                     ];
@@ -126,6 +130,7 @@ class ListMaterialsService
                             'rootRenditionId' => $rendition->getId(),
                             'rootRenditionName' => $rendition->getName(),
                             'rootPlan' => $count,
+                            'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                             'error' => ($categoryId === 3 && !$amountMaterial),
                             'info' => ($categoryId === 3 && !$amountMaterial) ? 'Не указана норма материала!' : '',
                         ];
@@ -137,6 +142,9 @@ class ListMaterialsService
 
         // Get norm materials on the date
         $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, $rendition->getId());
+        if (!$normMaterials) {
+            $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, 1);
+        }
         if ($normMaterials) {
             foreach ($normMaterials as  $materialNorm) {
 
@@ -165,6 +173,7 @@ class ListMaterialsService
                     'rootRenditionId' => $rendition->getId(),
                     'rootRenditionName' => $rendition->getName(),
                     'rootPlan' => $count,
+                    'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                     'error' => !$amountMaterial,
                     'info' => !$amountMaterial ? 'Не указана норма' : '',
                 ];
@@ -191,6 +200,7 @@ class ListMaterialsService
                 'rootRenditionId' => $rendition->getId(),
                 'rootRenditionName' => $rendition->getName(),
                 'rootPlan' => $count,
+                'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                 'error' => true,
                 'info' => 'Не задана спецификация и нормы',
             ];
@@ -232,8 +242,8 @@ class ListMaterialsService
                 'renditionId' => $material['rootRenditionId'],
                 'renditionName' => $material['rootRenditionName'],
                 'nomenclatureAmount' => $nomenclatureAmount,
-                'nomenclaturePlan' => $material['rootPlan']
-                
+                'nomenclaturePlan' => $material['rootPlan'],
+                'unitName' => $material['rootUnitName'],  
             ];
 
             $search = 0;

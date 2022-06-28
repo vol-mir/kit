@@ -6,11 +6,9 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                {% if is_granted("ROLE_ADMIN") %}
                 <div class="card-header">
                     {% include 'material/_controls_requirement.html.twig' %}
                 </div>
-                {% endif %}
                 <!-- /.card-header -->
                 <div class="card-body">
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
@@ -61,9 +59,20 @@
                             str = '';
                             for (key in rootObj) {
                                 //str += '<span class="badge badge-success">' + rootObj[key]['name'] + ' ' + rootObj[key]['designation'] + ' = ' + rootObj[key]['nomenclatureAmount'] + '</span>';
-                                str += '<tr><td>' + rootObj[key]['name'] + '</td><td>' + rootObj[key]['designation'] + '</td><td>' + rootObj[key]['nomenclatureAmount'] + '</td><td>' + rootObj[key]['nomenclaturePlan'] + '</td></tr>';
+                                str += '<tr><td>' + rootObj[key]['name'] + '</td><td>' + rootObj[key]['designation'] + '</td><td>' + rootObj[key]['renditionName'] + '</td><td>' + rootObj[key]['nomenclatureAmount'] + '</td><td>' + rootObj[key]['nomenclaturePlan'] + '</td></tr>';
                             }
-                            return '<table class="table table-sm"><tr><th width="40%">Наименование</th><th width="30%">Обозначение</th><th>Норма</th><th>План</th></tr>' + str + '</table>';
+
+                            temp = '';
+                            if (row["unitName"]) {
+                                temp = ', ' + row["unitName"];
+                            }
+
+                            temp2 = '';
+                            if (rootObj[key]["unitName"]) {
+                                temp2 = ', ' + rootObj[key]["unitName"];
+                            }
+                            
+                            return '<table class="table table-sm"><tr><th width="120px">Наименование</th><th width="120px">Обозначение</th><th width="120px">Характеристика</th><th width="80px">Норма на план' + temp + '</th><th width="80px">План' + temp2 + '</th></tr>' + str + '</table>';
 
                         },
                         "name": "root",

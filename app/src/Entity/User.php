@@ -28,6 +28,7 @@ class User implements UserInterface
         'ROLE_PEO' => 'ROLE_PEO',
         'ROLE_BUH' => 'ROLE_BUH',
         'ROLE_PLAN' => 'ROLE_PLAN',
+        'ROLE_OMTSiVK' => 'ROLE_OMTSiVK',
     ];
 
     public const DEPARTMENTS = [

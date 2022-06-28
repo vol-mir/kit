@@ -289,6 +289,7 @@ class MaterialController extends AbstractController
         return $this->render('material/show.html.twig', [
             'material' => $material,
             'normDocumentStatuses' => NormDocument::STATUSES,
+            'specificationStatuses' => Specification::STATUSES,
             'comments' => $this->entityManager->getRepository(Comment::class)->getFilterComments('Product', $material->getId()),
         ]);
     }

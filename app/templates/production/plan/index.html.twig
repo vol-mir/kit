@@ -124,8 +124,16 @@
                         urlEdit = urlEdit.replace("0", row["id"]);
 
                         let buttonShow = "<a href='" + urlShow + "' class='btn btn-secondary' title='{{ 'title.show'|trans }}'><i class='fas fa-eye'></i></a'></i></a>";
-                        let buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}'><i class='fas fa-edit'></i></a>";
-                        let buttonDelete = "<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal' data-id='" + row["id"] + "' title='{{ 'title.delete'|trans }}'><i class='fas fa-trash'></i></button>";
+
+                        let buttonEdit = '';
+                        {% if is_granted("ROLE_ADMIN") %}
+                            buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}'><i class='fas fa-edit'></i></a>";
+                        {% endif %}
+
+                        let buttonDelete = '';
+                         {% if is_granted("ROLE_ADMIN") %}
+                            buttonDelete = "<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal' data-id='" + row["id"] + "' title='{{ 'title.delete'|trans }}'><i class='fas fa-trash'></i></button>";
+                        {% endif %}
                         return "<div class='btn-group btn-group-sm'>" + buttonShow + buttonEdit + buttonDelete + "</div>";
                     },
                     "name": "control",

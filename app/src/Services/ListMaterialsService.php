@@ -188,6 +188,9 @@ class ListMaterialsService
         }
 
         if (!$structures && !$normMaterials) {
+
+            $categoryId = $product->getProductCategory() ? $product->getProductCategory()->getId() : '';
+            
             $result[] = [
                 'productId' => $product->getId(),
                 'productIntype' => $product->getIntype(),
@@ -208,7 +211,7 @@ class ListMaterialsService
                 'rootRenditionName' => $rendition->getName(),
                 'rootPlan' => $count,
                 'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
-                'error' => true,
+                'error' => ($categoryId === 3),
                 'info' => '[4] ' . 'Не задана спецификация и нормы',
             ];
         }

@@ -97,7 +97,7 @@ class HomeController extends AbstractController
         $countNullMaterialsAnalyticGroups = $this->productRepository->getCountNullMaterialsForGroup('analytic_group');
         $countNullMaterialsFinanceGroups = $this->productRepository->getCountNullMaterialsForGroup('finance_group');
 
-        dump($httpERPService->fetchPlan('00-00000001'));
+        // dump($httpERPService->fetchPlan('00-00000001'));
 /*
         $spreadsheet = IOFactory::load('materialnew.xlsx');
         //get current active sheet (first sheet)

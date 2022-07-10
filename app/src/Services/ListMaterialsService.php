@@ -72,9 +72,14 @@ class ListMaterialsService
                 // Get material norm on the date
                 $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productForStructure->getId(), $date, 3, $rendition->getId());
                 $renditionInfo = ' Исполнение - ' . $rendition->getName();
+
+                $renditionNotFound = false;
                 if (!$normMaterials) {
                     $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productForStructure->getId(), $date, 3, $renditionStandart->getId());
                     $renditionInfo .= ' - отсутствует, ищем для исполнения - ' . $renditionStandart->getName();
+
+                    $renditionNotFound = true;
+
                 }
 
                 if (count($normMaterials) == 0) {
@@ -97,8 +102,9 @@ class ListMaterialsService
                         'rootId' => $rootProduct->getId(),
                         'rootName' => $rootProduct->getName(),
                         'rootDesignation' => $rootProduct->getDesignation(),
-                        'rootRenditionId' => $rendition->getId(),
-                        'rootRenditionName' => $rendition->getName(),
+                        'rootRenditionId' => $renditionNotFound ? $renditionStandart->getId() : $rendition->getId(),
+                        'rootRenditionName' => $renditionNotFound ? $renditionStandart->getName() : $rendition->getName(),
+                        'rootRenditionNotFound' => $renditionNotFound,
                         'rootPlan' => $count,
                         'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                         'error' => $categoryId === 3,
@@ -135,6 +141,7 @@ class ListMaterialsService
                             'rootDesignation' => $rootProduct->getDesignation(),
                             'rootRenditionId' => $rendition->getId(),
                             'rootRenditionName' => $rendition->getName(),
+                            'rootRenditionNotFound' => false,
                             'rootPlan' => $count,
                             'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                             'error' => ($categoryId === 3 && !$amountMaterial),
@@ -148,9 +155,15 @@ class ListMaterialsService
         // Get norm materials on the date
         $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, $rendition->getId());
         $renditionInfo = ' Исполнение - ' . $rendition->getName();
+
+        $renditionNotFound = false;
+
         if (!$normMaterials) {
             $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, $renditionStandart->getId());
             $renditionInfo .= ' - отсутствует, ищем для исполнения - ' . $renditionStandart->getName();
+
+            $renditionNotFound = true;
+
         }
         if ($normMaterials) {
             foreach ($normMaterials as  $materialNorm) {
@@ -177,8 +190,9 @@ class ListMaterialsService
                     'rootId' => $rootProduct->getId(),
                     'rootName' => $rootProduct->getName(),
                     'rootDesignation' => $rootProduct->getDesignation(),
-                    'rootRenditionId' => $rendition->getId(),
-                    'rootRenditionName' => $rendition->getName(),
+                    'rootRenditionId' => $renditionNotFound ? $renditionStandart->getId() : $rendition->getId(),
+                    'rootRenditionName' => $renditionNotFound ? $renditionStandart->getName() :  $rendition->getName(),
+                    'rootRenditionNotFound' => $renditionNotFound,
                     'rootPlan' => $count,
                     'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                     'error' => !$amountMaterial,
@@ -209,6 +223,7 @@ class ListMaterialsService
                 'rootDesignation' => $rootProduct->getDesignation(),
                 'rootRenditionId' => $rendition->getId(),
                 'rootRenditionName' => $rendition->getName(),
+                'rootRenditionNotFound' => false,
                 'rootPlan' => $count,
                 'rootUnitName' => $rootProduct->getUnit()? $rootProduct->getUnit()->getName() : '',
                 'error' => ($categoryId === 3),
@@ -245,6 +260,15 @@ class ListMaterialsService
 
             $context = $prefix . $nomenclatureId;
 
+            $itemProduct = [
+                'id' => $material['productId'],
+                'name' => $material['productName'],
+                'designation' => $material['productDesignation'],
+                'materialAmount' => round((float)$material['materialAmount'], 4),
+                'productAmount' => round((float)$material['productAmount'], 4),
+                'unitName' => $material['productUnitName'],  
+            ];
+
             $itemRoot = [
                 'id' => $material['rootId'],
                 'name' => $material['rootName'],
@@ -253,8 +277,11 @@ class ListMaterialsService
                 'renditionName' => $material['rootRenditionName'],
                 'nomenclatureAmount' => $nomenclatureAmount,
                 'nomenclaturePlan' => $material['rootPlan'],
-                'unitName' => $material['rootUnitName'],  
+                'unitName' => $material['rootUnitName'], 
+                'product' => [$itemProduct],
+                'productIds' => [$material['productId']],
             ];
+
 
             $search = 0;
 
@@ -265,11 +292,25 @@ class ListMaterialsService
                     $result[$key]['amount'] = $amountTemp ? $amountTemp : 0;
                     if (!in_array($material['rootId'], $result[$key]['rootIds'])) {
                         $result[$key]['root'] []= $itemRoot;
-                        $result[$key]['rootIds'] []= $material['rootId'];
+                        $result[$key]['rootIds'] []= $material['rootId'].'-'.$material['rootRenditionId'];
                     } else {
                         $keyId = array_search($material['rootId'], $result[$key]['rootIds']);
                         $result[$key]['root'][$keyId]['nomenclatureAmount'] += $nomenclatureAmount;
                         $result[$key]['root'][$keyId]['nomenclatureAmount'] = round($result[$key]['root'][$keyId]['nomenclatureAmount'], 4);
+
+                        if ($material['rootRenditionNotFound']) {
+                            $result[$key]['root'][$keyId]['nomenclaturePlan'] += $material['rootPlan'];
+                        }
+                       // $result[$key]['root'][$keyId]['nomenclaturePlan'] = round($result[$key]['root'][$keyId]['nomenclaturePlan'], 0);
+                    }
+
+
+                    foreach ($result[$key]['root'] as $keyP => $itemP) {
+
+                        if (($material['rootId'] == $itemP['id']) && !in_array($material['productId'], $itemP['productIds'])) {
+                            $result[$key]['root'][$keyP]['product'] []= $itemProduct;
+                            $result[$key]['root'][$keyP]['productIds'] []= $material['productId'];
+                        }
                     }
                     
                     if ($material['error']) {
@@ -288,15 +329,14 @@ class ListMaterialsService
                 $arrStr['amount'] = round($nomenclatureAmount, 4);
                 $arrStr['context'] = $context;
                 $arrStr['root'] []= $itemRoot;
-                $arrStr['rootIds'] = [$material['rootId']];
+                $arrStr['rootIds'] = [$material['rootId'].'-'.$material['rootRenditionId']];
 
                 if ($material['error']) {
                     $arrStr['error'] []= $material;
                 } else {
                     $arrStr['error'] = [];
                 }
-                
-                
+
                 $result[] = $arrStr;
             }
         }

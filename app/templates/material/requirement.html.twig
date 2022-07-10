@@ -10,11 +10,14 @@
                     {% include 'material/_controls_requirement.html.twig' %}
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body">
+                <div id="js-spinner-materials-requirement" class="spinner-border spinner-materials-requirement" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div id="js-card-body-materials-requirement" class="card-body">
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th>Изделие</th>
+                            <th style="width:108px">Информация</th>
                             <th>Код</th>
                             <th>Наименование</th>
                             <th>Обозначение</th>
@@ -26,7 +29,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>Изделие</th>
+                            <th>Информация</th>
                             <th>Код</th>
                             <th>Наименование</th>
                             <th>Обозначение</th>
@@ -71,12 +74,13 @@
                             if (rootObj[key]["unitName"]) {
                                 temp2 = ', ' + rootObj[key]["unitName"];
                             }
-                            
-                            return '<table class="table table-sm"><tr><th width="120px">Наименование</th><th width="120px">Обозначение</th><th width="120px">Характеристика</th><th width="80px">Норма на план' + temp + '</th><th width="80px">План' + temp2 + '</th></tr>' + str + '</table>';
+
+                            return '<button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#table' + row["id"] + '" aria-expanded="false" aria-controls="table' + row["id"] + '"><i class="fas fa-eye"></i> Детализация</button><div class="collapse" id="table' + row["id"] + '"><table class="table table-sm"><tr><th width="120px">Наименование</th><th width="120px">Обозначение</th><th width="120px">Характеристика</th><th width="80px">Норма на план' + temp + '</th><th width="80px">План' + temp2 + '</th></tr>' + str + '</table></div>';
 
                         },
                         "name": "root",
-                        "targets": 0
+                        "targets": 0,
+                        "orderable": false
                     },
                     {
                         'render': function (data, type, row) {
@@ -156,6 +160,8 @@
 
                 let url = "{{ path('materials_requirement_calculate') }}";
 
+                $("#js-card-body-materials-requirement"). css("display", "none");
+                $("#js-spinner-materials-requirement"). css("display", "block");
                 $(this).attr("disabled", true);
 
                 $.ajax({
@@ -174,10 +180,20 @@
                     console.log(data);
 
                     $('.js-calculate-requirement-materials').prop("disabled", false);
+                    $("#js-card-body-materials-requirement"). css("display", "block");
+                    $("#js-spinner-materials-requirement"). css("display", "none");
 
                     table.clear();
                     table.rows.add(data.materials).draw();
                     
+                }).fail(function (jqXHR, textStatus) {
+                    console.log(textStatus);
+
+                    $('.js-calculate-requirement-materials').prop("disabled", false);
+                    $("#js-card-body-materials-requirement"). css("display", "block");
+                    $("#js-spinner-materials-requirement"). css("display", "none");
+
+                    table.clear();
                 });
 
                 

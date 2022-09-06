@@ -5,7 +5,7 @@ namespace App\Traits;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-trait ListDatatable {
+trait ListDatatableTrait {
 
     /**
      * @var EntityManagerInterface|null

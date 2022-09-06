@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Traits\ListDatatable;
+use App\Traits\ListDatatableTrait;
 use App\Entity\ProductionPlan;
 use App\Form\ProductionPlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
  */
 class ProductionPlanController extends AbstractController
 {
-    use ListDatatable;
+    use ListDatatableTrait;
 
     private $entityManager;
 

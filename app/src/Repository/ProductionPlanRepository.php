@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Interfaces\ListDatatableInterface;
 use App\Entity\ProductionPlan;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -12,7 +13,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method ProductionPlan[]    findAll()
  * @method ProductionPlan[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductionPlanRepository extends ServiceEntityRepository
+class ProductionPlanRepository extends ServiceEntityRepository implements ListDatatableInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -38,9 +39,10 @@ class ProductionPlanRepository extends ServiceEntityRepository
      * @param  int $length
      * @param  array $orders
      * @param  array $search
+     * @param  int|null $idDoc
      * @return array
      */
-    public function getListForDataTable($start, $length, $orders, $search): array
+    public function getListForDataTable($start, $length, $orders, $search, $idDoc = null): array
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");

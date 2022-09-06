@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Traits\ListDatatableTrait;
+
 use App\Entity\Product;
 use App\Entity\Rendition;
 use App\Entity\Calculation;
@@ -54,6 +56,7 @@ use PhpOffice\PhpWord\SimpleType\TblWidth;
  */
 class ProductController extends AbstractController
 {
+    use ListDatatableTrait;
 
     private $entityManager;
 
@@ -93,7 +96,6 @@ class ProductController extends AbstractController
             'productKinds' => $this->entityManager->getRepository(ProductKind::class)->getAllProductKinds(),
             'productCategories' => $this->entityManager->getRepository(ProductCategory::class)->getAllProductCategories(),
             'calculations' => $this->entityManager->getRepository(Calculation::class)->getAllCalculations(),
-
             'analyticGroups' => $this->entityManager->getRepository(AnalyticGroup::class)->getAllAnalyticGroups(),
             'financeGroups' => $this->entityManager->getRepository(FinanceGroup::class)->getAllFinanceGroups(),
         ]);
@@ -110,156 +112,8 @@ class ProductController extends AbstractController
      */
     public function listDatatableAction(Request $request): JsonResponse
     {
-        // Get the parameters from DataTable Ajax Call
-        if ($request->getMethod() === 'POST') {
-            $draw = (int)$request->request->get('draw');
-            $start = $request->request->get('start');
-            $length = $request->request->get('length');
-            $search = $request->request->get('search');
-            $orders = $request->request->get('order');
-            $columns = $request->request->get('columns');
-        } else // If the request is not a POST one, die hard
-        {
-            die;
-        }
+        $response = $this->getListDatatable($request, null, Product::class);
 
-        // Orders
-        foreach ($orders as $key => $order) {
-            // Orders does not contain the name of the column, but its number,
-            // so add the name so we can handle it just like the $columns array
-            $orders[$key]['name'] = $columns[$order['column']]['name'];
-        }
-
-        // Further filtering can be done in the Repository by passing necessary arguments
-        $otherConditions = null;
-
-        $results = $this->productRepository->getRequiredDTDataProduct($start, $length, $orders, $search, $columns, $otherConditions);
-
-        // Returned objects are of type Town
-        $objects = $results["results"];
-        // Get total number of objects
-        $totalObjectsCount = $this->productRepository->countProduct();
-        // Get total number of filtered data
-        $filteredObjectsCount = $results["countResult"];
-
-        $data = [];
-        foreach ($objects as $product) {
-            $dataTemp = [];
-            foreach ($columns as $column) {
-                switch ($column['name']) {
-                    case 'checkbox':
-                        {
-                            $dataTemp[] = "";
-                            break;
-                        }
-                    case 'id':
-                        {
-                            $elementTemp = $this->render('default/table_href.html.twig', [
-                                'url' => $this->generateUrl('product_show', ['id' => $product->getId()]),
-                                'urlName' => $product->getId()
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-
-                            break;
-                        }
-
-                    case 'name':
-                        {
-                            $elementTemp = $product->getName();
-                            $dataTemp[] = $elementTemp;
-
-                            break;
-                        }
-
-                    case 'designation':
-                        {
-                            $elementTemp = $product->getDesignation();
-
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'groups':
-                        {
-                            $elementTemp = '<small>' . $product->getProductGroup()->getName() . '</small>';
-                            $elementTemp .= '<br><small>' . $product->getProductType()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $product->getProductKind()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $product->getProductCategory()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $product->getCalculation()->getName(). '</small>';
-                            
-                            $elementTemp .= '<br><small>' . $product->getAnalyticGroup()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $product->getFinanceGroup()->getName(). '</small>';
-                            
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'ready':
-                        {
-                            $elementTemp = $this->render('default/table_group_btn_ready_product.html.twig', [
-                                'product' => $product
-                            ])->getContent();
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'control':
-                        {
-                            $isOGK= in_array('ROLE_OGK', $this->getUser()->getRoles(), true);
-                            $isOGT= in_array('ROLE_OGT', $this->getUser()->getRoles(), true);
-                            $isPEO= in_array('ROLE_PEO', $this->getUser()->getRoles(), true);
-                            $isBUH= in_array('ROLE_BUH', $this->getUser()->getRoles(), true);
-                            $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true);
-
-                            $urlShow = $this->generateUrl('product_show', ['id' => $product->getId()]);
-                            $urlEdit = '';
-                            $idDelete = '';
-
-                            if ($isAdmin || $isOGK || $isOGT || $isPEO || $isBUH) {
-                                $urlEdit = $this->generateUrl('product_edit', ['id' => $product->getId()]);
-                            }
-
-                            if ($isAdmin || $isOGK) {
-                                $idDelete = $product->getId();
-                            }
-
-
-                            $elementTemp = $this->render('default/table_group_btn_esd.html.twig', [
-                                'urlShow' => $urlShow,
-                                'urlEdit' => $urlEdit,
-                                'idDelete' => $idDelete
-                            ])->getContent();
-
-                            $elementTemp .= $this->render('default/table_group_btn_ready_product.html.twig', [
-                                'product' => $product
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'yid':
-                        {
-                            $elementTemp = $product->getId();
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-                }
-            }
-            $data[] = $dataTemp;
-        }
-
-        // Construct response
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $totalObjectsCount,
-            'recordsFiltered' => $filteredObjectsCount,
-            'data' => $data,
-        ];
-
-
-        // Send all this stuff back to DataTables
         $returnResponse = new JsonResponse();
         $returnResponse->setData($response);
 
@@ -1003,7 +857,6 @@ class ProductController extends AbstractController
             )
         );
     }
-
 
     public function getGroupsTrackPointsOver($tracks) {
 

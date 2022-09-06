@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Traits\ListDatatable;
+use App\Traits\ListDatatableTrait;
 use App\Entity\ProductionPlanItem;
 use App\Entity\ProductionPlan;
 use App\Form\ProductionPlanItemType;
@@ -30,7 +30,7 @@ use App\Repository\ProductionPlanItemRepository;
 class ProductionPlanItemController extends AbstractController
 {
 
-    use ListDatatable;
+    use ListDatatableTrait;
 
     private $entityManager;
 

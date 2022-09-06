@@ -561,8 +561,8 @@ class MaterialController extends AbstractController
                 $product = $productionPlanItems->getProduct();
                 $rendition = $productionPlanItems->getRendition();
 
-                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition));
-
+                //$temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition));
+                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition, $productionPlanItems->getAmount()));
             }
 
             $materials = $listMaterialsService->getGroupsMaterials($temp);

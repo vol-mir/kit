@@ -21,8 +21,7 @@
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
-                            <th>Группы</th>
-                            <th width="5%"></th>
+                            <th width="7%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -34,7 +33,6 @@
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
-                            <th>Группы</th>
                             <th></th>
                         </tr>
                         </tfoot>
@@ -62,25 +60,151 @@
 {% block javascripts %}
     <script>
         $(function () {
-            let columnYid = 1;
-
             $('[data-toggle="tooltip"]').tooltip();
 
             let table = $("#products").DataTable({
                 "columnDefs": [
                     {
+                        'render': function (data, type, row) {
+                            return '';
+                        },
                         "name": "checkbox",
                         "targets": 0,
                         "orderable": false,
                         "searchable": false,
-                        className: 'select-checkbox'
+                        className: 'select-checkbox',
                     },
-                    {"name": "yid", "targets": columnYid, "orderable": false, "searchable": false, className: "hide_column",},
-                    {"name": "id", "targets": 2},
-                    {"name": "designation", "targets": 3},
-                    {"name": "name", "targets": 4},
-                    {"name": "groups", "targets": 5},
-                    {"name": "control", "targets": 6, "orderable": false, "searchable": false},
+                    {
+                        'render': function (data, type, row) {
+                            return row["id"];
+                        },
+                        "name": "yid", 
+                        "targets": 1, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+
+                            let urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            urlShow = urlShow.replace("0", row["id"]);
+
+                            return "<a href='" + urlShow + "' class='float-left'>" + row["id"] + "</a>";
+                        },
+                        "name": "id", 
+                        "targets": 2
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["designation"];
+                        },
+                        "name": "designation", 
+                        "targets": 3
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["name"];
+                        },
+                        "name": "name", 
+                        "targets": 4
+                    },
+                    {
+                        'render': function (data, type, row) {
+
+                            let cnt = 7;
+                            let ready = 0;
+                            if (row["product_group_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_type_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_kind_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_category_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_calculation_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_finance_group_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+                            if (row["product_analytic_group_id"] != 1) {
+                                ready += 100 / cnt;
+                            }
+
+
+                            let urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            urlShow = urlShow.replace("0", row["id"]);
+
+                            let urlEdit = '';
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+                                urlEdit = "{{ path('product_edit', { 'id': 0 }) }}";
+                                urlEdit = urlEdit.replace("0", row["id"]);
+                            {% endif %}
+
+                            let buttonShow = "<li><a href='" + urlShow + "' class='dropdown-item' title='{{ 'title.show'|trans }}'>{{ 'title.show'|trans }}</a></li>";
+
+                            let buttonEdit = '';
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
+                                buttonEdit = "<li><a href='" + urlEdit + "' class='dropdown-item' title='{{ 'title.edit'|trans }}'>{{ 'title.edit'|trans }}</a></li>";
+                            {% endif %}
+
+                            let buttonDelete = '';
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") %}
+                                buttonDelete = "<li><a href='' class='dropdown-item modal-delete-dialog' title='{{ 'title.delete'|trans }}' data-toggle='modal' data-id='" + row["id"] + "'>{{ 'title.delete'|trans }}</a></li>";
+                            {% endif %}
+
+
+                            let groupInfo = "";
+                            groupInfo += "<div class='btn-group btn-group-sm dropleft ml-1'>";
+	                        groupInfo += "<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>";
+       
+                            if (Math.round(ready) == 100) {
+	                            groupInfo += "<i class='fa fa-check text-success' aria-hidden='true'></i>";
+                            } else {
+                                groupInfo += "<img src='{{ asset('dist/img/fire.gif') }}'  width='20'>";
+                            }
+
+                            groupInfo += "</button>";
+                            groupInfo += "<ul class='dropdown-menu'>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Группа: " + row["product_group_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Тип: " + row["product_type_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Вид: " + row["product_kind_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Категория: " + row["product_category_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Статья калькуляции: " + row["product_calculation_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Группа аналит. учета: " + row["product_analytic_group_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "<li class='dropdown-item'>";
+        	                groupInfo += "Группа фин. учета: " + row["product_finance_group_name"];
+                            groupInfo += "</li>";
+                            groupInfo += "</ul>";
+                            groupInfo += "</div>";
+
+
+                            return "<div class='btn-group btn-group-sm dropleft ml-1'><button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'><i class='fa fa-ellipsis-h' aria-hidden='true'></i></button><ul class='dropdown-menu'>" + buttonShow + buttonEdit + buttonDelete + "</ul></div>" + groupInfo;
+
+                            
+                        },
+                        "name": "control", 
+                        "targets": 5, 
+                        "orderable": false, 
+                        "searchable": false
+                    },
                 ],
                 "ajax": {
                     "url": "{{ path('product_datatables') }}",
@@ -161,7 +285,9 @@
 
             let productsEdit = [];
             $(".edit-group").on("click", function () {
-                productsEdit = table.rows(".selected").data().pluck(columnYid).toArray();
+                $.each(table.rows(".selected").data().toArray(), function( index, value ) {
+                    productsEdit.push(value.id);
+                });
                 if (productsEdit.length > 0) {
                     $('#modal-edit-group').modal('show');
                 }

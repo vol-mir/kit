@@ -2,318 +2,248 @@
 
 namespace App\Services;
 
-use App\Entity\Product;
-use App\Entity\MaterialNorm;
-use App\Entity\Structure;
-use App\Entity\Rendition;
-use Symfony\Component\HttpFoundation\Request;
+use App\Entity\{
+    Product,
+    MaterialNorm,
+    Structure,
+    Rendition,
+    Specification,
+    NormDocument,
+};
 use Doctrine\ORM\EntityManagerInterface;
 
 class ListMaterialsService
 {
-    /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
+    const RENDITION_STANDART_ID = 1;
 
+    /** 
+     * @var EntityManagerInterface $entityManager 
+     */
+    protected $entityManager;
+
+    /** 
+     * @var Rendition $renditionStandart 
+     */
+    protected $renditionStandart;
+
+
+    protected $tableMaterials = [];
+    
+
+    /**
+     * Construct to class ListMaterialsService
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->renditionStandart = $this->entityManager->getRepository(Rendition::class)->find(self::RENDITION_STANDART_ID);
+    }
+
+    public function initTable() {
+        $this->tableMaterials = [];
+    }
+
+    public function getTableMaterials() {
+        return $this->tableMaterials;
     }
 
     /**
      * Get list materials
      *
-     * @param Product $product
-     * @param $rootProduct - root product 
-     * @param int $count
-     * @param int $parent
+     * @param int $productId
+     * @param int $renditionId
+     * @param float $amount
      * @param $date
-     * @param $rendition
-     * @param $rootPlan
+     * @param string $type = 'root|child'
      *
      * @return array
      */
-    public function getMaterials(Product $product, $rootProduct, $count = 1, $parent, $date, $rendition, $rootPlan = 0): array
+
+    public function getMaterials(int $productId, int $renditionId, float $amount = 1, $date, $type, $arrRoots = []): array
     {
         $result = [];
 
-        $renditionStandart = $this->entityManager->getRepository(Rendition::class)->find(1);
+        $product = $this->entityManager->getRepository(Product::class)->find($productId);
+        $rendition = $this->entityManager->getRepository(Rendition::class)->find($renditionId);
 
-        // Get specification on the date
+        $itemRoot = [
+            'id' => $product->getId(),
+            'name' => $product->getName(),
+            'designation' => $product->getDesignation(),
+            'renditionId' => $rendition->getId(),
+            'renditionName' => $rendition->getName(),
+            'unitName' =>  $product->getUnit() ? $product->getUnit()->getName() : null,
+            'amount' => $amount,
+            'type' => $type,
+        ];
 
-        $structures = $this->entityManager->getRepository(Structure::class)->getActualStructure($product->getId(), $date, 3, $rendition->getId());
-        if (!$structures) {
-            $structures = $this->entityManager->getRepository(Structure::class)->getActualStructure($product->getId(), $date, 3, $renditionStandart->getId());
+        // Get structure to specification on the date
+        $structure = $this->entityManager->getRepository(Structure::class)->getActualStructure($productId, $date, Specification::APPROVAL, $renditionId);
+        $structureRenditionInfo = [
+            'structureRenditionId' => $rendition->getId(),
+            'structureRenditionName' => $rendition->getName(),
+        ];
+        if (empty($structure) && $renditionId !== $this->renditionStandart->getId()) {
+            $structure = $this->entityManager->getRepository(Structure::class)->getActualStructure($productId, $date, Specification::APPROVAL, $this->renditionStandart->getId());
+            $structureRenditionInfo = [
+                'structureRenditionId' => $this->renditionStandart->getId(),
+                'structureRenditionName' => $this->renditionStandart->getName(),
+            ];
         }
 
-        foreach ($structures as  $structure) {
+        // Get material norm on the date
+        $materialNorms = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productId, $date, NormDocument::APPROVAL, $renditionId);
+        $materialRenditionInfo = [
+            'materialRenditionId' => $rendition->getId(),
+            'materialRenditionName' => $rendition->getName(),
+        ];
+        if (empty($materialNorms) && ($renditionId !== $this->renditionStandart->getId())) {
+            $materialNorms = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productId, $date, NormDocument::APPROVAL, $this->renditionStandart->getId());
+            $materialRenditionInfo = [
+                'materialRenditionId' => $this->renditionStandart->getId(),
+                'materialRenditionName' => $this->renditionStandart->getName(),
+            ];
+        }
 
-            // Take only product from specifications - Product::INTYPE_MATERIAL
-            if (!in_array($structure->getProduct()->getIntype(), [Product::INTYPE_PRODUCT])) {
+        $itemRoot = array_merge($itemRoot, $structureRenditionInfo);
+        $itemRoot = array_merge($itemRoot, $materialRenditionInfo);
+
+        if ($type === 'root') {
+            $result = array_merge($result, ['root' => $itemRoot]);
+        }
+
+        $arrRoots[] = $itemRoot;
+
+        $materials = [];
+        foreach ($materialNorms as $item) {
+
+            $itemMaterial = $item->getMaterial();
+
+            // Replacement do not take into account
+            if (!$item->getMainReplacement()) {
+                continue;
+            }
+
+            $arrTemp = [
+                'id' => $itemMaterial->getId(),
+                'name' => $itemMaterial->getName(),
+                'designation' => null,
+                'unitName' =>  $itemMaterial->getUnit() ? $itemMaterial->getUnit()->getName() : null,
+                'amountStandard' => $item->getAmount(),
+                'amount' => $amount,
+                'amountAll' => $amount * $item->getAmount(),
+                'mainReplacement' => $item->getMainReplacement(),
+                'prefix' => 'mt-',
+            ];
+
+
+            $materials[] = $arrTemp;
+            $itemRoot['expense'] = $arrTemp;
+            $arrRoots['expense'] = $arrTemp;
+            
+            // ** COOL **
+            $this->addTableMaterials($arrTemp, $itemRoot, $arrRoots);
+
+            $result = array_merge($result, ['materials' => $materials]);
+        }
+
+        $nodes = [];
+        foreach ($structure as $item) {
+
+            $itemProduct = $item->getProduct();
+
+            // Take only product from specifications
+            if ($itemProduct->getIntype() !== Product::INTYPE_PRODUCT) {
                 continue;
             }
 
             // Replacement do not take into account
-            if (!$structure->getMainReplacement()) {
+            if (!$item->getMainReplacement()) {
                 continue;
             }
 
-            $productForStructure = $structure->getProduct();
-            $pid = $product->getId() === $rootProduct->getId() ? 0 : $product->getId() . '-' . $parent;
-
-            if (count($productForStructure->getSpecifications()) > 0) {
-
-
-                $arrTemp = $this->getMaterials($productForStructure, $rootProduct, $count * $structure->getAmount(), $pid, $date, $renditionStandart, $rootPlan);
-
-                foreach ($arrTemp as $elemTemp) {
-                    $result[] = $elemTemp;
-                }
-            } else {
-
-                // Get material norm on the date
-                $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productForStructure->getId(), $date, 3, $rendition->getId());
-                $renditionInfo = ' Исполнение - ' . $rendition->getName();
-
-                $renditionNotFound = false;
-                if (!$normMaterials && ($rendition->getId() != $renditionStandart->getId())) {
-                    $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($productForStructure->getId(), $date, 3, $renditionStandart->getId());
-                    $renditionInfo .= ' - отсутствует, ищем для исполнения - ' . $renditionStandart->getName();
-
-                    $renditionNotFound = true;
-                }
-
-                if (count($normMaterials) == 0) {
-                    $categoryId = $productForStructure->getProductCategory() ? $productForStructure->getProductCategory()->getId() : '';
-                    $amountProduct = strval($count * $structure->getAmount());
-
-                    $result[] = [
-                        'productId' => $productForStructure->getId(),
-                        'productIntype' => $productForStructure->getIntype(),
-                        'productName' => $productForStructure->getName(),
-                        'productDesignation' => $productForStructure->getDesignation(),
-                        'productUnitName' => $productForStructure->getUnit() ? $productForStructure->getUnit()->getName() : '',
-                        'productAmount' => $amountProduct,
-                        'productCategoryId' =>  $categoryId,
-                        'productCategoryName' => $productForStructure->getProductCategory() ? $productForStructure->getProductCategory()->getName() : '',
-                        'materialId' => null,
-                        'materialName' => null,
-                        'materialUnitName' => null,
-                        'materialAmount' => null,
-                        'rootId' => $rootProduct->getId(),
-                        'rootName' => $rootProduct->getName(),
-                        'rootDesignation' => $rootProduct->getDesignation(),
-                        'rootRenditionId' => $renditionNotFound ? $renditionStandart->getId() : $rendition->getId(),
-                        'rootRenditionName' => $renditionNotFound ? $renditionStandart->getName() : $rendition->getName(),
-                        'rootPlan' => $rootPlan,
-                        'rootUnitName' => $rootProduct->getUnit() ? $rootProduct->getUnit()->getName() : '',
-                        'error' => $categoryId === 3,
-                        'info' => $categoryId === 3 ? '[1] ' . 'Не указана норма материала.' . $renditionInfo : '[1] ' . $renditionInfo,
-                    ];
-                } else {
-
-                    foreach ($normMaterials as  $materialNorm) {
-
-                        if (!$materialNorm->getMainReplacement()) {
-                            continue;
-                        }
-
-                        $categoryId = $productForStructure->getProductCategory() ? $productForStructure->getProductCategory()->getId() : '';
-                        $amountMaterial = strval($count * $structure->getAmount() * $materialNorm->getAmount());
-                        $amountProduct = strval($count * $structure->getAmount());
-
-                        $result[] = [
-                            'productId' => $productForStructure->getId(),
-                            'productIntype' => $productForStructure->getIntype(),
-                            'productName' => $productForStructure->getName(),
-                            'productDesignation' => $productForStructure->getDesignation(),
-                            'productUnitName' => $productForStructure->getUnit()->getName(),
-                            'productAmount' => $amountProduct,
-                            'productCategoryId' =>  $categoryId,
-                            'productCategoryName' => $productForStructure->getProductCategory() ? $productForStructure->getProductCategory()->getName() : '',
-                            'materialId' => $materialNorm->getMaterial()->getId(),
-                            'materialName' => $materialNorm->getMaterial()->getFullName(),
-                            'materialUnitName' => $materialNorm->getMaterial()->getUnit()->getName(),
-                            'materialAmount' => $amountMaterial,
-                            'rootId' => $rootProduct->getId(),
-                            'rootName' => $rootProduct->getName(),
-                            'rootDesignation' => $rootProduct->getDesignation(),
-                            'rootRenditionId' => $rendition->getId(),
-                            'rootRenditionName' => $rendition->getName(),
-                            'rootPlan' => $rootPlan,
-                            'rootUnitName' => $rootProduct->getUnit() ? $rootProduct->getUnit()->getName() : '',
-                            'error' => ($categoryId === 3 && !$amountMaterial),
-                            'info' => ($categoryId === 3 && !$amountMaterial) ? '[2] ' . 'Не указана норма на ' . $materialNorm->getMaterial()->getFullName() : '[2]',
-                        ];
-                    }
-                }
-            }
-        }
-
-        // Get norm materials on the date
-        $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, $rendition->getId());
-        $renditionInfo = ' Исполнение - ' . $rendition->getName();
-
-        $renditionNotFound = false;
-
-        if (!$normMaterials && ($rendition->getId() != $renditionStandart->getId())) {
-            $normMaterials = $this->entityManager->getRepository(MaterialNorm::class)->getActualNormMaterials($product->getId(), $date, 3, $renditionStandart->getId());
-            $renditionInfo .= ' - отсутствует, ищем для исполнения - ' . $renditionStandart->getName();
-
-            $renditionNotFound = true;
-        }
-        if ($normMaterials) {
-            foreach ($normMaterials as  $materialNorm) {
-
-                if (!$materialNorm->getMainReplacement()) {
-                    continue;
-                }
-
-                $amountMaterial = strval($count * $materialNorm->getAmount());
-
-                $result[] = [
-                    'productId' => $product->getId(),
-                    'productIntype' => $product->getIntype(),
-                    'productName' => $product->getName(),
-                    'productDesignation' => $product->getDesignation(),
-                    'productUnitName' => $product->getUnit()->getName(),
-                    'productAmount' => $count,
-                    'productCategoryId' => $product->getProductCategory() ? $product->getProductCategory()->getId() : '',
-                    'productCategoryName' => $product->getProductCategory() ? $product->getProductCategory()->getName() : '',
-                    'materialId' => $materialNorm->getMaterial()->getId(),
-                    'materialName' => $materialNorm->getMaterial()->getFullName(),
-                    'materialUnitName' =>  $materialNorm->getMaterial()->getUnit()->getName(),
-                    'materialAmount' => $amountMaterial,
-                    'rootId' => $rootProduct->getId(),
-                    'rootName' => $rootProduct->getName(),
-                    'rootDesignation' => $rootProduct->getDesignation(),
-                    'rootRenditionId' => $renditionNotFound ? $renditionStandart->getId() : $rendition->getId(),
-                    'rootRenditionName' => $renditionNotFound ? $renditionStandart->getName() :  $rendition->getName(),
-                    'rootPlan' => $rootPlan,
-                    'rootUnitName' => $rootProduct->getUnit() ? $rootProduct->getUnit()->getName() : '',
-                    'error' => !$amountMaterial,
-                    'info' => !$amountMaterial ? '[3] ' . 'Не указана норма на ' . $materialNorm->getMaterial()->getFullName() . ', ' . $renditionInfo : '[3] ' . $renditionInfo,
-                ];
-            }
-        }
-
-        if (!$structures && !$normMaterials) {
-
-            $categoryId = $product->getProductCategory() ? $product->getProductCategory()->getId() : '';
-
-            $result[] = [
-                'productId' => $product->getId(),
-                'productIntype' => $product->getIntype(),
-                'productName' => $product->getName(),
-                'productDesignation' => $product->getDesignation(),
-                'productUnitName' => $product->getUnit()->getName(),
-                'productAmount' => $count,
-                'productCategoryId' => $product->getProductCategory() ? $product->getProductCategory()->getId() : '',
-                'productCategoryName' => $product->getProductCategory() ? $product->getProductCategory()->getName() : '',
-                'materialId' => null,
-                'materialName' => null,
-                'materialUnitName' => null,
-                'materialAmount' => null,
-                'rootId' => $rootProduct->getId(),
-                'rootName' => $rootProduct->getName(),
-                'rootDesignation' => $rootProduct->getDesignation(),
-                'rootRenditionId' => $rendition->getId(),
-                'rootRenditionName' => $rendition->getName(),
-                'rootPlan' => $rootPlan,
-                'rootUnitName' => $rootProduct->getUnit() ? $rootProduct->getUnit()->getName() : '',
-                'error' => ($categoryId === 3),
-                'info' => '[4] ' . 'Не задана спецификация и нормы',
+            $arrTemp = [
+                'id' => $itemProduct->getId(),
+                'name' => $itemProduct->getName(),
+                'designation' => $itemProduct->getDesignation(),
+                'renditionId' => $rendition->getId(),
+                'renditionName' => $rendition->getName(),
+                'unitName' =>  $itemProduct->getUnit() ? $itemProduct->getUnit()->getName() : null,
+                'amountStandard' => $item->getAmount(),
+                'amount' => $amount,
+                'amountAll' => $amount * $item->getAmount(),
+                'intype' => $itemProduct->getIntype(),
+                'categoryId' => $itemProduct->getProductCategory() ? $itemProduct->getProductCategory()->getId() : null,
+                'categoryName' => $itemProduct->getProductCategory() ? $itemProduct->getProductCategory()->getName() : null,
+                'mainReplacement' => $item->getMainReplacement(),
+                'type' => 'child',
+                'prefix' => 'pr-',
             ];
+
+            // TO DO - Make actual document
+            if (count($itemProduct->getSpecifications()) > 0 || count($itemProduct->getNormDocuments()) > 0) {
+                $composition = $this->getMaterials($itemProduct->getId(), $rendition->getId(), $amount * $item->getAmount(), $date, 'child', $arrRoots);
+
+                if (count($composition) > 0) {
+                    $arrTemp = array_merge($arrTemp, $composition);
+                }
+            }
+
+            $nodes[] = $arrTemp;
+            $itemRoot['expense'] = $arrTemp;
+            $arrRoots['expense'] = $arrTemp;
+
+            // ** COOL **
+            $this->addTableMaterials($arrTemp, $itemRoot, $arrRoots);
+
+            $result = array_merge($result, ['nodes' => $nodes]);
         }
 
         return $result;
     }
 
+    public function addTableMaterials($data, $root, $arrRoots) {
 
-    public function getGroupsMaterials($materials)
-    {
-        $result = [];
+        $context = $data['prefix'] . $data['id'];
 
-        foreach ($materials as $material) {
+        $search = 0;
 
-            $context = '';
-            if ($material['productCategoryId'] == 3) {
-                $nomenclatureId = $material['materialId'];
-                $nomenclatureName = $material['materialName'];
-                $nomenclatureDesignation = '';
-                $nomenclatureAmount = round((float)$material['materialAmount'], 4);
-                $nomenclatureUnitName = $material['materialUnitName'];
-                $prefix = 'mt-';
-            } else {
-                $nomenclatureId = $material['materialId'] ?? $material['productId'];
-                $nomenclatureName = $material['materialId'] ? $material['materialName'] : $material['productName'];
-                $nomenclatureDesignation = $material['materialId'] ? '' : $material['productDesignation'];
-                $nomenclatureAmount = $material['materialId'] ? round((float)$material['materialAmount'], 4) : round((float)$material['productAmount'], 4);
-                $nomenclatureUnitName = $material['materialId'] ? $material['materialUnitName'] : $material['productUnitName'];
-                $prefix = $material['materialId'] ? 'mt-' : 'pr-';
-            }
-
-            $context = $prefix . $nomenclatureId;
-
-            $itemRoot = [
-                'id' => $material['rootId'],
-                'name' => $material['rootName'],
-                'designation' => $material['rootDesignation'],
-                'renditionId' => $material['rootRenditionId'],
-                'renditionName' => $material['rootRenditionName'],
-                'nomenclatureAmount' => $nomenclatureAmount,
-                'nomenclaturePlan' => $material['rootPlan'],
-                'unitName' => $material['rootUnitName'],
-            ];
-
-            $search = 0;
-
-            foreach ($result as $key => $item) {
-                if ($item['context'] == $context) {
-                    $search = 1;
-                    $amountTemp = round((float)$item['amount'] + (float)$nomenclatureAmount, 4);
-                    $result[$key]['amount'] = $amountTemp ? $amountTemp : 0;
-                    if (!in_array($material['rootId'], $result[$key]['rootIds'])) {
-                        $result[$key]['root'][] = $itemRoot;
-                        $result[$key]['rootIds'][] = $material['rootId'] . '-' . $material['rootRenditionId'];
-                    } else {
-                        $keyId = array_search($material['rootId'], $result[$key]['rootIds']);
-                        $result[$key]['root'][$keyId]['nomenclatureAmount'] += $nomenclatureAmount;
-                        $result[$key]['root'][$keyId]['nomenclatureAmount'] = round($result[$key]['root'][$keyId]['nomenclatureAmount'], 4);
-
-                        //$result[$key]['root'][$keyId]['nomenclaturePlan'] += $material['rootPlan'];
-
-
-                        $result[$key]['root'][$keyId]['nomenclaturePlan'] = round($result[$key]['root'][$keyId]['nomenclaturePlan'], 0);
-                    }
-
-                    if ($material['error']) {
-                        $result[$key]['error'][] = $material;
-                    }
-                    break;
-                }
-            }
-
-            if ($search == 0) {
-                $arrStr = [];
-                $arrStr['id'] = $nomenclatureId;
-                $arrStr['name'] = $nomenclatureId ? $nomenclatureName : 'Ошибка';
-                $arrStr['designation'] = $nomenclatureDesignation;
-                $arrStr['unitName'] = $nomenclatureUnitName;
-                $arrStr['amount'] = round($nomenclatureAmount, 4);
-                $arrStr['context'] = $context;
-                $arrStr['root'][] = $itemRoot;
-                $arrStr['rootIds'] = [$material['rootId'] . '-' . $material['rootRenditionId']];
-
-                if ($material['error']) {
-                    $arrStr['error'][] = $material;
-                } else {
-                    $arrStr['error'] = [];
-                }
-
-                $result[] = $arrStr;
+        foreach ($this->tableMaterials as $key => $elem) {
+            if ($elem['context'] == $context) {
+                $search = 1;
+                $amountTemp = round((float)$elem['amountAll'] + (float)$data['amountAll'], 6);
+                $this->tableMaterials[$key]['amountAll'] = $amountTemp ?? 0;
+                $this->tableMaterials[$key]['root'][] = $root;
+                $this->tableMaterials[$key]['roots'][] = $arrRoots;
+                break;
             }
         }
 
-        return $result;
+        if ($search == 0) {
+            $arrStr = [];
+            $arrStr['id'] = $data['id'];
+            $arrStr['name'] = $data['name'];
+            $arrStr['designation'] = $data['designation'];
+            $arrStr['unitName'] = $data['unitName'];
+            $arrStr['amountAll'] = round($data['amountAll'], 6);
+            $arrStr['context'] = $context;
+            $arrStr['balanceBuy'] = 0;
+            $arrStr['balanceManufacture'] = 0;
+            $arrStr['amountResult'] = 0;
+            $arrStr['root'][] = $root;
+            $arrStr['roots'][] = $arrRoots;
+
+            $this->tableMaterials[] = $arrStr;
+        }
+    }
+
+    public function getAmountResult($data) 
+    {
+        array_walk ( $data, function (&$key) { 
+            $key["amountResult"] = $key['amountAll'] - $key['balanceBuy'] - $key['balanceManufacture']; 
+        });
+
+        return $data;
+
     }
 }

@@ -561,20 +561,21 @@ class MaterialController extends AbstractController
                 $product = $productionPlanItems->getProduct();
                 $rendition = $productionPlanItems->getRendition();
 
-                //$temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition));
-                $temp = array_merge($temp, $listMaterialsService->getMaterials($product, $product, $productionPlanItems->getAmount(), 0, $date, $rendition, $productionPlanItems->getAmount()));
+                $listMaterialsService->initTable();
+
+                $temp[] = $listMaterialsService->getMaterials($product->getId(), $rendition->getId(), $productionPlanItems->getAmount(), $date, 'root');
             }
 
-            $materials = $listMaterialsService->getGroupsMaterials($temp);
+           $tempMaterials = $listMaterialsService->getTableMaterials();
+           $materials = $listMaterialsService->getAmountResult($tempMaterials);
         }
 
         return new JsonResponse([
             'message' => $translator->trans('items.calculated_successfully'),
             'temp' => $temp,
-            'materials' => $materials
+            'tempMaterials' => $tempMaterials,
+            'materials' => $materials,
         ]);
     }
-
-
 
 }

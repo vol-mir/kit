@@ -41,3 +41,7 @@ body {
     display: none;
     margin: 50px auto;
 }
+
+.table-cell-edit{
+    background-color: #CAFF9E;
+}

@@ -17,24 +17,30 @@
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th style="width:108px">Информация</th>
                             <th>Код</th>
                             <th>Наименование</th>
                             <th>Обозначение</th>
                             <th>Ед.изм.</th>
-                            <th>Кол-во</th>
+                            <th>Кол-во план</th>
+                            <th>Остаток склад</th>
+                            <th>Остаток мат. отчет</th>
+                            <th>Кол-во итог</th>
+                            <th>Информация</th>
                         </tr>
                         </thead>
                         <tbody>
                         </tbody>
                         <tfoot>
                         <tr>
-                            <th>Информация</th>
                             <th>Код</th>
                             <th>Наименование</th>
                             <th>Обозначение</th>
                             <th>Ед.изм.</th>
-                            <th>Кол-во</th>
+                            <th>Кол-во план</th>
+                            <th>Остаток склад</th>
+                            <th>Остаток мат. отчет</th>
+                            <th>Кол-во итог</th>
+                            <th>Информация</th>
                         </tr>
                         </tfoot>
                     </table>
@@ -46,6 +52,8 @@
         <!-- /.col -->
     </div>
     <!-- /.row -->
+
+    {% include 'modals/show_requirement.html.twig' %}
 {% endblock %}
 
 
@@ -58,81 +66,68 @@
                 "columns": [
                     {
                         'render': function (data, type, row) {
-                            rootObj = row["root"];
-                            str = '';
-                            for (key in rootObj) {
-                                //str += '<span class="badge badge-success">' + rootObj[key]['name'] + ' ' + rootObj[key]['designation'] + ' = ' + rootObj[key]['nomenclatureAmount'] + '</span>';
-                                str += '<tr><td>' + rootObj[key]['name'] + '</td><td>' + rootObj[key]['designation'] + '</td><td>' + rootObj[key]['renditionName'] + '</td><td>' + rootObj[key]['nomenclatureAmount'] + '</td><td>' + rootObj[key]['nomenclaturePlan'] + '</td></tr>';
-                            }
-
-                            temp = '';
-                            if (row["unitName"]) {
-                                temp = ', ' + row["unitName"];
-                            }
-
-                            temp2 = '';
-                            if (rootObj[key]["unitName"]) {
-                                temp2 = ', ' + rootObj[key]["unitName"];
-                            }
-
-                            return '<button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#table' + row["id"] + '" aria-expanded="false" aria-controls="table' + row["id"] + '"><i class="fas fa-eye"></i> Детализация</button><div class="collapse" id="table' + row["id"] + '"><table class="table table-sm"><tr><th width="120px">Наименование</th><th width="120px">Обозначение</th><th width="120px">Характеристика</th><th width="80px">Норма на план' + temp + '</th><th width="80px">План' + temp2 + '</th></tr>' + str + '</table></div>';
-
-                        },
-                        "name": "root",
-                        "targets": 0,
-                        "orderable": false
-                    },
-                    {
-                        'render': function (data, type, row) {
                             return row["id"];
                         },
                         "name": "id",
-                        "targets": 1
+                        "targets": 0
                     },
                     {
                         'render': function (data, type, row) {
-                            str = row["name"];
-                            if (Object.keys(row["error"]).length > 0) {
-                                str += ' <span class="badge badge-danger">Ошибки</span>';
-                            }
-
-                            strTr = '';
-                            errorObj = row["error"];
-                            for (key in errorObj) {
-                                strTr += '<tr><td>' + errorObj[key]['info'] + ' - ' + errorObj[key]['productName'] + ' ' + errorObj[key]['productDesignation'] + '</td></tr>';
-                            }
-
-                            strTable = '<table>' + strTr + '</table>';
-
-                            if (strTr.length > 0) {
-                                str += strTable
-                                $("#requirement-error").text('Внимание! Есть ошибки!');
-                            }
-                            return str;
+                            return row["name"];
                         },
                         "name": "name",
-                        "targets": 2
+                        "targets": 1
                     },
                     {
                         'render': function (data, type, row) {
                             return row["designation"];
                         },
                         "name": "designation",
-                        "targets": 3
+                        "targets": 2
                     },
                     {
                         'render': function (data, type, row) {
                             return row["unitName"];
                         },
                         "name": "unitName",
+                        "targets": 3
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["amountAll"];
+                        },
+                        "name": "amountAll",
                         "targets": 4
                     },
                     {
                         'render': function (data, type, row) {
-                            return row["amount"];
+                            return row["balanceBuy"];
                         },
-                        "name": "amount",
+                        "name": "balanceBuy",
                         "targets": 5
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["balanceManufacture"];
+                        },
+                        "name": "balanceManufacture",
+                        "targets": 6
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["amountResult"];
+                        },
+                        "name": "amountResult",
+                        "className": "table-cell-edit",
+                        "targets": 7
+                    },
+                    {
+                        'render': function (data, type, row) {
+                           return "<button type='button' class='btn btn-sm btn-dark float-left modal-show-requirement-dialog' data-toggle='modal' data-id='" + row['id'] + "' data-unit='" + row['unitName'] + "' data-roots='" + JSON.stringify(row['roots']) + "' data-name='" + row["name"] + (row["designation"] ? ' ' + row["designation"] : '' )  + "'  data-amount-result='" + row['amountResult'] + "'  data-balance-manufacture='" + row['balanceManufacture'] + "'  data-balance-buy='" + row['balanceBuy'] + "'  data-amount-all='" + row['amountAll'] + "'><i class='fas fa-eye'></i> Посмотреть</button>";
+                        },
+                        "name": "root",
+                        "targets": 8,
+                        "orderable": false
                     },
                 ],
                 "stateSave": true,
@@ -143,6 +138,9 @@
                 "info": true,
                 "searching": true,
                 "pageLength": 25,
+                "initComplete": function (settings, json) {  
+                    $("#materials-requirement").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                },
                 "language": {
                     "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
                 }
@@ -167,7 +165,7 @@
                 $.ajax({
                     type: 'post',
                     url: url,
-                    timeout: 90000,
+                    timeout: 150000,
                     // async: false,
                     data: {
                         '_method': 'post', 
@@ -215,6 +213,72 @@
                     }
                 }
             });
+
+
+            $("#materials-requirement").on("click", ".modal-show-requirement-dialog", function () {
+                $('#js-modal-title').text($(this).attr('data-name'));
+                $('.js-unit').text($(this).attr('data-unit'));
+
+                $('#js-amount-all').text($(this).attr('data-amount-all'));
+                $('#js-balance-buy').text($(this).attr('data-balance-buy'));
+                $('#js-balance-manufacture').text($(this).attr('data-balance-manufacture'));
+                $('#js-amount-result').text($(this).attr('data-amount-result'));
+
+                let roots = JSON.parse($(this).attr('data-roots'));
+
+                let tableStr = "";
+                let resultFoot = 0;
+                for (let element of roots) {
+
+                    let prefix = "";
+
+                    for (const property in element) {
+
+                        if (property === 'expense') {
+                            resultFoot += round(element[property]['amountAll'], 6);
+                        }
+
+                        tableStr += "<tr>"
+                        tableStr += "<td>"
+                        tableStr += prefix + ' ' + element[property]['name'] + (element[property]['designation'] ? ' ' + element[property]['designation'] : '' )
+                        tableStr += "</td>"
+                        tableStr += "<td>"
+                        tableStr += element[property]['renditionName'] ?? ''
+                        tableStr += "</td>"
+                        tableStr += "<td>"
+                        tableStr += element[property]['structureRenditionName'] ?? ''
+                        tableStr += "</td>"
+                        tableStr += "<td>"
+                        tableStr += (property === 'expense') ? round(element[property]['amountStandard'], 6) : ''
+                        tableStr += "</td>"
+                        tableStr += "<td>"
+                        tableStr += (property === 'expense') ? round(element[property]['amount'], 6) : ''
+                        tableStr += "</td>"
+                        tableStr += "<td>"
+                        tableStr += (property === 'expense') ? round(element[property]['amountAll'], 6) : round(element[property]['amount'], 6)
+                        tableStr += "</td>"
+                        tableStr += "</tr>"
+
+                        prefix += '--';
+                    };
+
+                };
+
+                $('#js-foot-result').text(resultFoot);
+
+                $('#js-detailing').html(tableStr);
+                
+                $('#modal-show-requirement').modal('show');
+            });
+
+            $("#modal-show-requirement").on("click", "#btn-modal-show-requirement-close", function () {
+                $('#modal-show-requirement').modal('hide');
+            });
+
+            function round(num, decimalPlaces = 0) {
+                num = Math.round(num + "e" + decimalPlaces);
+                return Number(num + "e" + -decimalPlaces);
+            }
 
         });
 

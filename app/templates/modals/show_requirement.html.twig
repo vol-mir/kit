@@ -1,0 +1,74 @@
+<div class="modal fade" id="modal-show-requirement">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="js-modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Общая информация</h5>
+                <table class="table table-hover table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Количество для плана, <span class="js-unit"><span></th>
+                            <td id="js-amount-all"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Остаток на складаз закупкок, <span class="js-unit"><span></th>
+                            <td id="js-balance-buy"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Остаток на материальных отчетах, <span class="js-unit"><span></th>
+                            <td id="js-balance-manufacture"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Итого, <span class="js-unit"><span></th>
+                            <th id="js-amount-result"></th>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Детализация</h5>
+                <table class="table table-hover table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Наименование</th>
+                            <th>Исполнение по плану</th>
+                            <th>Исполнение расчетное</th>
+                            <th>Норма на деталь, узел, изделие</th>
+                            <th>Количество на план</th>
+                            <th>Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody id="js-detailing">
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Итого</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th id="js-foot-result"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Отмена</button>
+                <button type="button" id="btn-modal-show-requirement-close" class="btn btn-light">Закрыть</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

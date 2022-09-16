@@ -194,7 +194,9 @@ class ListMaterialsService
             $arrRoots['expense'] = $arrTemp;
 
             // ** COOL **
-            $this->addTableMaterials($arrTemp, $itemRoot, $arrRoots);
+            if ($itemProduct->getProductCategory()->getId() == 2) {
+                $this->addTableMaterials($arrTemp, $itemRoot, $arrRoots);
+            }
 
             $result = array_merge($result, ['nodes' => $nodes]);
         }

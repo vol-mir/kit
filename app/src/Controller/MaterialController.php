@@ -556,14 +556,14 @@ class MaterialController extends AbstractController
             $date = new \DateTime();
 
             $temp = [];
+            $listMaterialsService->initTable();
+
             foreach ($productionPlan->getProductionPlanItems() as $productionPlanItems) {
 
                 $product = $productionPlanItems->getProduct();
                 $rendition = $productionPlanItems->getRendition();
 
-                $listMaterialsService->initTable();
-
-                $temp[] = $listMaterialsService->getMaterials($product->getId(), $rendition->getId(), $productionPlanItems->getAmount(), $date, 'root');
+                $listMaterialsService->getMaterials($product->getId(), $rendition->getId(), $productionPlanItems->getAmount(), $date, 'root');
             }
 
            $tempMaterials = $listMaterialsService->getTableMaterials();

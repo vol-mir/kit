@@ -17,15 +17,15 @@
                     <table id="materials-requirement" class="table table-bordered table-striped table-hover table-sm">
                         <thead>
                         <tr>
-                            <th>Код</th>
+                            <th width="2%">Код</th>
                             <th>Наименование</th>
                             <th>Обозначение</th>
-                            <th>Ед.изм.</th>
-                            <th>Кол-во план</th>
-                            <th>Остаток склад</th>
-                            <th>Остаток мат. отчет</th>
-                            <th>Кол-во итог</th>
-                            <th>Информация</th>
+                            <th width="8%">Ед.изм.</th>
+                            <th width="8%">Кол-во план</th>
+                            <th width="8%">Остаток склад</th>
+                            <th width="8%">Остаток мат. отчет</th>
+                            <th width="8%">Кол-во итог</th>
+                            <th width="10%">Информация</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -137,6 +137,7 @@
                 "paging": true,
                 "info": true,
                 "searching": true,
+                "responsive": false,
                 "pageLength": 25,
                 "initComplete": function (settings, json) {  
                     $("#materials-requirement").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            

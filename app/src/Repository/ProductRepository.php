@@ -713,15 +713,15 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         return $this
             ->createQueryBuilder('t0')
             ->select("count(t0.id)")
-            ->join('t0.product_group', 't1')
-            ->join('t0.product_type', 't2')
-            ->join('t0.product_kind', 't3')
-            ->join('t0.product_category', 't4')
-            ->join('t0.calculation', 't5')
-            ->join('t0.analytic_group', 't6')
-            ->join('t0.finance_group', 't7')
-            ->where("t0.intype = :intype")
-            ->setParameter('intype', Product::INTYPE_PRODUCT)
+            ->leftjoin('t0.product_group', 't1')
+            ->leftjoin('t0.product_type', 't2')
+            ->leftjoin('t0.product_kind', 't3')
+            ->leftjoin('t0.product_category', 't4')
+            ->leftjoin('t0.calculation', 't5')
+            ->leftjoin('t0.analytic_group', 't6')
+            ->leftjoin('t0.finance_group', 't7')
+            ->where("t0.intype IN (:intypes)")
+            ->setParameter('intypes', [Product::INTYPE_PRODUCT, Product::INTYPE_MATERIAL, Product::INTYPE_DOCUMENT])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -739,7 +739,7 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
-        $query->select("t0.id, t0.designation, t0.name, t1.name as product_group_name, t2.name as product_type_name, t3.name as product_kind_name, t4.name as product_category_name, t5.name as product_calculation_name, t6.name as product_analytic_group_name, t7.name as product_finance_group_name,
+        $query->select("t0.id, t0.designation, t0.name, t0.intype, t1.name as product_group_name, t2.name as product_type_name, t3.name as product_kind_name, t4.name as product_category_name, t5.name as product_calculation_name, t6.name as product_analytic_group_name, t7.name as product_finance_group_name,
                        t1.id as product_group_id, t2.id as product_type_id, t3.id as product_kind_id, t4.id as product_category_id, t5.id as product_calculation_id, t6.id as product_analytic_group_id, t7.id as product_finance_group_id");
 
         // Create Count Query
@@ -747,21 +747,21 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         $countQuery->select("COUNT(t0)");
 
         // Join
-        $query->join('t0.product_group', 't1');
-        $query->join('t0.product_type', 't2');
-        $query->join('t0.product_kind', 't3');
-        $query->join('t0.product_category', 't4');
-        $query->join('t0.calculation', 't5');
-        $query->join('t0.analytic_group', 't6');
-        $query->join('t0.finance_group', 't7');
+        $query->leftjoin('t0.product_group', 't1');
+        $query->leftjoin('t0.product_type', 't2');
+        $query->leftjoin('t0.product_kind', 't3');
+        $query->leftjoin('t0.product_category', 't4');
+        $query->leftjoin('t0.calculation', 't5');
+        $query->leftjoin('t0.analytic_group', 't6');
+        $query->leftjoin('t0.finance_group', 't7');
 
-        $countQuery->join('t0.product_group', 't1');
-        $countQuery->join('t0.product_type', 't2');
-        $countQuery->join('t0.product_kind', 't3');
-        $countQuery->join('t0.product_category', 't4');
-        $countQuery->join('t0.calculation', 't5');
-        $countQuery->join('t0.analytic_group', 't6');
-        $countQuery->join('t0.finance_group', 't7');
+        $countQuery->leftjoin('t0.product_group', 't1');
+        $countQuery->leftjoin('t0.product_type', 't2');
+        $countQuery->leftjoin('t0.product_kind', 't3');
+        $countQuery->leftjoin('t0.product_category', 't4');
+        $countQuery->leftjoin('t0.calculation', 't5');
+        $countQuery->leftjoin('t0.analytic_group', 't6');
+        $countQuery->leftjoin('t0.finance_group', 't7');
 
         // Fields Search
         if ($search['value'] !== '') {
@@ -821,11 +821,11 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         }
 
         // Execute
-        $query->andWhere("t0.intype = :intype");
-        $query->setParameter('intype', Product::INTYPE_PRODUCT);
+        $query->andWhere("t0.intype IN (:intypes)");
+        $query->setParameter('intypes', [Product::INTYPE_PRODUCT, Product::INTYPE_MATERIAL, Product::INTYPE_DOCUMENT]);
 
-        $countQuery->andWhere("t0.intype = :intype");
-        $countQuery->setParameter('intype', Product::INTYPE_PRODUCT);
+        $countQuery->andWhere("t0.intype IN (:intypes)");
+        $countQuery->setParameter('intypes', [Product::INTYPE_PRODUCT, Product::INTYPE_MATERIAL, Product::INTYPE_DOCUMENT]);
 
         $listObjects = $query->getQuery()->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $listCount = $countQuery->getQuery()->getSingleScalarResult();

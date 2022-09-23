@@ -57,182 +57,6 @@ class MaterialController extends AbstractController
     }
 
     /**
-     * Index page
-     *
-     * @Route("/materials", methods="GET", name="material_index")
-     *
-     * @return Response
-     */
-
-    public function index(): Response
-    {
-
-        return $this->render('material/index.html.twig', [
-            'productGroups' => $this->entityManager->getRepository(ProductGroup::class)->getAllProductGroups(),
-            'productTypes' => $this->entityManager->getRepository(EntityProductType::class)->getAllProductTypes(),
-            'productKinds' => $this->entityManager->getRepository(ProductKind::class)->getAllProductKinds(),
-            'productCategories' => $this->entityManager->getRepository(ProductCategory::class)->getAllProductCategories(),
-            'calculations' => $this->entityManager->getRepository(Calculation::class)->getAllCalculations(),
-
-            'analyticGroups' => $this->entityManager->getRepository(AnalyticGroup::class)->getAllAnalyticGroups(),
-            'financeGroups' => $this->entityManager->getRepository(FinanceGroup::class)->getAllFinanceGroups(),
-        
-        ]);
-    }
-
-    /**
-     * Data for tables
-     *
-     * @Route("/material/datatables", methods="POST", name="material_datatables")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function listDatatableAction(Request $request): JsonResponse
-    {
-        // Get the parameters from DataTable Ajax Call
-        if ($request->getMethod() === 'POST') {
-            $draw = (int)$request->request->get('draw');
-            $start = $request->request->get('start');
-            $length = $request->request->get('length');
-            $search = $request->request->get('search');
-            $orders = $request->request->get('order');
-            $columns = $request->request->get('columns');
-        } else // If the request is not a POST one, die hard
-        {
-            die;
-        }
-
-        // Orders
-        foreach ($orders as $key => $order) {
-            // Orders does not contain the name of the column, but its number,
-            // so add the name so we can handle it just like the $columns array
-            $orders[$key]['name'] = $columns[$order['column']]['name'];
-        }
-
-        // Further filtering can be done in the Repository by passing necessary arguments
-        $otherConditions = null;
-
-        $results = $this->productRepository->getRequiredDTDataMaterial($start, $length, $orders, $search, $columns, $otherConditions);
-
-        // Returned objects are of type Town
-        $objects = $results["results"];
-        // Get total number of objects
-        $totalObjectsCount = $this->productRepository->countMaterial();
-        // Get total number of filtered data
-        $filteredObjectsCount = $results["countResult"];
-
-        $data = [];
-        foreach ($objects as $material) {
-            $dataTemp = [];
-            foreach ($columns as $column) {
-                switch ($column['name']) {
-
-                    case 'checkbox':
-                        {
-                            $dataTemp[] = "";
-                            break;
-                        }
-                    case 'id':
-                        {
-                            $elementTemp = $this->render('default/table_href.html.twig', [
-                                'url' => $this->generateUrl('material_show', ['id' => $material->getId()]),
-                                'urlName' => $material->getId()
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-
-                            break;
-                        }
-
-                    case 'name':
-                        {
-                            $elementTemp = $material->getName();
-                            $dataTemp[] = $elementTemp;
-
-                            break;
-                        }
-
-                    case 'groups':
-                        {
-                            $elementTemp = '<small>' . $material->getProductGroup()->getName() . '</small>';
-                            $elementTemp .= '<br><small>' . $material->getProductType()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $material->getProductKind()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $material->getProductCategory()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $material->getCalculation()->getName(). '</small>';
-                            
-                            $elementTemp .= '<br><small>' . $material->getAnalyticGroup()->getName(). '</small>';
-                            $elementTemp .= '<br><small>' . $material->getFinanceGroup()->getName(). '</small>';
-                            
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'control':
-                        {
-                            $isOGK= in_array('ROLE_OGK', $this->getUser()->getRoles(), true);
-                            $isOGT= in_array('ROLE_OGT', $this->getUser()->getRoles(), true);
-                            $isPEO= in_array('ROLE_PEO', $this->getUser()->getRoles(), true);
-                            $isBUH= in_array('ROLE_BUH', $this->getUser()->getRoles(), true);
-                            
-                            $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true);
-
-                            $urlShow = $this->generateUrl('material_show', ['id' => $material->getId()]);
-                            $urlEdit = '';
-                            $idDelete = '';
-
-                            if ($isAdmin || $isOGK || $isOGT || $isPEO || $isBUH) {
-                                $urlEdit = $this->generateUrl('material_edit', ['id' => $material->getId()]);
-                            }
-
-                            if ($isAdmin || $isOGK || $isOGT) {
-                                $idDelete = $material->getId();
-                            }
-
-
-                            $elementTemp = $this->render('default/table_group_btn_esd.html.twig', [
-                                'urlShow' => $urlShow,
-                                'urlEdit' => $urlEdit,
-                                'idDelete' => $idDelete
-                            ])->getContent();
-
-                            $elementTemp .= $this->render('default/table_group_btn_ready_product.html.twig', [
-                                'product' => $material
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-                    case 'yid':
-                        {
-                            $elementTemp = $material->getId();
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-                }
-            }
-            $data[] = $dataTemp;
-        }
-
-        // Construct response
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $totalObjectsCount,
-            'recordsFiltered' => $filteredObjectsCount,
-            'data' => $data,
-        ];
-
-
-        // Send all this stuff back to DataTables
-        $returnResponse = new JsonResponse();
-        $returnResponse->setData($response);
-
-        return $returnResponse;
-    }
-
-
-    /**
      * Creates a new material entity
      *
      * @Route("/material/new", methods="GET|POST", name="material_new")
@@ -266,7 +90,7 @@ class MaterialController extends AbstractController
                 return $this->redirectToRoute('material_new');
             }
 
-            return $this->redirectToRoute('material_index');
+            return $this->redirectToRoute('product_index');
         }
 
         return $this->render('material/new.html.twig', [
@@ -320,7 +144,7 @@ class MaterialController extends AbstractController
                 return $this->redirectToRoute('material_edit', ['id' => $material->getId()]);
             }
 
-            return $this->redirectToRoute('material_index');
+            return $this->redirectToRoute('product_index');
         }
 
         return $this->render('material/edit.html.twig', [

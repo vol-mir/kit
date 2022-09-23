@@ -117,29 +117,6 @@
                             </a>
                         </li>
 
-
-                        <li class="nav-item">
-                            <a href="{{ path('material_index') }}"
-                                class="nav-link {% if app.request.get('_route') == 'material_index' %} active {% endif %}">
-                                <i class="fas fa fa-leaf nav-icon"></i>
-                                <p>
-                                    {{ 'title.page.index.material'|trans }}
-                                </p>
-                            </a>
-                        </li>
-
-                        {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_ADMIN") %}
-                        <li class="nav-item">
-                            <a href="{{ path('document_index') }}"
-                                class="nav-link {% if app.request.get('_route') == 'document_index' %} active {% endif %}">
-                                <i class="fas fa fa-book nav-icon"></i>
-                                <p>
-                                    {{ 'title.page.index.document'|trans }}
-                                </p>
-                            </a>
-                        </li>
-                        {% endif %}
-
                         <li class="nav-header">Документы</li>
 
                         <li class="nav-item">

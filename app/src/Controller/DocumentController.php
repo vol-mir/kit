@@ -43,129 +43,6 @@ class DocumentController extends AbstractController
     }
 
     /**
-     * Index page
-     *
-     * @Route("/documentas", methods="GET", name="document_index")
-     *
-     * @return Response
-     */
-    public function index(): Response
-    {
-
-        return $this->render('document/index.html.twig');
-    }
-
-    /**
-     * Data for tables
-     *
-     * @Route("/document/datatables", methods="POST", name="document_datatables")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function listDatatableAction(Request $request): JsonResponse
-    {
-        // Get the parameters from DataTable Ajax Call
-        if ($request->getMethod() === 'POST') {
-            $draw = (int)$request->request->get('draw');
-            $start = $request->request->get('start');
-            $length = $request->request->get('length');
-            $search = $request->request->get('search');
-            $orders = $request->request->get('order');
-            $columns = $request->request->get('columns');
-        } else // If the request is not a POST one, die hard
-        {
-            die;
-        }
-
-        // Orders
-        foreach ($orders as $key => $order) {
-            // Orders does not contain the name of the column, but its number,
-            // so add the name so we can handle it just like the $columns array
-            $orders[$key]['name'] = $columns[$order['column']]['name'];
-        }
-
-        // Further filtering can be done in the Repository by passing necessary arguments
-        $otherConditions = null;
-
-        $results = $this->productRepository->getRequiredDTDataDocument($start, $length, $orders, $search, $columns, $otherConditions);
-
-        // Returned objects are of type Town
-        $objects = $results["results"];
-        // Get total number of objects
-        $totalObjectsCount = $this->productRepository->countDocument();
-        // Get total number of filtered data
-        $filteredObjectsCount = $results["countResult"];
-
-        $data = [];
-        foreach ($objects as $document) {
-            $dataTemp = [];
-            foreach ($columns as $column) {
-                switch ($column['name']) {
-                    case 'name':
-                        {
-                            $elementTemp = $this->render('default/table_href.html.twig', [
-                                'url' => $this->generateUrl('document_show', ['id' => $document->getId()]),
-                                'urlName' => $document->getName()
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-
-                    case 'designation':
-                        {
-                            $elementTemp = $document->getDesignation();
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-                    case 'control':
-                        {
-                            $isOGK= in_array('ROLE_OGK', $this->getUser()->getRoles(), true);
-                            $isOGT= in_array('ROLE_OGT', $this->getUser()->getRoles(), true);
-                            $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true);
-
-                            $urlShow = $this->generateUrl('document_show', ['id' => $document->getId()]);
-                            $urlEdit = '';
-                            $idDelete = '';
-
-                           if ($isAdmin || $isOGK) {
-                                $urlEdit = $this->generateUrl('document_edit', ['id' => $document->getId()]);
-                                $idDelete = $document->getId();
-                            }
-
-                            $elementTemp = $this->render('default/table_group_btn_esd.html.twig', [
-                                'urlShow' => $urlShow,
-                                'urlEdit' => $urlEdit,
-                                'idDelete' => $idDelete
-                            ])->getContent();
-
-                            $dataTemp[] = $elementTemp;
-                            break;
-                        }
-                }
-            }
-            $data[] = $dataTemp;
-        }
-
-        // Construct response
-        $response = [
-            'draw' => $draw,
-            'recordsTotal' => $totalObjectsCount,
-            'recordsFiltered' => $filteredObjectsCount,
-            'data' => $data,
-        ];
-
-
-        // Send all this stuff back to DataTables
-        $returnResponse = new JsonResponse();
-        $returnResponse->setData($response);
-
-        return $returnResponse;
-    }
-
-    /**
      * Creates a new document entity
      *
      * @Route("/document/new", methods="GET|POST", name="document_new")
@@ -193,7 +70,7 @@ class DocumentController extends AbstractController
                 return $this->redirectToRoute('document_new');
             }
 
-            return $this->redirectToRoute('document_index');
+            return $this->redirectToRoute('product_index');
         }
 
         return $this->render('document/new.html.twig', [
@@ -227,7 +104,7 @@ class DocumentController extends AbstractController
                 return $this->redirectToRoute('document_edit', ['id' => $document->getId()]);
             }
 
-            return $this->redirectToRoute('document_index');
+            return $this->redirectToRoute('product_index');
         }
 
         return $this->render('document/edit.html.twig', [

@@ -18,9 +18,11 @@
                         <tr>
                             <th width="3%" class="toggle-all"><i id="select_all" name="select_invoice"></i></th>
                             <th></th>
+                            <th width="2%"></th>
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
+                            <th width="25%">Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
                             <th width="7%"></th>
                         </tr>
                         </thead>
@@ -30,9 +32,11 @@
                         <tr>
                             <th></th>
                             <th></th>
+                            <th></th>
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
+                            <th>Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
                             <th></th>
                         </tr>
                         </tfoot>
@@ -86,28 +90,68 @@
                     },
                     {
                         'render': function (data, type, row) {
+                            symbol = '';
+                            if (row["intype"] === 1) {
+                                symbol = '<i class="fas fa fa-cube nav-icon"></i>';
+                            } else if (row["intype"] === 3) {
+                                symbol = '<i class="fas fa fa-leaf nav-icon"></i>';
+                            } else if (row["intype"] === 4) {
+                                symbol = '<i class="fas fa fa-book nav-icon"></i>';
+                            } else {
+                                symbol = row["intype"];
+                            }
+                            return symbol;
+                        },
+                        "name": "symbol", 
+                        "targets": 2, 
+                        "orderable": false, 
+                        "searchable": false, 
+                    },
+                    {
+                        'render': function (data, type, row) {
 
-                            let urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            let urlShow = '';
+                            if (row["intype"] === 1) {
+                                urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            } else if (row["intype"] === 3) {
+                                urlShow = "{{ path('material_show', { 'id': 0 }) }}";
+                            } else if (row["intype"] === 4) {
+                                urlShow = "{{ path('document_show', { 'id': 0 }) }}";
+                            } else {
+                                urlShow = row["id"];
+                            }
+
                             urlShow = urlShow.replace("0", row["id"]);
 
                             return "<a href='" + urlShow + "' class='float-left'>" + row["id"] + "</a>";
                         },
                         "name": "id", 
-                        "targets": 2
+                        "targets": 3
                     },
                     {
                         'render': function (data, type, row) {
                             return row["designation"];
                         },
                         "name": "designation", 
-                        "targets": 3
+                        "targets": 4
                     },
                     {
                         'render': function (data, type, row) {
                             return row["name"];
                         },
                         "name": "name", 
-                        "targets": 4
+                        "targets": 5
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            let groups = '';
+                            if (row["intype"] === 1 || row["intype"] === 3) {
+                                groups = row["product_group_name"] + ' - ' + row["product_type_name"] + ' - ' + row["product_kind_name"] + ' - ' + row["product_category_name"] + ' - ' + row["product_analytic_group_name"] + ' - ' + row["product_finance_group_name"];
+                            } 
+                            return groups;
+                        },
+                        "name": "groups", 
+                        "targets": 6
                     },
                     {
                         'render': function (data, type, row) {
@@ -136,13 +180,34 @@
                                 ready += 100 / cnt;
                             }
 
-
-                            let urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            let urlShow = '';
+                            if (row["intype"] === 1) {
+                                urlShow = "{{ path('product_show', { 'id': 0 }) }}";
+                            } else if (row["intype"] === 3) {
+                                urlShow = "{{ path('material_show', { 'id': 0 }) }}";
+                            } else if (row["intype"] === 4) {
+                                urlShow = "{{ path('document_show', { 'id': 0 }) }}";
+                            } else {
+                                urlShow = row["id"];
+                            }
                             urlShow = urlShow.replace("0", row["id"]);
 
                             let urlEdit = '';
-                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
-                                urlEdit = "{{ path('product_edit', { 'id': 0 }) }}";
+                            {% if (is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")) %}
+                                if (row["intype"] === 1) {
+                                    urlEdit = "{{ path('product_edit', { 'id': 0 }) }}";
+                                } else if (row["intype"] === 3) {
+                                    urlEdit = "{{ path('material_edit', { 'id': 0 }) }}";
+                                } else if (row["intype"] === 4) {
+                                    urlEdit = "{{ path('document_edit', { 'id': 0 }) }}";
+                                }
+                                urlEdit = urlEdit.replace("0", row["id"]);
+                            {% elseif (is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH")) %}
+                                if (row["intype"] === 1) {
+                                    urlEdit = "{{ path('product_edit', { 'id': 0 }) }}";
+                                } else if (row["intype"] === 3) {
+                                    urlEdit = "{{ path('material_edit', { 'id': 0 }) }}";
+                                }
                                 urlEdit = urlEdit.replace("0", row["id"]);
                             {% endif %}
 
@@ -150,7 +215,9 @@
 
                             let buttonEdit = '';
                             {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
-                                buttonEdit = "<li><a href='" + urlEdit + "' class='dropdown-item' title='{{ 'title.edit'|trans }}'>{{ 'title.edit'|trans }}</a></li>";
+                                if (urlEdit) {
+                                    buttonEdit = "<li><a href='" + urlEdit + "' class='dropdown-item' title='{{ 'title.edit'|trans }}'>{{ 'title.edit'|trans }}</a></li>";
+                                }
                             {% endif %}
 
                             let buttonDelete = '';
@@ -195,13 +262,15 @@
                             groupInfo += "</ul>";
                             groupInfo += "</div>";
 
+                            if (row["intype"] === 4) {
+                                groupInfo = '';
+                            } 
 
                             return "<div class='btn-group btn-group-sm dropleft ml-1'><button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'><i class='fa fa-ellipsis-h' aria-hidden='true'></i></button><ul class='dropdown-menu'>" + buttonShow + buttonEdit + buttonDelete + "</ul></div>" + groupInfo;
-
                             
                         },
                         "name": "control", 
-                        "targets": 5, 
+                        "targets": 7, 
                         "orderable": false, 
                         "searchable": false
                     },
@@ -219,7 +288,7 @@
                 "info": true,
                 "searching": true,
                 "pageLength": 25,
-                "order": [[2, 'asc']],
+                "order": [[5, 'asc']],
                 "language": {
                     "url": "{{ asset('dist/json/dataTables.ru.lang.json') }}"
                 },

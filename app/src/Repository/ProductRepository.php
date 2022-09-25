@@ -20,143 +20,12 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         parent::__construct($registry, Product::class);
     }
 
-    // TO DO For Delete
-    public function countProduct()
-    {
-        return $this
-            ->createQueryBuilder('t0')
-            ->select("count(t0.id)")
-            ->join('t0.product_group', 't1')
-            ->join('t0.product_type', 't2')
-            ->join('t0.product_kind', 't3')
-            ->join('t0.product_category', 't4')
-            ->join('t0.calculation', 't5')
-            ->join('t0.analytic_group', 't6')
-            ->join('t0.finance_group', 't7')
-            ->where("t0.intype = :intype")
-            ->setParameter('intype', Product::INTYPE_PRODUCT)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    // TO DO For Delete
-    public function getRequiredDTDataProduct($start, $length, $orders, $search, $columns, $otherConditions = null): array
-    {
-        // Create Main Query
-        $query = $this->createQueryBuilder('t0');
-        $query->join('t0.product_group', 't1');
-        $query->join('t0.product_type', 't2');
-        $query->join('t0.product_kind', 't3');
-        $query->join('t0.product_category', 't4');
-        $query->join('t0.calculation', 't5');
-        $query->join('t0.analytic_group', 't6');
-        $query->join('t0.finance_group', 't7');
-
-
-        // Create Count Query
-        $countQuery = $this->createQueryBuilder('t0');
-        $countQuery->select('COUNT(t0)');
-        $countQuery->join('t0.product_group', 't1');
-        $countQuery->join('t0.product_type', 't2');
-        $countQuery->join('t0.product_kind', 't3');
-        $countQuery->join('t0.product_category', 't4');
-        $countQuery->join('t0.calculation', 't5');
-        $countQuery->join('t0.analytic_group', 't6');
-        $countQuery->join('t0.finance_group', 't7');
-
-
-        // Other conditions than the ones sent by the Ajax call ?
-        if ($otherConditions === null) {
-            // No
-            // However, add a "always true" condition to keep an uniform treatment in all cases
-            $query->where("1=1");
-            $countQuery->where("1=1");
-        } else {
-            // Add condition
-            $query->where($otherConditions);
-            $countQuery->where($otherConditions);
-        }
-
-        // Fields Search
-        if ($search['value'] !== '') {
-            // $searchItem is what we are looking for
-            $searchItem = $search['value'];
-            $searchQuery = 't0.id LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t0.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t0.designation LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t1.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t2.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t3.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t4.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t5.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t6.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t7.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= " or concat(t0.name, ' ', t0.designation) LIKE '%$searchItem%'";
-
-            $query->andWhere($searchQuery);
-            $countQuery->andWhere($searchQuery);
-        }
-
-        // Limit
-        $query->setFirstResult($start)->setMaxResults($length);
-
-        // Order
-        foreach ($orders as $key => $order) {
-            // $order['name'] is the name of the order column as sent by the JS
-            if ($order['name'] !== '') {
-                $orderColumn = null;
-
-                switch ($order['name']) {
-                    case 'id': {
-                            $query->orderBy('t0.id', $order['dir']);
-                            break;
-                        }
-                    case 'name': {
-                            $query->orderBy('t0.name', $order['dir']);
-                            break;
-                        }
-                    case 'designation': {
-                            $query->orderBy('t0.designation', $order['dir']);
-                            break;
-                        }
-
-                    case 'groups': {
-                            $query->orderBy('t1.name', $order['dir']);
-                            $query->addOrderBy('t2.name', $order['dir']);
-                            $query->addOrderBy('t3.name', $order['dir']);
-                            $query->addOrderBy('t4.name', $order['dir']);
-                            $query->addOrderBy('t5.name', $order['dir']);
-                            $query->addOrderBy('t6.name', $order['dir']);
-                            $query->addOrderBy('t7.name', $order['dir']);
-                            break;
-                        }
-                }
-            }
-        }
-
-        $query->andWhere("t0.intype = :intype");
-        $query->setParameter('intype', Product::INTYPE_PRODUCT);
-
-        $countQuery->andWhere("t0.intype = :intype");
-        $countQuery->setParameter('intype', Product::INTYPE_PRODUCT);
-
-        // Execute
-        $results = $query->getQuery()->getResult();
-        $countResult = $countQuery->getQuery()->getSingleScalarResult();
-
-        return [
-            "results" => $results,
-            "countResult" => $countResult
-        ];
-    }
-
-
     public function countSpecificationSection()
     {
         return $this
             ->createQueryBuilder('t0')
-            ->select("count(t0.id)")
-            ->where("t0.intype = :intype")
+            ->select('count(t0.id)')
+            ->where('t0.intype = :intype')
             ->setParameter('intype', Product::INTYPE_SPECIFICATION_SECTION)
             ->getQuery()
             ->getSingleScalarResult();
@@ -216,125 +85,6 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
 
         $countQuery->andWhere("t0.intype = :intype");
         $countQuery->setParameter('intype', Product::INTYPE_SPECIFICATION_SECTION);
-
-        // Execute
-        $results = $query->getQuery()->getResult();
-        $countResult = $countQuery->getQuery()->getSingleScalarResult();
-
-        return [
-            "results" => $results,
-            "countResult" => $countResult
-        ];
-    }
-
-    public function countMaterial()
-    {
-        return $this
-            ->createQueryBuilder('t0')
-            ->select("count(t0.id)")
-            ->join('t0.product_group', 't1')
-            ->join('t0.product_type', 't2')
-            ->join('t0.product_kind', 't3')
-            ->join('t0.product_category', 't4')
-            ->join('t0.calculation', 't5')
-            ->join('t0.analytic_group', 't6')
-            ->join('t0.finance_group', 't7')
-            ->where("t0.intype = :intype")
-            ->setParameter('intype', Product::INTYPE_MATERIAL)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function getRequiredDTDataMaterial($start, $length, $orders, $search, $columns, $otherConditions = null): array
-    {
-        // Create Main Query
-        $query = $this->createQueryBuilder('t0');
-        $query->join('t0.product_group', 't1');
-        $query->join('t0.product_type', 't2');
-        $query->join('t0.product_kind', 't3');
-        $query->join('t0.product_category', 't4');
-        $query->join('t0.calculation', 't5');
-        $query->join('t0.analytic_group', 't6');
-        $query->join('t0.finance_group', 't7');
-
-        // Create Count Query
-        $countQuery = $this->createQueryBuilder('t0');
-        $countQuery->select('COUNT(t0)');
-        $countQuery->join('t0.product_group', 't1');
-        $countQuery->join('t0.product_type', 't2');
-        $countQuery->join('t0.product_kind', 't3');
-        $countQuery->join('t0.product_category', 't4');
-        $countQuery->join('t0.calculation', 't5');
-        $countQuery->join('t0.analytic_group', 't6');
-        $countQuery->join('t0.finance_group', 't7');
-
-        // Other conditions than the ones sent by the Ajax call ?
-        if ($otherConditions === null) {
-            // No
-            // However, add a "always true" condition to keep an uniform treatment in all cases
-            $query->where("1=1");
-            $countQuery->where("1=1");
-        } else {
-            // Add condition
-            $query->where($otherConditions);
-            $countQuery->where($otherConditions);
-        }
-
-        // Fields Search
-        if ($search['value'] !== '') {
-            // $searchItem is what we are looking for
-            $searchItem = $search['value'];
-            $searchQuery = 't0.id LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t0.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t1.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t2.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t3.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t4.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t5.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t6.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t7.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= " or concat(t0.name, ' ', t0.designation) LIKE '%$searchItem%'";
-
-            $query->andWhere($searchQuery);
-            $countQuery->andWhere($searchQuery);
-        }
-
-        // Limit
-        $query->setFirstResult($start)->setMaxResults($length);
-
-        // Order
-        $query->orderBy('t0.position', 'ASC');
-        foreach ($orders as $key => $order) {
-            // $order['name'] is the name of the order column as sent by the JS
-            if ($order['name'] !== '') {
-                $orderColumn = null;
-
-                switch ($order['name']) {
-                    case 'id': {
-                            $query->orderBy('t0.id', $order['dir']);
-                            break;
-                        }
-                    case 'name': {
-                            $query->orderBy('t0.name', $order['dir']);
-                            break;
-                        }
-
-                    case 'groups': {
-                            $query->orderBy('t1.name', $order['dir']);
-                            $query->addOrderBy('t2.name', $order['dir']);
-                            $query->addOrderBy('t3.name', $order['dir']);
-                            $query->addOrderBy('t4.name', $order['dir']);
-                            break;
-                        }
-                }
-            }
-        }
-
-        $query->andWhere("t0.intype = :intype");
-        $query->setParameter('intype', Product::INTYPE_MATERIAL);
-
-        $countQuery->andWhere("t0.intype = :intype");
-        $countQuery->setParameter('intype', Product::INTYPE_MATERIAL);
 
         // Execute
         $results = $query->getQuery()->getResult();
@@ -507,87 +257,6 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         ];
     }
 
-    public function countDocument()
-    {
-        return $this
-            ->createQueryBuilder('t0')
-            ->select("count(t0.id)")
-            ->where("t0.intype = :intype")
-            ->setParameter('intype', Product::INTYPE_DOCUMENT)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function getRequiredDTDataDocument($start, $length, $orders, $search, $columns, $otherConditions = null): array
-    {
-        // Create Main Query
-        $query = $this->createQueryBuilder('t0');
-
-        // Create Count Query
-        $countQuery = $this->createQueryBuilder('t0');
-        $countQuery->select('COUNT(t0)');
-
-        // Other conditions than the ones sent by the Ajax call ?
-        if ($otherConditions === null) {
-            // No
-            // However, add a "always true" condition to keep an uniform treatment in all cases
-            $query->where("1=1");
-            $countQuery->where("1=1");
-        } else {
-            // Add condition
-            $query->where($otherConditions);
-            $countQuery->where($otherConditions);
-        }
-
-        // Fields Search
-        if ($search['value'] !== '') {
-            // $searchItem is what we are looking for
-            $searchItem = $search['value'];
-            $searchQuery = 't0.name LIKE \'%' . $searchItem . '%\'';
-            $searchQuery .= ' or t0.designation LIKE \'%' . $searchItem . '%\'';
-
-            $query->andWhere($searchQuery);
-            $countQuery->andWhere($searchQuery);
-        }
-
-        // Limit
-        $query->setFirstResult($start)->setMaxResults($length);
-
-        // Order
-        foreach ($orders as $key => $order) {
-            // $order['name'] is the name of the order column as sent by the JS
-            if ($order['name'] !== '') {
-                $orderColumn = null;
-
-                switch ($order['name']) {
-                    case 'name': {
-                            $query->orderBy('t0.name', $order['dir']);
-                            break;
-                        }
-                    case 'designation': {
-                            $query->orderBy('t0.designation', $order['dir']);
-                            break;
-                        }
-                }
-            }
-        }
-
-        $query->andWhere("t0.intype = :intype");
-        $query->setParameter('intype', Product::INTYPE_DOCUMENT);
-
-        $countQuery->andWhere("t0.intype = :intype");
-        $countQuery->setParameter('intype', Product::INTYPE_DOCUMENT);
-
-        // Execute
-        $results = $query->getQuery()->getResult();
-        $countResult = $countQuery->getQuery()->getSingleScalarResult();
-
-        return [
-            "results" => $results,
-            "countResult" => $countResult
-        ];
-    }
-
     public function findForSelectProduct($id = null, $intype = Product::INTYPE_PRODUCT)
     {
         $query = $this->createQueryBuilder('p');
@@ -627,7 +296,6 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
 
         return $query;
     }
-
 
     public function findForExcel($id)
     {
@@ -735,7 +403,7 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
      * @param  int|null $idDoc
      * @return array
      */
-    public function getListForDataTable($start, $length, $orders, $search, $idDoc = null): array
+    public function getListForDataTable($start, $length, $orders, $search, $columns, $idDoc = null): array
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");
@@ -783,6 +451,135 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
             $countQuery->andWhere($searchQuery);
         }
 
+        // Filters
+        foreach ($columns as $key => $column) {
+            if ($column['name'] !== '') {
+                switch ($column['name']) {
+                    case 'intype':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'intype';
+                                $searchQuery = 't0.intype = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_group_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_group_id';
+                                $searchQuery = 't1.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_type_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_type_id';
+                                $searchQuery = 't2.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_kind_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_kind_id';
+                                $searchQuery = 't3.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_category_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_category_id';
+                                $searchQuery = 't4.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_calculation_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_calculation_id';
+                                $searchQuery = 't5.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_analytic_group_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_analytic_group_id';
+                                $searchQuery = 't6.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                    case 'product_finance_group_id':
+                        {
+                            $columnSearch = $column['search'];
+                            if (!empty($columnSearch['value'])) {
+                                $setParametr = 'product_finance_group_id';
+                                $searchQuery = 't7.id = :' . $setParametr;
+                            
+                                $query->andWhere($searchQuery);
+                                $query->setParameter($setParametr, $columnSearch['value']);
+
+                                $countQuery->andWhere($searchQuery);
+                                $countQuery->setParameter($setParametr, $columnSearch['value']);
+                            }
+                            break;
+                        }
+                }
+            }
+
+        }
+
         // Limit
         $query->setFirstResult($start)->setMaxResults($length);
 
@@ -790,7 +587,6 @@ class ProductRepository extends ServiceEntityRepository implements ListDatatable
         foreach ($orders as $key => $order) {
             // $order['name'] is the name of the order column as sent by the JS
             if ($order['name'] !== '') {
-                $orderColumn = null;
 
                 switch ($order['name']) {
                     case 'id': {

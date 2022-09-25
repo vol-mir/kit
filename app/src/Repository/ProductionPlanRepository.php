@@ -42,7 +42,7 @@ class ProductionPlanRepository extends ServiceEntityRepository implements ListDa
      * @param  int|null $idDoc
      * @return array
      */
-    public function getListForDataTable($start, $length, $orders, $search, $idDoc = null): array
+    public function getListForDataTable($start, $length, $orders, $search, $columns, $idDoc = null): array
     {
         // Create Main Query
         $query = $this->createQueryBuilder("t0");

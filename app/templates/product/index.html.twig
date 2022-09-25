@@ -9,6 +9,7 @@
                 {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  or is_granted("ROLE_OGT") or is_granted("ROLE_PEO")  or is_granted("ROLE_BUH") %}
                 <div class="card-header">
                     {% include 'product/_controls.html.twig' %}
+                    {% include 'product/_filter.html.twig' %}
                 </div>
                 {% endif %}
                 <!-- /.card-header -->
@@ -24,6 +25,14 @@
                             <th>Наименование</th>
                             <th width="25%">Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
                             <th width="7%"></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -37,6 +46,14 @@
                             <th>Обозначение</th>
                             <th>Наименование</th>
                             <th>Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                             <th></th>
                         </tr>
                         </tfoot>
@@ -123,7 +140,7 @@
 
                             urlShow = urlShow.replace("0", row["id"]);
 
-                            return "<a href='" + urlShow + "' class='float-left'>" + row["id"] + "</a>";
+                            return "<a href='" + urlShow + "' class='float-left' target='_blank'>" + row["id"] + "</a>";
                         },
                         "name": "id", 
                         "targets": 3
@@ -146,7 +163,7 @@
                         'render': function (data, type, row) {
                             let groups = '';
                             if (row["intype"] === 1 || row["intype"] === 3) {
-                                groups = row["product_group_name"] + ' - ' + row["product_type_name"] + ' - ' + row["product_kind_name"] + ' - ' + row["product_category_name"] + ' - ' + row["product_analytic_group_name"] + ' - ' + row["product_finance_group_name"];
+                                groups = row["product_group_name"] + ' - ' + row["product_type_name"] + ' - ' + row["product_kind_name"] + ' - ' + row["product_category_name"] + ' - ' + row["product_calculation_name"] + ' - ' + row["product_analytic_group_name"] + ' - ' + row["product_finance_group_name"];
                             } 
                             return groups;
                         },
@@ -211,12 +228,12 @@
                                 urlEdit = urlEdit.replace("0", row["id"]);
                             {% endif %}
 
-                            let buttonShow = "<li><a href='" + urlShow + "' class='dropdown-item' title='{{ 'title.show'|trans }}'>{{ 'title.show'|trans }}</a></li>";
+                            let buttonShow = "<li><a href='" + urlShow + "' class='dropdown-item' title='{{ 'title.show'|trans }}' target='_blank'>{{ 'title.show'|trans }}</a></li>";
 
                             let buttonEdit = '';
                             {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or is_granted("ROLE_BUH") %}
                                 if (urlEdit) {
-                                    buttonEdit = "<li><a href='" + urlEdit + "' class='dropdown-item' title='{{ 'title.edit'|trans }}'>{{ 'title.edit'|trans }}</a></li>";
+                                    buttonEdit = "<li><a href='" + urlEdit + "' class='dropdown-item' title='{{ 'title.edit'|trans }}' target='_blank'>{{ 'title.edit'|trans }}</a></li>";
                                 }
                             {% endif %}
 
@@ -273,6 +290,86 @@
                         "targets": 7, 
                         "orderable": false, 
                         "searchable": false
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["intype"];
+                        },
+                        "name": "intype", 
+                        "targets": 8, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_group_id"];
+                        },
+                        "name": "product_group_id", 
+                        "targets": 9, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_type_id"];
+                        },
+                        "name": "product_type_id", 
+                        "targets": 10, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_kind_id"];
+                        },
+                        "name": "product_kind_id", 
+                        "targets": 11, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_category_id"];
+                        },
+                        "name": "product_category_id", 
+                        "targets": 12, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_calculation_id"];
+                        },
+                        "name": "product_calculation_id", 
+                        "targets": 13, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_analytic_group_id"];
+                        },
+                        "name": "product_analytic_group_id", 
+                        "targets": 14, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
+                    },
+                    {
+                        'render': function (data, type, row) {
+                            return row["product_finance_group_id"];
+                        },
+                        "name": "product_finance_group_id", 
+                        "targets": 15, 
+                        "orderable": false, 
+                        "searchable": false, 
+                        className: "hide_column",
                     },
                 ],
                 "ajax": {
@@ -421,6 +518,237 @@
 
                 $('#modal-edit-group').modal('hide');
             });
+
+
+
+            let state = table.state.loaded();
+
+            // filters
+
+            // ----- start - intype -------
+            let columnIntype = 8;
+            let intypeCheck = $('#intype-check');
+            let intypeSelect = $('#intype-select');
+
+            if (state) {
+                let colIntypeSearch = state.columns[columnIntype].search;
+                if (colIntypeSearch.search) {
+                    intypeCheck.prop("checked", true);
+                    intypeSelect.val(colIntypeSearch.search);
+                }
+            }
+
+            intypeCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnIntype).search(intypeSelect.val()).draw();
+                } else {
+                    table.column(columnIntype).search('').draw();
+                }
+            });
+
+            intypeSelect.on('change', function () {
+                if (intypeCheck.is(":checked")) {
+                    table.column(columnIntype).search(intypeSelect.val()).draw();
+                }
+            });
+            // ----- end - intype -------
+
+            // ----- start - product-group -------
+            let columnProductGroup = 9;
+            let productGroupCheck = $('#product-group-check');
+            let productGroupSelect = $('#product-group-select');
+
+            if (state) {
+                let colProductGroupSearch = state.columns[columnProductGroup].search;
+                if (colProductGroupSearch.search) {
+                    productGroupCheck.prop("checked", true);
+                    productGroupSelect.val(colProductGroupSearch.search);
+                }
+            }
+
+            productGroupCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductGroup).search(productGroupSelect.val()).draw();
+                } else {
+                    table.column(columnProductGroup).search('').draw();
+                }
+            });
+
+            productGroupSelect.on('change', function () {
+                if (productGroupCheck.is(":checked")) {
+                    table.column(columnProductGroup).search(productGroupSelect.val()).draw();
+                }
+            });
+            // ----- end - product-group -------
+
+            // ----- start - product-type -------
+            let columnProductType = 10;
+            let productTypeCheck = $('#product-type-check');
+            let productTypeSelect = $('#product-type-select');
+
+            if (state) {
+                let colProductTypeSearch = state.columns[columnProductType].search;
+                if (colProductTypeSearch.search) {
+                    productTypeCheck.prop("checked", true);
+                    productTypeSelect.val(colProductTypeSearch.search);
+                }
+            }
+
+            productTypeCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductType).search(productTypeSelect.val()).draw();
+                } else {
+                    table.column(columnProductType).search('').draw();
+                }
+            });
+
+            productTypeSelect.on('change', function () {
+                if (productTypeCheck.is(":checked")) {
+                    table.column(columnProductType).search(productTypeSelect.val()).draw();
+                }
+            });
+            // ----- end - product-type -------
+
+            // ----- start - product-kind -------
+            let columnProductKind = 11;
+            let productKindCheck = $('#product-kind-check');
+            let productKindSelect = $('#product-kind-select');
+
+            if (state) {
+                let colProductKindSearch = state.columns[columnProductKind].search;
+                if (colProductKindSearch.search) {
+                    productKindCheck.prop("checked", true);
+                    productKindSelect.val(colProductKindSearch.search);
+                }
+            }
+
+            productKindCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductKind).search(productKindSelect.val()).draw();
+                } else {
+                    table.column(columnProductKind).search('').draw();
+                }
+            });
+
+            productKindSelect.on('change', function () {
+                if (productKindCheck.is(":checked")) {
+                    table.column(columnProductKind).search(productKindSelect.val()).draw();
+                }
+            });
+            // ----- end - product-kind -------
+
+            // ----- start - product-category -------
+            let columnProductCategory = 12;
+            let productCategoryCheck = $('#product-category-check');
+            let productCategorySelect = $('#product-category-select');
+
+            if (state) {
+                let colProductCategorySearch = state.columns[columnProductCategory].search;
+                if (colProductCategorySearch.search) {
+                    productCategoryCheck.prop("checked", true);
+                    productCategorySelect.val(colProductCategorySearch.search);
+                }
+            }
+
+            productCategoryCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductCategory).search(productCategorySelect.val()).draw();
+                } else {
+                    table.column(columnProductCategory).search('').draw();
+                }
+            });
+
+            productCategorySelect.on('change', function () {
+                if (productCategoryCheck.is(":checked")) {
+                    table.column(columnProductCategory).search(productCategorySelect.val()).draw();
+                }
+            });
+            // ----- end - product-category -------
+
+            // ----- start - product-calculation -------
+            let columnProductCalculation = 13;
+            let productCalculationCheck = $('#product-calculation-check');
+            let productCalculationSelect = $('#product-calculation-select');
+
+            if (state) {
+                let colProductCalculationSearch = state.columns[columnProductCalculation].search;
+                if (colProductCalculationSearch.search) {
+                    productCalculationCheck.prop("checked", true);
+                    productCalculationSelect.val(colProductCalculationSearch.search);
+                }
+            }
+
+            productCalculationCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductCalculation).search(productCalculationSelect.val()).draw();
+                } else {
+                    table.column(columnProductCalculation).search('').draw();
+                }
+            });
+
+            productCalculationSelect.on('change', function () {
+                if (productCalculationCheck.is(":checked")) {
+                    table.column(columnProductCalculation).search(productCalculationSelect.val()).draw();
+                }
+            });
+            // ----- end - product-calculation -------
+
+            // ----- start - product-analytic-group -------
+            let columnProductAnalyticGroup = 14;
+            let productAnalyticGroupCheck = $('#product-analytic-group-check');
+            let productAnalyticGroupSelect = $('#product-analytic-group-select');
+
+            if (state) {
+                let colProductAnalyticGroupSearch = state.columns[columnProductAnalyticGroup].search;
+                if (colProductAnalyticGroupSearch.search) {
+                    productAnalyticGroupCheck.prop("checked", true);
+                    productAnalyticGroupSelect.val(colProductAnalyticGroupSearch.search);
+                }
+            }
+
+            productAnalyticGroupCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductAnalyticGroup).search(productAnalyticGroupSelect.val()).draw();
+                } else {
+                    table.column(columnProductAnalyticGroup).search('').draw();
+                }
+            });
+
+            productAnalyticGroupSelect.on('change', function () {
+                if (productAnalyticGroupCheck.is(":checked")) {
+                    table.column(columnProductAnalyticGroup).search(productAnalyticGroupSelect.val()).draw();
+                }
+            });
+            // ----- end - product-analytic-group -------
+
+            // ----- start - product-finance-group -------
+            let columnProductFinanceGroup = 15;
+            let productFinanceGroupCheck = $('#product-finance-group-check');
+            let productFinanceGroupSelect = $('#product-finance-group-select');
+
+            if (state) {
+                let colProductFinanceGroupSearch = state.columns[columnProductFinanceGroup].search;
+                if (colProductFinanceGroupSearch.search) {
+                    productFinanceGroupCheck.prop("checked", true);
+                    productFinanceGroupSelect.val(colProductFinanceGroupSearch.search);
+                }
+            }
+
+            productFinanceGroupCheck.on('change', function () {
+                if (this.checked) {
+                    table.column(columnProductFinanceGroup).search(productFinanceGroupSelect.val()).draw();
+                } else {
+                    table.column(columnProductFinanceGroup).search('').draw();
+                }
+            });
+
+            productFinanceGroupSelect.on('change', function () {
+                if (productFinanceGroupCheck.is(":checked")) {
+                    table.column(columnProductFinanceGroup).search(productFinanceGroupSelect.val()).draw();
+                }
+            });
+            // ----- end - product-finance-group -------
+
         });
     </script>
 

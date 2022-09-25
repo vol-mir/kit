@@ -13,5 +13,5 @@ interface ListDatatableInterface {
      * @param  int|null $idDoc
      * @return array
      */
-    public function getListForDataTable($start, $length, $orders, $search, $idDoc = null): array;
+    public function getListForDataTable($start, $length, $orders, $search, $columns, $idDoc = null): array;
 }

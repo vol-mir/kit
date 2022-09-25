@@ -37,7 +37,7 @@ trait ListDatatableTrait {
 
         $results = $this->entityManager
             ->getRepository($entity)
-            ->getListForDataTable($start, $length, $orders, $search, $idDoc);
+            ->getListForDataTable($start, $length, $orders, $search, $columns, $idDoc);
 
         return [
             'draw' => $draw,

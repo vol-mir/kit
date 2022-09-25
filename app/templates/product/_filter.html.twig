@@ -1,0 +1,145 @@
+<div class="row pt-2">
+    <div class="col-3">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="intype-check">&nbsp;Номенклатура
+                        </span>
+                </div>
+                <select class="form-control" id="intype-select">
+                    <option value="0">Все</option>
+                    <option value="1">Номенклатура</option>
+                    <option value="3">Материалы</option>
+                    <option value="4">Документация</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-group-check">&nbsp;Группа
+                        </span>
+                </div>
+                <select class="form-control" id="product-group-select">
+                    <option value="0">Все</option>
+                    {% for productGroup in productGroups %}
+                        <option value="{{ productGroup.id }}">{{ productGroup.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-type-check">&nbsp;Тип
+                        </span>
+                </div>
+                <select class="form-control" id="product-type-select">
+                    <option value="0">Все</option>
+                    {% for productType in productTypes %}
+                        <option value="{{ productType.id }}">{{ productType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-kind-check">&nbsp;Вид
+                        </span>
+                </div>
+                <select class="form-control" id="product-kind-select">
+                    <option value="0">Все</option>
+                    {% for productKind in productKinds %}
+                        <option value="{{ productKind.id }}">{{ productKind.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-category-check">&nbsp;Товарная категория
+                        </span>
+                </div>
+                <select class="form-control" id="product-category-select">
+                    <option value="0">Все</option>
+                    {% for productCategory in productCategories %}
+                        <option value="{{ productCategory.id }}">{{ productCategory.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-5">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-calculation-check">&nbsp;Статья калькуляции
+                        </span>
+                </div>
+                <select class="form-control" id="product-calculation-select">
+                    <option value="0">Все</option>
+                    {% for calculation in calculations %}
+                        <option value="{{ calculation.id }}">{{ calculation.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-analytic-group-check">&nbsp;Группа аналит. учета
+                        </span>
+                </div>
+                <select class="form-control" id="product-analytic-group-select">
+                    <option value="0">Все</option>
+                    {% for analyticGroup in analyticGroups %}
+                        <option value="{{ analyticGroup.id }}">{{ analyticGroup.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <input type="checkbox" id="product-finance-group-check">&nbsp;Группа фин. учета
+                        </span>
+                </div>
+                <select class="form-control" id="product-finance-group-select">
+                    <option value="0">Все</option>
+                    {% for financeGroup in financeGroups %}
+                        <option value="{{ financeGroup.id }}">{{ financeGroup.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

@@ -45,3 +45,7 @@ body {
 .table-cell-edit{
     background-color: #CAFF9E;
 }
+
+.group_column {
+    line-height: 14px;
+}

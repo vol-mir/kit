@@ -9,9 +9,11 @@
                 {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_OGK")  or is_granted("ROLE_OGT") or is_granted("ROLE_PEO")  or is_granted("ROLE_BUH") %}
                 <div class="card-header">
                     {% include 'product/_controls.html.twig' %}
-                    {% include 'product/_filter.html.twig' %}
                 </div>
                 {% endif %}
+                <div class="card-header">
+                    {% include 'product/_filter.html.twig' %}
+                </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                     <table id="products" class="table table-bordered table-striped table-hover table-sm">
@@ -23,7 +25,7 @@
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
-                            <th width="25%">Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
+                            <th width="25%">Группы</th>
                             <th width="7%"></th>
                             <th></th>
                             <th></th>
@@ -45,7 +47,7 @@
                             <th>Код</th>
                             <th>Обозначение</th>
                             <th>Наименование</th>
-                            <th>Группа - Тип - Вид - Категория - Статья калькуляции - Группа аналит. учета - Группа фин. учета</th>
+                            <th>Группы</th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -163,12 +165,13 @@
                         'render': function (data, type, row) {
                             let groups = '';
                             if (row["intype"] === 1 || row["intype"] === 3) {
-                                groups = row["product_group_name"] + ' - ' + row["product_type_name"] + ' - ' + row["product_kind_name"] + ' - ' + row["product_category_name"] + ' - ' + row["product_calculation_name"] + ' - ' + row["product_analytic_group_name"] + ' - ' + row["product_finance_group_name"];
+                                groups = '<small>Группа: ' + row["product_group_name"] + '</small><br><small>Тип: ' + row["product_type_name"] + '</small><br><small>Вид: ' + row["product_kind_name"] + '</small><br><small>Категория: ' + row["product_category_name"] + '</small><br><small>Статья калькуляции: ' + row["product_calculation_name"] + '</small><br><small>Группа аналит. учета: ' + row["product_analytic_group_name"] + '</small><br><small>Группа фин. учета: ' + row["product_finance_group_name"] + '</small>';
                             } 
                             return groups;
                         },
                         "name": "groups", 
-                        "targets": 6
+                        "targets": 6,
+                        className: "group_column",
                     },
                     {
                         'render': function (data, type, row) {

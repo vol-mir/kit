@@ -9,12 +9,17 @@ use App\Entity\{
     Rendition,
     Specification,
     NormDocument,
+    NeedPurchasedProduct,
+    ProductionPlan
 };
 use Doctrine\ORM\EntityManagerInterface;
 
 class ListMaterialsService
 {
     const RENDITION_STANDART_ID = 1;
+
+    const PREFIX_MATERIAL = 'mt';
+    const PREFIX_PRODUCT = 'pr';
 
     /** 
      * @var EntityManagerInterface $entityManager 
@@ -28,7 +33,7 @@ class ListMaterialsService
 
 
     protected $tableMaterials = [];
-    
+
 
     /**
      * Construct to class ListMaterialsService
@@ -39,11 +44,13 @@ class ListMaterialsService
         $this->renditionStandart = $this->entityManager->getRepository(Rendition::class)->find(self::RENDITION_STANDART_ID);
     }
 
-    public function initTable() {
+    public function initTable()
+    {
         $this->tableMaterials = [];
     }
 
-    public function getTableMaterials() {
+    public function getTableMaterials()
+    {
         return $this->tableMaterials;
     }
 
@@ -55,11 +62,12 @@ class ListMaterialsService
      * @param float $amount
      * @param $date
      * @param string $type = 'root|child'
+     * @param int $specificationId
      *
      * @return array
      */
 
-    public function getMaterials(int $productId, int $renditionId, float $amount = 1, $date, $type, $arrRoots = []): array
+    public function getMaterials(int $productId, int $renditionId, float $amount = 1, $date, $type, $arrRoots = [], $specificationId = null): array
     {
         $result = [];
 
@@ -75,6 +83,7 @@ class ListMaterialsService
             'unitName' =>  $product->getUnit() ? $product->getUnit()->getName() : null,
             'amount' => $amount,
             'type' => $type,
+            'specificationId' => $specificationId,
         ];
 
         // Get structure to specification on the date
@@ -133,14 +142,15 @@ class ListMaterialsService
                 'amount' => $amount,
                 'amountAll' => $amount * $item->getAmount(),
                 'mainReplacement' => $item->getMainReplacement(),
-                'prefix' => 'mt-',
+                'prefix' => self::PREFIX_MATERIAL,
+                'normDocumentId' => $item->getNormDocument()->getId(),
             ];
 
 
             $materials[] = $arrTemp;
             $itemRoot['expense'] = $arrTemp;
             $arrRoots['expense'] = $arrTemp;
-            
+
             // ** COOL **
             $this->addTableMaterials($arrTemp, $itemRoot, $arrRoots);
 
@@ -177,12 +187,13 @@ class ListMaterialsService
                 'categoryName' => $itemProduct->getProductCategory() ? $itemProduct->getProductCategory()->getName() : null,
                 'mainReplacement' => $item->getMainReplacement(),
                 'type' => 'child',
-                'prefix' => 'pr-',
+                'prefix' => self::PREFIX_PRODUCT,
+                'specificationId' => $item->getSpecification()->getId(),
             ];
 
             // TO DO - Make actual document
             if (count($itemProduct->getSpecifications()) > 0 || count($itemProduct->getNormDocuments()) > 0) {
-                $composition = $this->getMaterials($itemProduct->getId(), $rendition->getId(), $amount * $item->getAmount(), $date, 'child', $arrRoots);
+                $composition = $this->getMaterials($itemProduct->getId(), $rendition->getId(), $amount * $item->getAmount(), $date, 'child', $arrRoots, $item->getSpecification()->getId());
 
                 if (count($composition) > 0) {
                     $arrTemp = array_merge($arrTemp, $composition);
@@ -204,9 +215,10 @@ class ListMaterialsService
         return $result;
     }
 
-    public function addTableMaterials($data, $root, $arrRoots) {
+    public function addTableMaterials($data, $root, $arrRoots)
+    {
 
-        $context = $data['prefix'] . $data['id'];
+        $context = $data['prefix'] . '-' . $data['id'];
 
         $search = 0;
 
@@ -229,6 +241,7 @@ class ListMaterialsService
             $arrStr['unitName'] = $data['unitName'];
             $arrStr['amountAll'] = round($data['amountAll'], 6);
             $arrStr['context'] = $context;
+            $arrStr['prefix'] = $data['prefix'];
             $arrStr['balanceBuy'] = 0;
             $arrStr['balanceManufacture'] = 0;
             $arrStr['amountResult'] = 0;
@@ -239,13 +252,42 @@ class ListMaterialsService
         }
     }
 
-    public function getAmountResult($data) 
+    public function getAmountResult($data)
     {
-        array_walk ( $data, function (&$key) { 
-            $key["amountResult"] = $key['amountAll'] - $key['balanceBuy'] - $key['balanceManufacture']; 
+        array_walk($data, function (&$key) {
+            $key["amountResult"] = $key['amountAll'] - $key['balanceBuy'] - $key['balanceManufacture'];
         });
 
         return $data;
+    }
 
+    public function saveTableMaterials(ProductionPlan $productionPlan, $data)
+    {
+        $oldNeedPurchasedProducts = $this->entityManager->getRepository(NeedPurchasedProduct::class)->findBy(['production_plan' => $productionPlan->getId()]);
+        array_walk($oldNeedPurchasedProducts, array($this, 'deleteEntity'));
+        $this->entityManager->flush();
+
+        array_walk ( $data, function (&$key) use ($productionPlan) { 
+            $needPurchasedProduct = new NeedPurchasedProduct();
+
+            $needPurchasedProduct->setAmountAll($key['amountAll']);
+            $needPurchasedProduct->setBalanceBuy($key['balanceBuy']);
+            $needPurchasedProduct->setBalanceManufacture($key['balanceManufacture']);
+            $needPurchasedProduct->setContext($key['context']);
+            $needPurchasedProduct->setPrefix($key['prefix']);
+            $needPurchasedProduct->setAmountResult($key['amountResult']);
+            $product = $this->entityManager->getRepository(Product::class)->find($key['id']);
+            $needPurchasedProduct->setProduct($product);
+            $needPurchasedProduct->setProductionPlan($productionPlan);
+
+            $this->entityManager->persist($needPurchasedProduct);
+        });
+
+        $this->entityManager->flush();
+    }
+
+    protected function deleteEntity($entity, $key)
+    {
+        $this->entityManager->remove($entity);
     }
 }

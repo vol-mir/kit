@@ -298,6 +298,11 @@ class Product
      */
     private $productionPlanItems;
 
+    /**
+     * @ORM\OneToMany(targetEntity=NeedPurchasedProduct::class, mappedBy="product", orphanRemoval=true, cascade={"remove"})
+     */
+    private $needPurchasedProducts;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
@@ -308,6 +313,7 @@ class Product
         $this->material_norms = new ArrayCollection();
         $this->track_documents = new ArrayCollection();
         $this->productionPlanItems = new ArrayCollection();
+        $this->needPurchasedProducts = new ArrayCollection();
     }
 
     public function __toString(): ?string
@@ -932,6 +938,36 @@ class Product
             // set the owning side to null (unless already changed)
             if ($productionPlanItem->getProduct() === $this) {
                 $productionPlanItem->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NeedPurchasedProduct>
+     */
+    public function getNeedPurchasedProducts(): Collection
+    {
+        return $this->needPurchasedProducts;
+    }
+
+    public function addNeedPurchasedProduct(NeedPurchasedProduct $needPurchasedProduct): self
+    {
+        if (!$this->needPurchasedProducts->contains($needPurchasedProduct)) {
+            $this->needPurchasedProducts[] = $needPurchasedProduct;
+            $needPurchasedProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNeedPurchasedProduct(NeedPurchasedProduct $needPurchasedProduct): self
+    {
+        if ($this->needPurchasedProducts->removeElement($needPurchasedProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($needPurchasedProduct->getProduct() === $this) {
+                $needPurchasedProduct->setProduct(null);
             }
         }
 

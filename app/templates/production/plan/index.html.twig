@@ -123,18 +123,23 @@
                         let urlEdit = "{{ path('production_plan_edit', { 'id': 0 }) }}";
                         urlEdit = urlEdit.replace("0", row["id"]);
 
-                        let buttonShow = "<a href='" + urlShow + "' class='btn btn-secondary' title='{{ 'title.show'|trans }}'><i class='fas fa-eye'></i></a'></i></a>";
+                        let buttonShow = "<a href='" + urlShow + "' class='btn btn-secondary' title='{{ 'title.show'|trans }}' target='_blank'><i class='fas fa-eye'></i></a'></i></a>";
 
                         let buttonEdit = '';
                         {% if is_granted("ROLE_ADMIN") %}
-                            buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}'><i class='fas fa-edit'></i></a>";
+                            buttonEdit = "<a href='" + urlEdit + "' class='btn btn-info' title='{{ 'title.edit'|trans }}' target='_blank'><i class='fas fa-edit'></i></a>";
                         {% endif %}
 
                         let buttonDelete = '';
                          {% if is_granted("ROLE_ADMIN") %}
                             buttonDelete = "<button type='button' class='btn btn-sm btn-danger float-left modal-delete-dialog' data-toggle='modal' data-id='" + row["id"] + "' title='{{ 'title.delete'|trans }}'><i class='fas fa-trash'></i></button>";
                         {% endif %}
-                        return "<div class='btn-group btn-group-sm'>" + buttonShow + buttonEdit + buttonDelete + "</div>";
+
+                        let urlNeed = "{{ path('production_plan_need_purchased', { 'id': 0 }) }}";
+                        urlNeed = urlNeed.replace("0", row["id"]);
+                        let buttonNeed = "<a href='" + urlNeed + "' class='btn btn-info' title='Потребность' target='_blank'><i class='fas fa-coffee'></i></a>";
+
+                        return "<div class='btn-group btn-group-sm'>" + buttonNeed + buttonShow + buttonEdit + buttonDelete + "</div>";
                     },
                     "name": "control",
                     "orderable": false,

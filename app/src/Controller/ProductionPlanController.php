@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Traits\ListDatatableTrait;
 use App\Entity\ProductionPlan;
+use App\Entity\NeedPurchasedProduct;
 use App\Form\ProductionPlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * Class ProductionPlanController
@@ -240,4 +242,41 @@ class ProductionPlanController extends AbstractController
 
         return $returnResponse;
     }
+
+    /**
+     * Show page need purchased
+     *
+     * @Route("/production/plans/{id}/purchased", methods="GET", name="production_plan_need_purchased")
+     *
+     * @return Response
+     */
+    public function needPurchased(Request $request, ProductionPlan $productionPlan): Response
+    {
+        return $this->render('production/need/purchased.html.twig', [
+            'productionPlan' => $productionPlan,
+        ]);
+    }
+
+    /**
+     * List datatable need purchased action
+     *
+     * @Route("/datatable/plan/{production_plan_id}/need/purchaseds", requirements={"production_plan_id" = "\d+"}, methods="POST", name="datatable_plan_need_purchaseds")
+     * @ParamConverter("productionPlan", options={"id" = "production_plan_id"})
+     * @Security("is_granted('ROLE_USER')")
+     * 
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function listDatatableNeedPurchasedAction(Request $request, ProductionPlan $productionPlan): JsonResponse
+    {
+        $response = $this->getListDatatable($request, $productionPlan, NeedPurchasedProduct::class);
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setData($response);
+
+        return $returnResponse;
+    }
+
+
 }

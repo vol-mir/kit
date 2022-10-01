@@ -137,6 +137,9 @@ class NeedPurchasedProductRepository extends ServiceEntityRepository
             }
         }
 
+        $query->andWhere('t0.production_plan = :productionPlanId');
+        $query->setParameter('productionPlanId', $idDoc);
+
         $countQuery->andWhere('t0.production_plan = :productionPlanId');
         $countQuery->setParameter('productionPlanId', $idDoc);
 

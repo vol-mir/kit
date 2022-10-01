@@ -250,7 +250,7 @@ class ProductionPlanController extends AbstractController
     /**
      * Show page need purchased
      *
-     * @Route("/production/plans/{id}/purchased", methods="GET", name="production_plan_need_purchased")
+     * @Route("/production/plan/{id}/purchased", methods="GET", name="production_plan_need_purchased")
      *
      * @return Response
      */
@@ -322,8 +322,7 @@ class ProductionPlanController extends AbstractController
     
         $detailing = [];
 
-        $number = 1;
-        foreach ($needPurchasedProductElements as $key => $element) {
+        foreach ($needPurchasedProductElements as $element) {
             $arrStr = [];
             $arrStr['id'] = $element->getKeyParent() . '-' . $element->getProduct()->getId();
             $arrStr['pid'] = $element->getParent() ? $element->getKeyParent() . '-' . $element->getParent()->getId() : null;

@@ -268,7 +268,7 @@ class ListMaterialsService
     public function getAmountResult($data)
     {
         array_walk($data, function (&$key) {
-            $key["amountResult"] = $key['amountAll'] - $key['balanceBuy'] - $key['balanceManufacture'];
+            $key['amountResult'] = $key['amountAll'] - $key['balanceBuy'] - $key['balanceManufacture'];
         });
 
         return $data;

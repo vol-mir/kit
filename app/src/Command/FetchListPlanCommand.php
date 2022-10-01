@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Services\HTTPERPService;
+use App\Services\ListMaterialsService;
 
 class FetchListPlanCommand extends Command
 {
@@ -30,6 +31,7 @@ class FetchListPlanCommand extends Command
     private $userRepository;
     private $renditionRepository;
     private $productRepository;
+    private $listMaterialsService;
 
     protected static $defaultName = 'app:fetch:list-plan';
 
@@ -40,9 +42,9 @@ class FetchListPlanCommand extends Command
         UserRepository $userRepository,
         RenditionRepository $renditionRepository,
         ProductRepository $productRepository,
-        HTTPERPService $httpERPService
-    )
-    {
+        HTTPERPService $httpERPService,
+        ListMaterialsService $listMaterialsService
+    ) {
         parent::__construct();
 
         $this->em = $em;
@@ -52,6 +54,7 @@ class FetchListPlanCommand extends Command
         $this->userRepository = $userRepository;
         $this->renditionRepository = $renditionRepository;
         $this->productRepository = $productRepository;
+        $this->listMaterialsService = $listMaterialsService;
     }
 
     protected function configure()
@@ -98,14 +101,14 @@ class FetchListPlanCommand extends Command
                 $productionPlan->setAccountType(array_search($plan['БААЗ_ТипСчетаПланаПроизводства'], $accountTypes));
                 $productionPlan->setUser($user);
 
-                
+
 
                 sleep(2);
 
                 $planProducts = $this->httpERPService->fetchPlan((string)$plan['Номер']);
 
                 $indexNumber = 1;
-                
+
                 $note = '';
                 foreach ($planProducts as $planProduct) {
 
@@ -124,7 +127,7 @@ class FetchListPlanCommand extends Command
                             break;
                         }
                     }
-                   
+
                     if ($product) {
                         $productionPlanItem = new ProductionPlanItem();
                         $productionPlanItem->setIndexNumber($indexNumber++);
@@ -134,34 +137,43 @@ class FetchListPlanCommand extends Command
                         $productionPlanItem->setAmount((float)str_replace(' ', '', $planProduct['Количество']));
 
                         $this->em->persist($productionPlanItem);
-
                     } else {
-                       $this->log->info($planProduct['НаименованиеКД'] . ' ' . $planProduct['ОбозначениеКД'] . ' ' .$planProduct['Характеристика'] . ' = ' .$planProduct['Количество']);
+                        $this->log->info($planProduct['НаименованиеКД'] . ' ' . $planProduct['ОбозначениеКД'] . ' ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество']);
 
-                       $io->note($planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' .$planProduct['Характеристика'] . ' = ' .$planProduct['Количество']);
-                       $io->newLine();
+                        $io->note($planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество']);
+                        $io->newLine();
 
-                       $note .= $planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' .$planProduct['Характеристика'] . ' = ' .$planProduct['Количество'] . '; ';
+                        $note .= $planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество'] . '; ';
                     }
-
                 }
-                
+
                 if ($note) {
                     $productionPlan->setNote('Не внесены: ' . $note . ' - требуется ручная корректировка');
                 }
 
                 $this->em->persist($productionPlan);
+                $this->em->flush();
 
+                $date = new \DateTime();
 
+                $temp = [];
+                $this->listMaterialsService->initTable();
 
+                foreach ($productionPlan->getProductionPlanItems() as $productionPlanItems) {
 
+                    $product = $productionPlanItems->getProduct();
+                    $rendition = $productionPlanItems->getRendition();
+
+                    $this->listMaterialsService->getMaterials($product->getId(), $rendition->getId(), $productionPlanItems->getAmount(), $date, 'root');
+                }
+
+                $tempMaterials = $this->listMaterialsService->getTableMaterials();
+                $materials = $this->listMaterialsService->getAmountResult($tempMaterials);
+                $this->listMaterialsService->saveTableMaterials($productionPlan, $materials);
             }
-
-            $this->em->flush();
-
         }
 
-        
+
 
         $io->progressFinish();
         $io->success('Fetch list plan success');

@@ -3,8 +3,12 @@
 namespace App\Controller;
 
 use App\Traits\ListDatatableTrait;
-use App\Entity\ProductionPlan;
-use App\Entity\NeedPurchasedProduct;
+use App\Entity\{
+    ProductionPlan,
+    NeedPurchasedProduct,
+    NeedPurchasedProductElement,
+    Product
+};
 use App\Form\ProductionPlanType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -254,6 +258,7 @@ class ProductionPlanController extends AbstractController
     {
         return $this->render('production/need/purchased.html.twig', [
             'productionPlan' => $productionPlan,
+            'accountTypes' => ProductionPlan::ACCOUNT_TYPES,
         ]);
     }
 
@@ -271,6 +276,74 @@ class ProductionPlanController extends AbstractController
     public function listDatatableNeedPurchasedAction(Request $request, ProductionPlan $productionPlan): JsonResponse
     {
         $response = $this->getListDatatable($request, $productionPlan, NeedPurchasedProduct::class);
+
+        $returnResponse = new JsonResponse();
+        $returnResponse->setData($response);
+
+        return $returnResponse;
+    }
+
+    /**
+     * Show page need purchased to product or material
+     *
+     * @Route("/production/plans/{production_plan_id}/purchased/{id}/product", methods="GET", name="production_plan_need_purchased_product")
+     * @ParamConverter("productionPlan", options={"id" = "production_plan_id"})
+     * @Security("is_granted('ROLE_USER')")
+     * 
+     * @return Response
+     */
+    public function needPurchasedProduct(Request $request, ProductionPlan $productionPlan, Product $product): Response
+    {
+        $needPurchasedProduct = $this->entityManager->getRepository(NeedPurchasedProduct::class)->findOneBy(['production_plan' => $productionPlan->getId(), 'product' => $product->getId()]);
+      
+        return $this->render('production/need/purchased_product.html.twig', [
+            'productionPlan' => $productionPlan,
+            'accountTypes' => ProductionPlan::ACCOUNT_TYPES,
+            'product' => $product,
+            'needPurchasedProduct' => $needPurchasedProduct,
+        ]);
+    }
+
+    /**
+     * Data for purchased-product-detailing tables
+     *
+     * @Route("/production/plans/{production_plan_id}/purchased/{id}/product/detailing", methods="POST", name="purchased_product_detailing")
+     * @ParamConverter("productionPlan", options={"id" = "production_plan_id"})
+     * @Security("is_granted('ROLE_USER')")
+     * 
+     * @param Request $request
+     * @param Product $product
+     *
+     * @return JsonResponse
+     */
+    public function purchasedProductDetailing(Request $request, ProductionPlan $productionPlan, Product $product): JsonResponse
+    {
+        $needPurchasedProductElements = $this->entityManager->getRepository(NeedPurchasedProductElement::class)->findBy(['production_plan' => $productionPlan->getId(), 'parent_material' => $product->getId()]);
+    
+        $detailing = [];
+
+        $number = 1;
+        foreach ($needPurchasedProductElements as $key => $element) {
+            $arrStr = [];
+            $arrStr['id'] = $element->getKeyParent() . '-' . $element->getProduct()->getId();
+            $arrStr['pid'] = $element->getParent() ? $element->getKeyParent() . '-' . $element->getParent()->getId() : null;
+            $arrStr['amount'] = strval((double)($element->getAmount()));
+            $arrStr['amountStandart'] = strval((double)($element->getAmountStandart()));
+            $arrStr['amountAll'] = strval((double)($element->getAmountAll()));
+            $arrStr['intype'] = $element->getProduct()->getIntype();
+            $arrStr['productId'] = $element->getProduct()->getId();
+            $arrStr['name'] = $element->getProduct()->getName();
+            $arrStr['unit'] = $element->getProduct()->getUnit() ? $element->getProduct()->getUnit()->getName() : '';
+            $arrStr['designation'] = $element->getProduct()->getDesignation();
+            $arrStr['specificationId'] = $element->getSpecification() ? $element->getSpecification()->getId() : null;
+            $arrStr['normDocumentId'] = $element->getNormDocument() ? $element->getNormDocument()->getId() : null;
+
+            $detailing[] = $arrStr;
+        }
+
+        $response = [
+            'data' => $detailing
+        ];
 
         $returnResponse = new JsonResponse();
         $returnResponse->setData($response);

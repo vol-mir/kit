@@ -10,6 +10,7 @@ use App\Entity\{
     Specification,
     NormDocument,
     NeedPurchasedProduct,
+    NeedPurchasedProductElement,
     ProductionPlan
 };
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,13 +68,15 @@ class ListMaterialsService
      * @return array
      */
 
-    public function getMaterials(int $productId, int $renditionId, float $amount = 1, $date, $type, $arrRoots = [], $specificationId = null): array
+    public function getMaterials(int $productId, int $renditionId, float $amount = 1, $date, $type, $arrRoots = [], $specificationId = 0): array
     {
         $result = [];
 
         $product = $this->entityManager->getRepository(Product::class)->find($productId);
         $rendition = $this->entityManager->getRepository(Rendition::class)->find($renditionId);
 
+        $specificationForParent = $this->entityManager->getRepository(Specification::class)->find($specificationId);
+                    
         $itemRoot = [
             'id' => $product->getId(),
             'name' => $product->getName(),
@@ -81,9 +84,13 @@ class ListMaterialsService
             'renditionId' => $rendition->getId(),
             'renditionName' => $rendition->getName(),
             'unitName' =>  $product->getUnit() ? $product->getUnit()->getName() : null,
-            'amount' => $amount,
+            'amount' => 0,
+            'amountStandard' => 0,
+            'amountAll'=> $amount,
             'type' => $type,
-            'specificationId' => $specificationId,
+            'specificationId' => $specificationId ?? 0,
+            'normDocumentId' => 0,
+            'parent' => $specificationForParent ? $specificationForParent->getProduct()->getId() : 0,
         ];
 
         // Get structure to specification on the date
@@ -143,7 +150,11 @@ class ListMaterialsService
                 'amountAll' => $amount * $item->getAmount(),
                 'mainReplacement' => $item->getMainReplacement(),
                 'prefix' => self::PREFIX_MATERIAL,
+                'type' => 'material',
+                'renditionId' => 0,
+                'specificationId' => 0,
                 'normDocumentId' => $item->getNormDocument()->getId(),
+                'parent' => $item->getNormDocument()->getProduct()->getId(),
             ];
 
 
@@ -188,7 +199,9 @@ class ListMaterialsService
                 'mainReplacement' => $item->getMainReplacement(),
                 'type' => 'child',
                 'prefix' => self::PREFIX_PRODUCT,
-                'specificationId' => $item->getSpecification()->getId(),
+                'specificationId' => $item->getSpecification() ? $item->getSpecification()->getId() : 0,
+                'normDocumentId' => 0,
+                'parent' => $item->getSpecification()->getProduct()->getId(),
             ];
 
             // TO DO - Make actual document
@@ -265,9 +278,13 @@ class ListMaterialsService
     {
         $oldNeedPurchasedProducts = $this->entityManager->getRepository(NeedPurchasedProduct::class)->findBy(['production_plan' => $productionPlan->getId()]);
         array_walk($oldNeedPurchasedProducts, array($this, 'deleteEntity'));
+
+        $oldNeedPurchasedProductElements = $this->entityManager->getRepository(NeedPurchasedProductElement::class)->findBy(['production_plan' => $productionPlan->getId()]);
+        array_walk($oldNeedPurchasedProductElements, array($this, 'deleteEntity'));
+
         $this->entityManager->flush();
 
-        array_walk ( $data, function (&$key) use ($productionPlan) { 
+        array_walk($data, function (&$key) use ($productionPlan) {
             $needPurchasedProduct = new NeedPurchasedProduct();
 
             $needPurchasedProduct->setAmountAll($key['amountAll']);
@@ -276,11 +293,43 @@ class ListMaterialsService
             $needPurchasedProduct->setContext($key['context']);
             $needPurchasedProduct->setPrefix($key['prefix']);
             $needPurchasedProduct->setAmountResult($key['amountResult']);
-            $product = $this->entityManager->getRepository(Product::class)->find($key['id']);
-            $needPurchasedProduct->setProduct($product);
+            $parentMaterial = $this->entityManager->getRepository(Product::class)->find($key['id']);
+            $needPurchasedProduct->setProduct($parentMaterial);
             $needPurchasedProduct->setProductionPlan($productionPlan);
 
             $this->entityManager->persist($needPurchasedProduct);
+
+            foreach ($key['roots'] as $index => $root) {
+                array_walk($root, function (&$key2) use ($productionPlan, $parentMaterial, $index) {
+                    $needPurchasedProductElement = new NeedPurchasedProductElement();
+
+                    $needPurchasedProductElement->setAmount($key2['amount']);
+                    $needPurchasedProductElement->setAmountStandart($key2['amountStandard']);
+                    $needPurchasedProductElement->setAmountAll($key2['amountAll']);
+                    $needPurchasedProductElement->setType($key2['type']);
+                    $specification = $this->entityManager->getRepository(Specification::class)->find($key2['specificationId']);
+                    $needPurchasedProductElement->setSpecification($specification);
+                    $product = $this->entityManager->getRepository(Product::class)->find($key2['id']);
+                    $needPurchasedProductElement->setProduct($product);
+
+                    $rendition = $this->entityManager->getRepository(Rendition::class)->find($key2['renditionId']);
+                    $needPurchasedProductElement->setRendition($rendition);
+
+                    $normDocument = $this->entityManager->getRepository(NormDocument::class)->find($key2['normDocumentId']);
+                    $needPurchasedProductElement->setNormDocument($normDocument);
+
+                    $needPurchasedProductElement->setProductionPlan($productionPlan);
+
+                    $needPurchasedProductElement->setKeyParent($index);
+
+                    $parent = $this->entityManager->getRepository(Product::class)->find($key2['parent']);
+                    $needPurchasedProductElement->setParent($parent);
+
+                    $needPurchasedProductElement->setParentMaterial($parentMaterial);
+
+                    $this->entityManager->persist($needPurchasedProductElement);
+                });
+            }
         });
 
         $this->entityManager->flush();

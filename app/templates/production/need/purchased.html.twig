@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Потребность материалов и покупных деталей - по плану {{ productionPlan.idErp }} от {{ productionPlan.dateErp|date("d.m.Y") }} {% endblock %}
+{% block title %}Потребность материалов и покупных деталей: <small>по плану производства № {{ productionPlan.idErp }} от {{ productionPlan.dateErp|date("d.m.Y") }} - {{ accountTypes[productionPlan.accountType] }}, дата производства с {{ productionPlan.dateBeginErp|date("d.m.Y") }} - по {{ productionPlan.dateEndErp|date("d.m.Y") }} </small>{% endblock %}
 
 {% block body %}
 <div class="row">
@@ -16,10 +16,10 @@
                             <th>Обозначение</th>
                             <th>Наименование</th>
                             <th>Ед.изм.</th>
-                            <th>Кол-во план</th>
-                            <th>Остаток склад</th>
-                            <th>Остаток мат. отчет</th>
-                            <th>Кол-во итог</th>
+                            <th>Кол-во для плана</th>
+                            <th>Остаток на складе закупок</th>
+                            <th>Остаток на производстве</th>
+                            <th>Итого к закупке</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -32,10 +32,10 @@
                             <th>Обозначение</th>
                             <th>Наименование</th>
                             <th>Ед.изм.</th>
-                            <th>Кол-во план</th>
-                            <th>Остаток склад</th>
-                            <th>Остаток мат. отчет</th>
-                            <th>Кол-во итог</th>
+                            <th>Кол-во для плана</th>
+                            <th>Остаток на складе закупок</th>
+                            <th>Остаток на производстве</th>
+                            <th>Итого к закупке</th>
                             <th></th>
                         </tr>
                     </tfoot>
@@ -138,8 +138,10 @@
                 {
                     'render': function (data, type, row) {
 
-                        let urlShow = "{{ path('production_plan_need_purchased', { 'id': 0 }) }}";
-                        urlShow = urlShow.replace("0", 1);
+                        let urlShow = "{{ path('production_plan_need_purchased_product', { 'production_plan_id': '0pl', 'id': '0pr' }) }}";
+                        urlShow = urlShow.replace('0pl', "{{ productionPlan.id }}");
+                        urlShow = urlShow.replace('0pr', row["product_id"]);
+
                         let buttonShow = "<a href='" + urlShow + "' class='btn btn-secondary' title='Подробнее' target='_blank'><i class='fas fa-eye'></i></a>";
 
                         return "<div class='btn-group btn-group-sm'>" + buttonShow + "</div>";

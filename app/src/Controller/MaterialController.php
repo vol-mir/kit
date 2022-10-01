@@ -391,10 +391,8 @@ class MaterialController extends AbstractController
             }
 
            $tempMaterials = $listMaterialsService->getTableMaterials();
-
-           $listMaterialsService->saveTableMaterials($productionPlan, $tempMaterials);
-
            $materials = $listMaterialsService->getAmountResult($tempMaterials);
+           $listMaterialsService->saveTableMaterials($productionPlan, $materials);
         }
 
         return new JsonResponse([

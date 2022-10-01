@@ -73,12 +73,18 @@ class Rendition
      */
     private $productionPlanItems;
 
+    /**
+     * @ORM\OneToMany(targetEntity=NeedPurchasedProductElement::class, mappedBy="rendition", orphanRemoval=true, cascade={"remove"})
+     */
+    private $needPurchasedProductElements;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
         $this->norm_documents = new ArrayCollection();
         $this->track_documents = new ArrayCollection();
         $this->productionPlanItems = new ArrayCollection();
+        $this->needPurchasedProductElements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -236,6 +242,36 @@ class Rendition
             // set the owning side to null (unless already changed)
             if ($productionPlanItem->getRendition() === $this) {
                 $productionPlanItem->setRendition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NeedPurchasedProductElement>
+     */
+    public function getNeedPurchasedProductElements(): Collection
+    {
+        return $this->needPurchasedProductElements;
+    }
+
+    public function addNeedPurchasedProductElement(NeedPurchasedProductElement $needPurchasedProductElement): self
+    {
+        if (!$this->needPurchasedProductElements->contains($needPurchasedProductElement)) {
+            $this->needPurchasedProductElements[] = $needPurchasedProductElement;
+            $needPurchasedProductElement->setRendition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNeedPurchasedProductElement(NeedPurchasedProductElement $needPurchasedProductElement): self
+    {
+        if ($this->needPurchasedProductElements->removeElement($needPurchasedProductElement)) {
+            // set the owning side to null (unless already changed)
+            if ($needPurchasedProductElement->getRendition() === $this) {
+                $needPurchasedProductElement->setRendition(null);
             }
         }
 

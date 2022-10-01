@@ -118,9 +118,15 @@ class NormDocument
      */
     private $id_avt;
 
+    /**
+     * @ORM\OneToMany(targetEntity=NeedPurchasedProductElement::class, mappedBy="norm_document", orphanRemoval=true, cascade={"remove"})
+     */
+    private $needPurchasedProductElements;
+
     public function __construct()
     {
         $this->material_norms = new ArrayCollection();
+        $this->needPurchasedProductElements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -277,6 +283,36 @@ class NormDocument
     public function setIdAvt(?int $id_avt): self
     {
         $this->id_avt = $id_avt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NeedPurchasedProductElement>
+     */
+    public function getNeedPurchasedProductElements(): Collection
+    {
+        return $this->needPurchasedProductElements;
+    }
+
+    public function addNeedPurchasedProductElement(NeedPurchasedProductElement $needPurchasedProductElement): self
+    {
+        if (!$this->needPurchasedProductElements->contains($needPurchasedProductElement)) {
+            $this->needPurchasedProductElements[] = $needPurchasedProductElement;
+            $needPurchasedProductElement->setNormDocument($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNeedPurchasedProductElement(NeedPurchasedProductElement $needPurchasedProductElement): self
+    {
+        if ($this->needPurchasedProductElements->removeElement($needPurchasedProductElement)) {
+            // set the owning side to null (unless already changed)
+            if ($needPurchasedProductElement->getNormDocument() === $this) {
+                $needPurchasedProductElement->setNormDocument(null);
+            }
+        }
 
         return $this;
     }

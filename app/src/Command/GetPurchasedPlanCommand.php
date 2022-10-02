@@ -2,13 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\ {
-    ProductionPlan,
-    ProductionPlanItem,
-    User,
-    Rendition,
-    Product
-};
+use App\Entity\ProductionPlan;
 use Symfony\Component\Console\ {
     Command\Command,
     Input\InputInterface,
@@ -17,11 +11,7 @@ use Symfony\Component\Console\ {
 };
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use App\Services\ {
-    HTTPERPService,
-    ListMaterialsService
-};
+use App\Services\ListMaterialsService;
 
 class GetPurchasedPlanCommand extends Command
 {

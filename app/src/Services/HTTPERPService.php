@@ -53,5 +53,20 @@ class HTTPERPService
         $array = json_decode($content, true);
         return $array;
     }
+
+    public function getRemains($date)
+    {
+        $response = $this->client->request(
+            'GET',
+            $this->erpHttp. '/remains/get_remains/' . $date,
+            [
+                'auth_basic' => $this->authBasic,
+            ]
+        );
+
+        $content = $response->getContent();
+        $array = json_decode($content, true);
+        return $array;
+    }
    
 }

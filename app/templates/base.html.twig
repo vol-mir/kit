@@ -164,20 +164,6 @@
 
                         {% endif %}
 
-                        {% if is_granted("ROLE_OMTSiVK") or is_granted("ROLE_ADMIN") %}
-
-                        <li class="nav-item">
-                            <a href="{{ path('materials_requirement_index') }}"
-                                class="nav-link {% if app.request.get('_route') == 'materials_requirement_index' %} active {% endif %}">
-                                <i class="fa fa-coffee nav-icon"></i>
-                                <p>
-                                    {{ 'title.page.index.material_requirement'|trans }}
-                                </p>
-                            </a>
-                        </li>
-
-                        {% endif %}
-
                         {% if is_granted("ROLE_OGK") or is_granted("ROLE_OGT") or is_granted("ROLE_PEO") or
                         is_granted("ROLE_ADMIN") or is_granted("ROLE_BUH")%}
 

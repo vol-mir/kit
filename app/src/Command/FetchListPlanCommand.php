@@ -2,182 +2,144 @@
 
 namespace App\Command;
 
-use App\Entity\ProductionPlan;
-use App\Entity\ProductionPlanItem;
-use App\Repository\ProductionPlanRepository;
-use App\Repository\UserRepository;
-use App\Repository\RenditionRepository;
-use App\Repository\ProductRepository;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Entity\ {
+    ProductionPlan,
+    ProductionPlanItem,
+    User,
+    Rendition,
+    Product
+};
+use Symfony\Component\Console\ {
+    Command\Command,
+    Input\InputInterface,
+    Output\OutputInterface,
+    Style\SymfonyStyle
+};
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use Psr\Log\LoggerInterface;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Services\HTTPERPService;
-use App\Services\ListMaterialsService;
 
 class FetchListPlanCommand extends Command
 {
-    private $em;
-    private $log;
-    private $productionPlanRepository;
-    private $userRepository;
-    private $renditionRepository;
-    private $productRepository;
-    private $listMaterialsService;
+    /** 
+     * @var EntityManagerInterface $entityManager 
+     */
+    protected $entityManager;
+
+    /** 
+     * @var HTTPERPService $httpERPService 
+     */
+    private $httpERPService;
 
     protected static $defaultName = 'app:fetch:list-plan';
 
     public function __construct(
-        EntityManagerInterface $em,
-        LoggerInterface $logger,
-        ProductionPlanRepository $productionPlanRepository,
-        UserRepository $userRepository,
-        RenditionRepository $renditionRepository,
-        ProductRepository $productRepository,
-        HTTPERPService $httpERPService,
-        ListMaterialsService $listMaterialsService
+        EntityManagerInterface $entityManager,
+        HTTPERPService $httpERPService
     ) {
         parent::__construct();
-
-        $this->em = $em;
-        $this->log = $logger;
-        $this->productionPlanRepository = $productionPlanRepository;
+        $this->entityManager = $entityManager;
         $this->httpERPService = $httpERPService;
-        $this->userRepository = $userRepository;
-        $this->renditionRepository = $renditionRepository;
-        $this->productRepository = $productRepository;
-        $this->listMaterialsService = $listMaterialsService;
     }
 
     protected function configure()
     {
-        $this->setDescription('Fetch list plan - php -d memory_limit=-1 bin/console app:fetch:list-plan');
+        $this->setDescription('Загрузка планов из ЕРП - php -d memory_limit=-1 bin/console app:fetch:list-plan');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $productionPlans = $this->productionPlanRepository->findAll();
-        $products = $this->productRepository->findAll();
-        $renditions = $this->renditionRepository->findAll();
+        // Get plans fron ERP
+        $erpPlans = $this->httpERPService->fetchListPlan();
 
-        $listPlan = $this->httpERPService->fetchListPlan();
+        // Get user with id = 1 (admin)
+        $admin = $this->entityManager->getRepository(User::class)->find(1);
 
-        $user = $this->userRepository->find(1);
-        $accountTypes = ProductionPlan::ACCOUNT_TYPES;
+        // Get all products
+        $products = $this->entityManager->getRepository(Product::class)->findAll();
 
-        $io->progressStart(count($listPlan));
+        // Get all renditions
+        $renditions = $this->entityManager->getRepository(Rendition::class)->findAll();
 
-        foreach ($listPlan as $plan) {
+        // Get standart rendition
+        $renditionStandart = $this->entityManager->getRepository(Rendition::class)->find(1);
 
-            $flag = 1;
+        $io->progressStart(count($erpPlans));
 
-            foreach ($productionPlans as $productionPlan) {
-                if ($plan['Номер'] == $productionPlan->getIdErp()) {
-                    $flag = 0;
-                    break;
-                }
-            }
+        foreach ($erpPlans as $erpPlan) {
 
-            if ($flag && $plan['ВидПлана'] === 'Основной') {
-
+            if ($erpPlan['ВидПлана'] !== 'Основной') {
                 $io->progressAdvance();
-
-                $productionPlan = new ProductionPlan();
-                $productionPlan->setIdErp($plan['Номер']);
-
-                $productionPlan->setDateErp(new \DateTime($plan['Дата']));
-                $productionPlan->setDateBeginErp(new \DateTime($plan['НачалоПериода']));
-                $productionPlan->setDateEndErp(new \DateTime($plan['ОкончаниеПериода']));
-                $productionPlan->setAccountType(array_search($plan['БААЗ_ТипСчетаПланаПроизводства'], $accountTypes));
-                $productionPlan->setUser($user);
-
-
-
-                sleep(2);
-
-                $planProducts = $this->httpERPService->fetchPlan((string)$plan['Номер']);
-
-                $indexNumber = 1;
-
-                $note = '';
-                foreach ($planProducts as $planProduct) {
-
-                    $product = null;
-                    foreach ($products as $itemProduct) {
-                        if (strtolower(trim($planProduct['ОбозначениеКД'])) == strtolower(trim($itemProduct->getDesignation()))) {
-                            $product = $itemProduct;
-                            break;
-                        }
-                    }
-
-                    $rendition = $this->renditionRepository->find(1);
-                    foreach ($renditions as $itemRendition) {
-                        if (strtolower(trim($planProduct['Характеристика'])) == strtolower(trim($itemRendition->getName()))) {
-                            $rendition = $itemRendition;
-                            break;
-                        }
-                    }
-
-                    if ($product) {
-                        $productionPlanItem = new ProductionPlanItem();
-                        $productionPlanItem->setIndexNumber($indexNumber++);
-                        $productionPlanItem->setProductionPlan($productionPlan);
-                        $productionPlanItem->setProduct($product);
-                        $productionPlanItem->setRendition($rendition);
-                        $productionPlanItem->setAmount((float)str_replace(' ', '', $planProduct['Количество']));
-
-                        $this->em->persist($productionPlanItem);
-                    } else {
-                        $this->log->info($planProduct['НаименованиеКД'] . ' ' . $planProduct['ОбозначениеКД'] . ' ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество']);
-
-                        $io->note($planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество']);
-                        $io->newLine();
-
-                        $note .= $planProduct['НаименованиеКД'] . ' [' . $planProduct['ОбозначениеКД'] . '] ' . $planProduct['Характеристика'] . ' = ' . $planProduct['Количество'] . '; ';
-                    }
-                }
-
-                if ($note) {
-                    $productionPlan->setNote('Не внесены: ' . $note . ' - требуется ручная корректировка');
-                }
-
-                $this->em->persist($productionPlan);
-                $this->em->flush();
-
-                $date = new \DateTime();
-
-                $temp = [];
-                $this->listMaterialsService->initTable();
-
-                foreach ($productionPlan->getProductionPlanItems() as $productionPlanItems) {
-
-                    $product = $productionPlanItems->getProduct();
-                    $rendition = $productionPlanItems->getRendition();
-
-                    $this->listMaterialsService->getMaterials($product->getId(), $rendition->getId(), $productionPlanItems->getAmount(), $date, 'root');
-                }
-
-                $tempMaterials = $this->listMaterialsService->getTableMaterials();
-                $materials = $this->listMaterialsService->getAmountResult($tempMaterials);
-                $this->listMaterialsService->saveTableMaterials($productionPlan, $materials);
+                continue;
             }
+
+            $productionPlan = $this->entityManager->getRepository(ProductionPlan::class)->findOneBy(['id_erp' => $erpPlan['Номер']]);
+            if (!empty($productionPlan)) {
+                $io->progressAdvance();
+                continue;
+            }
+
+            $productionPlan = new ProductionPlan();
+            $productionPlan->setIdErp($erpPlan['Номер']);
+            $productionPlan->setDateErp(new DateTime($erpPlan['Дата']));
+            $productionPlan->setDateBeginErp(new DateTime($erpPlan['НачалоПериода']));
+            $productionPlan->setDateEndErp(new DateTime($erpPlan['ОкончаниеПериода']));
+            $productionPlan->setAccountType(array_search($erpPlan['БААЗ_ТипСчетаПланаПроизводства'], ProductionPlan::ACCOUNT_TYPES));
+            $productionPlan->setUser($admin);
+
+            $planErpProducts = $this->httpERPService->fetchPlan((string)$erpPlan['Номер']);
+
+            $indexNumber = 1;
+            $note = '';
+
+            foreach ($planErpProducts as $planErpProduct) {
+
+                $product = null;
+                foreach ($products as $elem) {
+                    if (strtolower(trim($planErpProduct['ОбозначениеКД'])) === strtolower(trim($elem->getDesignation()))) {
+                        $product = $elem;
+                        break;
+                    }
+                }
+                if (empty($product)) {
+                    $note .= $planErpProduct['НаименованиеКД'] . ' ' . $planErpProduct['ОбозначениеКД'] . ' - ' . $planErpProduct['Характеристика'] . ' = ' . $planErpProduct['Количество'];
+                    $io->note($planErpProduct['НаименованиеКД'] . ' ' . $planErpProduct['ОбозначениеКД'] . ' - ' . $planErpProduct['Характеристика'] . ' = ' . $planErpProduct['Количество']);
+                    $io->newLine();
+                    $io->progressAdvance();
+                    continue;
+                }
+
+                $rendition = $renditionStandart;
+                foreach ($renditions as $elem) {
+                    if (strtolower(trim($planErpProduct['Характеристика'])) == strtolower(trim($elem->getName()))) {
+                        $rendition = $elem;
+                        break;
+                    }
+                }
+
+                $productionPlanItem = new ProductionPlanItem();
+                $productionPlanItem->setIndexNumber($indexNumber++);
+                $productionPlanItem->setProductionPlan($productionPlan);
+                $productionPlanItem->setProduct($product);
+                $productionPlanItem->setRendition($rendition);
+                $productionPlanItem->setAmount((float)str_replace(' ', '', $planErpProduct['Количество']));
+                $this->entityManager->persist($productionPlanItem);
+            }
+
+            if (!empty($note)) {
+                $productionPlan->setNote('Не внесены: ' . $note . ' - требуется ручная корректировка');
+            }
+
+            $this->entityManager->persist($productionPlan);
+            $this->entityManager->flush();
+
+            $io->progressAdvance();
         }
 
-
-
         $io->progressFinish();
-        $io->success('Fetch list plan success');
-        $this->log->info('app:fetch:list-plan - Fetch list plan success');
+        $io->success('Загрузка планов закончилась!');
 
         return Command::SUCCESS;
     }
